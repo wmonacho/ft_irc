@@ -29,7 +29,7 @@ int main(int ac, char **av)
 
 		// Once we have a socket, we have to associate that socket with a port on our local machine
 		// This bind() call will bind the socket to the current IP address on port
-		if (bind(server.getSocketfd(), (struct sockaddr*)&server.getServAddr(), server.getServLen()) < 0) {
+		if (bind(server.getSocketfd(), (struct sockaddr*)server.getServAddr(), server.getServLen()) < 0) {
 			std::cout << "Error : socket binding failed" << std::endl;
 			exit(1);
 		}
@@ -43,13 +43,13 @@ int main(int ac, char **av)
 
 		// Finally we extract the first connection request from the queue of pending connections for the listening socket
 		// then we create a new connected socket and we return a new fd referring to that socket
-		server.setNewSocket(accept(server.getSocketfd(), (struct sockaddr*)&server.getClientAddr(), server.getClientLen()));
+		server.setNewSocket(accept(server.getSocketfd(), (struct sockaddr*)server.getClientAddr(), server.getClientLen()));
 		if (server.getNewSocket() < 0) {
 			std::cout << "Error : new socket creation failed" << std::endl;
 			exit(1);
 		}
 
-		std::cout << "Server got a connection from " << inet_ntoa(server.getClientAddr().sin_addr) << " on port " << ntohs(server.getClientAddr().sin_port) << std::endl;
+		std::cout << "Server got a connection from " << inet_ntoa(server.getClientAddr()->sin_addr) << " on port " << ntohs(server.getClientAddr()->sin_port) << std::endl;
 
 		/* This is where we will receive command, treat them and send the result to the client*/
 		send(server.getNewSocket(), "Hello !\n", 8, 0);
