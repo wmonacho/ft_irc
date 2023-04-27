@@ -28,14 +28,14 @@ class Server {
         Server& operator=(const Server& obj);
         ~Server();
 
-        int         getSocketfd(void);
-        int         getNewSocket(void);
-        ssize_t     getValRead(void);
-        int         getPort(void);
-        socklen_t   getServLen(void);
-        socklen_t*  getClientLen(void);
-        sockaddr_in getServAddr(void);
-        sockaddr_in getClientAddr(void);
+        int             getSocketfd(void);
+        int             getNewSocket(void);
+        ssize_t         getValRead(void);
+        int             getPort(void);
+        socklen_t       getServLen(void);
+        socklen_t*      getClientLen(void);
+        sockaddr_in*    getServAddr(void);
+        sockaddr_in*    getClientAddr(void);
 
         void    setSocketfd(int fd);
         void    setNewSocket(int fd);

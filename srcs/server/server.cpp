@@ -9,18 +9,25 @@ Server::Server() {
     return ;
 }
 
-Server::Server(const Server& obj) : _socketfd(obj._socketfd), _newSocket(obj._newSocket), _servLen(obj._servLen),
-_clientLen(obj._clientLen), _servAddr(obj._servAddr), _clientAddr(obj._clientAddr), _valRread(obj._valRread) {
+Server::Server(const Server& obj) {
 
+    this->_port = obj._port;
+    this->_socketfd = obj._socketfd;
+    this->_newSocket = obj._newSocket;
+    this->_valRread = obj._valRread;
+    this->_servLen = obj._servLen;
+    this->_clientLen = obj._clientLen;
+    this->_servAddr = obj._servAddr;
+    this->_clientAddr = obj._clientAddr;
     *this = obj;
     return ;
 }
 
 Server& Server::operator=(const Server& obj) {
 
+    this->_port = obj._port;
     this->_socketfd = obj._socketfd;
     this->_newSocket = obj._newSocket;
-    this->_port = obj._port;
     this->_valRread = obj._valRread;
     this->_servLen = obj._servLen;
     this->_clientLen = obj._clientLen;
@@ -64,14 +71,14 @@ socklen_t* Server::getClientLen(void) {
     return &this->_clientLen;
 }
 
-sockaddr_in Server::getServAddr(void) {
+sockaddr_in* Server::getServAddr(void) {
 
-    return this->_servAddr;
+    return &this->_servAddr;
 }
 
-sockaddr_in Server::getClientAddr(void) {
+sockaddr_in* Server::getClientAddr(void) {
 
-    return this->_clientAddr;
+    return &this->_clientAddr;
 }
 
 // *** SETTERS ***
