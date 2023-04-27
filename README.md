@@ -1,5 +1,4 @@
-# ft_irc
-
+# Bienvenue sur ft_irc 
 L’objectif de ce projet est de reproduire le fonctionnement d’un serveur IRC.
 Vous utiliserez un vrai client IRC afin de vous connecter à votre serveur et ainsi de le
 tester.
@@ -7,5 +6,9 @@ Internet fonctionne grâce à de nombreux standards et protocoles pour permettre
 interopérabilité entre les machines connectées. Il est toujours intéressant de connaître ce
 genre de chose.
 
-Pour lancer WeeChat lancer l'executable suivant :
-./client_srcs/weechat-docker/build-and-run.sh 
+<h1>
+</h1>
+
+**Pour lancer WeeChat lancer l'executable suivant :**
+
+```./client_srcs/weechat-docker/build-and-run.sh ```
