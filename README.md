@@ -11,4 +11,4 @@ genre de chose.
 
 **Pour lancer WeeChat lancer l'executable suivant :**
 
-```./client_srcs/weechat-docker/build-and-run.sh ```
+```./srcs/client_srcs/weechat-docker/build-and-run.sh ```
