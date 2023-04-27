@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 15:54:01 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/04/27 12:50:40 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/04/27 15:46:10 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,6 +24,7 @@ User::User( User const & obj)
 
 User	&User::operator=( User const & rhs)
 {
+	(void)rhs;
 	return (*this);
 }
 
