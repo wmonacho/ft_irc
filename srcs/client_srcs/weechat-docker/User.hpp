@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 15:54:00 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/04/27 12:49:48 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/04/27 15:31:08 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,6 +23,8 @@ class User
 		std::string	_password;
 		std::string	_full_name;
 		std::string	_email_address;
+		std::string	_host_address;
+		std::string	_server_connect;
 	public :
 		User( void );
 		~User( void );

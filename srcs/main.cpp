@@ -1,7 +1,11 @@
 #include "server/server.hpp"
+#include "client_srcs/weechat-docker/User.hpp"
 
 int main(int ac, char **av)
 {
+	// User	inst;
+
+	// (void)inst;
 	Server server;
 
 	if (ac == 3)
