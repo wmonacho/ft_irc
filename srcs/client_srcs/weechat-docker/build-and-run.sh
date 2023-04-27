@@ -1,5 +1,8 @@
 #!/bin/bash
 
+# Make for sure
+make
+
 # Build the Docker image
 docker build -t weechat-docker .
 
