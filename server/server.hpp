@@ -12,12 +12,14 @@ class Server {
 
     private :
 
+        int _port;
         int _socketfd;
         int _newSocket;
-        int _valRread;
-        int _port;
-        struct sockaddr_in servAddr, clientAddr;
-        socklen_t servLen, clientLen;
+        ssize_t _valRread;
+        socklen_t _servLen;
+        socklen_t _clientLen;
+        struct sockaddr_in _servAddr;
+        struct sockaddr_in _clientAddr;
 
     public :
 
@@ -26,17 +28,20 @@ class Server {
         Server& operator=(const Server& obj);
         ~Server();
 
-        int     getSocketfd(void);
-        int     getNewSocket(void);
-        int     getAddressLen(void);
-        int     getValRead(void);
-        int     getPort(void);
+        int         getSocketfd(void);
+        int         getNewSocket(void);
+        ssize_t     getValRead(void);
+        int         getPort(void);
+        socklen_t   getServLen(void);
+        socklen_t*  getClientLen(void);
+        sockaddr_in getServAddr(void);
+        sockaddr_in getClientAddr(void);
 
         void    setSocketfd(int fd);
         void    setNewSocket(int fd);
-        void    setAddressLen(int length);
-        void    setValRead(int value);
+        void    setValRead(ssize_t value);
         void    setPort(int port);
+        void    setServAddr(int port);
 };
 
 #endif
