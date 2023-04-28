@@ -11,3 +11,7 @@ docker build -t weechat-docker .
 docker run -it weechat-docker
 
 # Add -p port instead -it for run with a special port
+
+#run exec ircserv
+
+./ircserv 9999 manger
