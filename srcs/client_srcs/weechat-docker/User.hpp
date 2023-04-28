@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 15:54:00 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/04/27 15:31:08 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/04/28 17:42:53 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,6 +14,8 @@
 # define USER_HPP
 
 #include <iostream>
+#include <set>
+#include <map>
 
 class User
 {
@@ -25,6 +27,11 @@ class User
 		std::string	_email_address;
 		std::string	_host_address;
 		std::string	_server_connect;
+		std::string _m_host;
+		bool 		_m_away;
+		std::set<std::string> _m_channels;
+		std::map<std::string, std::set<std::string>> _m_modes;
+		std::string _m_server;
 	public :
 		User( void );
 		~User( void );

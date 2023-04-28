@@ -33,7 +33,7 @@ Server& Server::operator=(const Server& obj) {
     this->_clientLen = obj._clientLen;
     this->_servAddr = obj._servAddr;
     this->_clientAddr = obj._clientAddr;
-    *this = obj;
+    // *this = obj; #BOUCLE INFINI OPE=
     return *this;
 }
 
@@ -108,7 +108,8 @@ void    Server::setServAddr(int port) {
     // Server byte order
     this->_servAddr.sin_family = AF_INET;
     // Fill with current host's IP address
-    this->_servAddr.sin_addr.s_addr = INADDR_ANY;
+    // this->_servAddr.sin_addr.s_addr = INADDR_ANY;
+    this->_servAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
     // The htons() function converts the unsigned short integer hostshort from host byte order to network byte order
     this->_servAddr.sin_port = htons(port);
 }
