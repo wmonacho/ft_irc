@@ -37,7 +37,8 @@ genre de chose.
 ```
 server add manger 127.0.0.1/9999
 ```
-(au lieu de l'IP j'ai pu tester avec une adresse serveur comme chat.manger.net/6697 ce qui m'add un serveur "test" qui me permet d'avoir les logs etc)
+(au lieu de l'IP j'ai pu tester avec une adresse serveur comme chat.freenode.net/6697 et -autoconnect ce qui m'add un serveur "test" qui me permet d'avoir les logs etc) cmd : /server add freenode chat.freenode.net/6697 -ssl -autoconnect
+
 * on y rajoute -ssl qui indique que la connexion au serveur se fera en utilisant le protocole SSL/TLS pour le chiffrement de la communication
 
 * on utilise ensuite la commande :
