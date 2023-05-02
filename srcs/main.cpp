@@ -52,11 +52,12 @@ int main(int ac, char **av)
 		std::cout << "Server got a connection from " << inet_ntoa(server.getClientAddr()->sin_addr) << " on port " << ntohs(server.getClientAddr()->sin_port) << std::endl;
 
 		/* This is where we will receive command, treat them and send the result to the client*/
+		// The send() command is similar to write(), the main difference is that it has flags and it can only be used with connected sockets
 		send(server.getNewSocket(), "Hello !\n", 8, 0);
 		// Now we can read from the new_socket
-		server.setValRead(read(server.getNewSocket(), buffer, 255));
+		// The redv() command is similar to read, the main difference is that it has flags and it can only be used with connected sockets
+		server.setValRead(recv(server.getNewSocket(), buffer, 255, 0));
 		std::cout << "Message from the client : " << server.getValRead() << std::endl;
-		// il faudra aussi recv
 
 		// closing the connected socket
 		close(server.getNewSocket());
