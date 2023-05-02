@@ -7,6 +7,7 @@ int main(int ac, char **av)
 
 	// (void)inst;
 	Server server;
+	struct pollfd fds;
 
 	if (ac == 3)
 	{
@@ -51,14 +52,31 @@ int main(int ac, char **av)
 
 		std::cout << "Server got a connection from " << inet_ntoa(server.getClientAddr()->sin_addr) << " on port " << ntohs(server.getClientAddr()->sin_port) << std::endl;
 
-		/* This is where we will receive command, treat them and send the result to the client*/
-		// The send() command is similar to write(), the main difference is that it has flags and it can only be used with connected sockets
-		send(server.getNewSocket(), "Hello !\n", 8, 0);
-		// Now we can read from the new_socket
-		// The redv() command is similar to read, the main difference is that it has flags and it can only be used with connected sockets
-		server.setValRead(recv(server.getNewSocket(), buffer, 255, 0));
-		std::cout << "Message from the client : " << server.getValRead() << std::endl;
+		fds.fd = server.getNewSocket();
+		fds.events = POLLIN;
 
+		while (1) {
+			int num_events = poll(&fds, 1, -1); // Wait indefinitely for events
+			if (num_events == -1) {
+				// Handle poll error
+				std::cout << "Poll error" << std::endl;
+				close(server.getNewSocket());
+				close(server.getSocketfd());
+				exit(1);
+			}
+			else if (num_events == 0) {
+				// No events occurred before timeout
+				std::cout << "RAS je sais pas encore quoi faire ici" << std::endl;
+			}
+			else {
+				// Check if the client socket has data available for reading
+				if (fds.revents & POLLIN) {
+					// Handle incoming messages from the client
+					server.setValRead(recv(server.getNewSocket(), buffer, 255, 0));
+					std::cout << "Message from the client : " << buffer << std::endl;
+				}
+			}
+		}
 		// closing the connected socket
 		close(server.getNewSocket());
 		// closing the listening socket
