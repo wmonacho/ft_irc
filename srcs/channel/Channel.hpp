@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 13:57:00 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/03 14:58:36 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/05/03 15:30:37 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,7 @@
 #define CHANNEL_HPP
 
 #include "../server/server.hpp"
-class User;
+#include "../user/User.hpp"
 
 class Channel
 {
