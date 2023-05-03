@@ -1,5 +1,5 @@
 #include "server/server.hpp"
-#include "User_srcs/User.hpp"
+#include "user/User.hpp"
 
 int main(int ac, char **av)
 {

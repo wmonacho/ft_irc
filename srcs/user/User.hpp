@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 15:54:00 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/03 14:58:57 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/05/03 15:30:46 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,8 +16,6 @@
 #include <iostream>
 #include <set>
 #include <map>
-#include "../channel/Channel.hpp"
-class Channel;
 
 class User
 {

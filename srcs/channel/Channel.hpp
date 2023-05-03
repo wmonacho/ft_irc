@@ -6,24 +6,15 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 13:57:00 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/03 14:58:36 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/05/03 15:30:37 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef CHANNEL_HPP
 #define CHANNEL_HPP
 
-#include <sys/socket.h>
-#include <arpa/inet.h>
-#include <netinet/in.h>
-#include <iostream>
-#include <unistd.h>
-#include <stdlib.h>
-#include <poll.h>
-#include <string.h>
-#include <vector>
-
-class User;
+#include "../server/server.hpp"
+#include "../user/User.hpp"
 
 class Channel
 {
