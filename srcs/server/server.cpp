@@ -81,6 +81,11 @@ sockaddr_in* Server::getClientAddr(void) {
     return &this->_clientAddr;
 }
 
+std::map<std::string, Channel>  Server::getMap(void) {
+
+    return this->_channels;
+}
+
 // *** SETTERS ***
 
 void    Server::setSocketfd(int fd) {
@@ -113,3 +118,11 @@ void    Server::setServAddr(int port) {
     // The htons() function converts the unsigned short integer hostshort from host byte order to network byte order
     this->_servAddr.sin_port = htons(port);
 }
+
+void    Server::setNewChannelInMap(const Channel& channel) {
+
+    this->_channels[channel.getName()] = channel;
+}
+
+
+/* SERVER FUNCTIONS */
