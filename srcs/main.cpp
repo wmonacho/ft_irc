@@ -56,6 +56,7 @@ int main(int ac, char **av)
 		fds.events = POLLIN;
 
 		while (1) {
+			send(server.getNewSocket(), "> ", 2, 0);
 			int num_events = poll(&fds, 1, -1); // Wait indefinitely for events
 			if (num_events == -1) {
 				// Handle poll error
