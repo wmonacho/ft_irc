@@ -50,6 +50,8 @@ class Server {
         void    setPort(int port);
         void    setServAddr(int port);
         void    setNewChannelInMap(const Channel& channel);
+
+        void    joinChannel( std::string channel_name, User new_user );
 };
 
 #endif

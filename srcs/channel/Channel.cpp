@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:31:22 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/03 14:58:44 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/05/03 17:21:47 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,6 +15,11 @@
 Channel::Channel( void )
 {
 
+}
+
+Channel::Channel( std::string name)
+{
+	this->_name = name;
 }
 
 Channel::Channel( Channel const & obj)
