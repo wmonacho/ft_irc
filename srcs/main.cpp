@@ -1,5 +1,5 @@
 #include "server/server.hpp"
-#include "client_srcs/weechat-docker/User.hpp"
+#include "client_srcs/User.hpp"
 
 int main(int ac, char **av)
 {
@@ -56,7 +56,6 @@ int main(int ac, char **av)
 		fds.events = POLLIN;
 
 		while (1) {
-			send(server.getNewSocket(), "> ", 2, 0);
 			int num_events = poll(&fds, 1, -1); // Wait indefinitely for events
 			if (num_events == -1) {
 				// Handle poll error
@@ -73,8 +72,9 @@ int main(int ac, char **av)
 				// Check if the client socket has data available for reading
 				if (fds.revents & POLLIN) {
 					// Handle incoming messages from the client
-					server.setValRead(recv(server.getNewSocket(), buffer, 255, 0));
-					std::cout << "Message from the client : " << buffer << std::endl;
+					memset(buffer, 0, 255);
+					if (recv(server.getNewSocket(), buffer, 255, 0) > 0)
+						std::cout << "Message from the client : " << buffer;
 				}
 			}
 		}

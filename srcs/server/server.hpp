@@ -8,6 +8,7 @@
 #include <unistd.h>
 #include <stdlib.h>
 #include <poll.h>
+#include <string.h>
 
 class Server {
 
