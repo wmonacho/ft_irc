@@ -13,7 +13,16 @@
 #ifndef CHANNEL_HPP
 #define CHANNEL_HPP
 
-#include "../server/server.hpp"
+#include <sys/socket.h>
+#include <arpa/inet.h>
+#include <netinet/in.h>
+#include <iostream>
+#include <unistd.h>
+#include <stdlib.h>
+#include <poll.h>
+#include <string.h>
+#include <vector>
+
 class User;
 
 class Channel

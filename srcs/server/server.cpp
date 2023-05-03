@@ -121,7 +121,7 @@ void    Server::setServAddr(int port) {
 
 void    Server::setNewChannelInMap(const Channel& channel) {
 
-    this->_channels[channel._name] = channel;
+    this->_channels[channel.getName()] = channel;
 }
 
 

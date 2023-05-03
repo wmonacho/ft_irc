@@ -10,8 +10,8 @@
 #include <stdlib.h>
 #include <poll.h>
 #include <string.h>
-#include <map>
 #include <vector>
+#include <map>
 
 class Channel;
 class Server {
