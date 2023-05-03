@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 15:54:00 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/03 15:30:46 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/05/03 17:31:02 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,6 +35,7 @@ class User
 		void		setPassword( std::string new_string );
 		void		setUsername( std::string new_string );
 		void		setNickname( std::string new_string );
+		void		setAdmin( int admin);
 		std::string	getEmailaddress( void );
 		std::string	getFullname( void ) const;
 		std::string	getPassword( void ) const;
