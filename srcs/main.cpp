@@ -1,5 +1,5 @@
 #include "server/server.hpp"
-#include "client_srcs/User.hpp"
+#include "User_srcs/User.hpp"
 
 int main(int ac, char **av)
 {
@@ -54,7 +54,7 @@ int main(int ac, char **av)
 
 		fds.fd = server.getNewSocket();
 		fds.events = POLLIN;
-
+		
 		while (1) {
 			int num_events = poll(&fds, 1, -1); // Wait indefinitely for events
 			if (num_events == -1) {

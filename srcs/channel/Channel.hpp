@@ -11,7 +11,7 @@
 /* ************************************************************************** */
 
 #ifndef CHANNEL_HPP
-#define CHANNELL_HPP
+#define CHANNEL_HPP
 
 class Channel
 {
