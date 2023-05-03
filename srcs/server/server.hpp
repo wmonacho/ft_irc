@@ -10,7 +10,6 @@
 #include <stdlib.h>
 #include <poll.h>
 #include <string.h>
-#include <vector>
 #include <map>
 
 class Channel;
