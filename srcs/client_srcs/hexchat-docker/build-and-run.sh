@@ -4,11 +4,11 @@
 make
 
 # Build the Docker image
-docker build -t hexchat-docker .
+docker build -t weechat-docker .
 
 
 # Run the Docker container
-docker run -it hexchat-docker
+docker run -it weechat-docker
 
 # Add -p port instead -it for run with a special port
 
