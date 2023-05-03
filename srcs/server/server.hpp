@@ -11,6 +11,7 @@
 #include <poll.h>
 #include <string.h>
 #include <map>
+#include <vector>
 
 class Channel;
 class Server {

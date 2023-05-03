@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 15:54:00 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/04/28 17:53:31 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/05/03 14:58:57 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,6 +16,8 @@
 #include <iostream>
 #include <set>
 #include <map>
+#include "../channel/Channel.hpp"
+class Channel;
 
 class User
 {
@@ -24,14 +26,7 @@ class User
 		std::string	_username;
 		std::string	_password;
 		std::string	_full_name;
-		std::string	_email_address;
-		std::string	_host_address;
-		std::string	_server_connect;
-		std::string _m_host;
-		bool 		_m_away;
-		std::set<std::string> _m_channels;
-		std::map<std::string, std::set<std::string> > _m_modes;
-		std::string _m_server;
+		bool		_admin;
 	public :
 		User( void );
 		~User( void );
@@ -43,10 +38,10 @@ class User
 		void		setUsername( std::string new_string );
 		void		setNickname( std::string new_string );
 		std::string	getEmailaddress( void );
-		std::string	getFullname( void );
-		std::string	getPassword( void );
-		std::string	getUsername( void );
-		std::string	getNickname( void );
+		std::string	getFullname( void ) const;
+		std::string	getPassword( void ) const;
+		std::string	getUsername( void ) const;
+		std::string	getNickname( void ) const;
 };
 
 
