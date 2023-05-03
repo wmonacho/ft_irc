@@ -57,7 +57,7 @@ int main(int ac, char **av)
 		// Now we can read from the new_socket
 		// The redv() command is similar to read, the main difference is that it has flags and it can only be used with connected sockets
 		server.setValRead(recv(server.getNewSocket(), buffer, 255, 0));
-		std::cout << "Message from the client : " << server.getValRead() << std::endl;
+		std::cout << "Message from the client : " << server.getValRead() << "    " << buffer << std::endl;
 
 		// closing the connected socket
 		close(server.getNewSocket());
