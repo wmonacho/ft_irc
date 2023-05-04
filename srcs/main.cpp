@@ -1,5 +1,6 @@
 #include "server/server.hpp"
 #include "user/User.hpp"
+#include "cmd/cmd.hpp"
 
 int main(int ac, char **av)
 {
@@ -74,7 +75,17 @@ int main(int ac, char **av)
 					// Handle incoming messages from the client
 					memset(buffer, 0, 255);
 					if (recv(server.getNewSocket(), buffer, 255, 0) > 0)
-						std::cout << "Message from the client : " << buffer;
+                                   {
+                                       cmd inst;
+                                       std::vector<std::string> splitBuffer = inst.splitString(buffer);
+                                        if (splitBuffer.size() < 2)
+                                        {
+                                              std::cerr << "Usage: ./irc [command]" << std::endl;
+                                            return (1);
+                                        }
+                                        inst.whichCmd(splitBuffer[0], buffer);
+                                        std::cout << "Message from the client : " << buffer;
+                                   }
 				}
 			}
 		}

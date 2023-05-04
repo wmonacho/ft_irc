@@ -75,13 +75,15 @@ NAME =		ircserv
 FILES =		main.cpp							\
 			server/server.cpp					\
 			channel/Channel.cpp					\
-			user/User.cpp					\
+			user/User.cpp						\
+			cmd/cmd.cpp							\
 # ================================================
 
 # HEADER =========================================
 HEADER =	server/server.hpp					\
 			channel/Channel.hpp					\
-			user/User.hpp					\
+			user/User.hpp						\
+			cmd/cmd.hpp							\
 
 # ================================================
 
@@ -93,7 +95,7 @@ FLAGS =		-Wall -Wextra -Werror -std=c++98
 CC =		c++
 # ================================================
 
-SUB_DIR_LST =	server channel user
+SUB_DIR_LST =	server channel user cmd
 
 # OBJS_DIR =======================================
 OBJS_DIR =	.objs
