@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 13:57:00 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/03 17:22:02 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/05/04 17:07:44 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ class Channel
 {
 	private :
 		std::string	_name;
-		std::vector<User> _user_list;
+		std::vector<User> _channel_user_list;
 	public :
 		Channel();
 		Channel( std::string name);

@@ -5,6 +5,9 @@
 #include <string>
 #include <vector>
 #include <cstring>
+#include "../server/server.hpp"
+
+class Server;
 
 class cmd
 {
@@ -21,7 +24,7 @@ public:
 
     void    whichCmd(std::string cmd, std::string str, Server server);
     bool    parsePass(std::string str, Server server);
-    bool    parseNick(std::string str);
+    bool    parseNick(std::string str, Server server);
     bool    parseUser(std::string str);
     bool    parsePart(std::string str);
     bool    parseTopic(std::string str);

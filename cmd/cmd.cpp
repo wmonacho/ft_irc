@@ -68,14 +68,13 @@ std::vector<std::string> cmd::splitString(std::string str, const char *delim)
 bool    cmd::parsePass(std::string str, Server server)
 {
     std::vector<std::string> splitArg = splitString(str, " ");
-    if (splitArg.size() != 2)
+    if (splitArg.size() != 2 || server.alreadyRegistred())
         return (false);
-    //check si l'user a deja set son password
-    //set son password
+    server.setPassword(splitArg[1]);
     return (true);
 }
 
-bool    cmd::parseNick(std::string str)
+bool    cmd::parseNick(std::string str, Server server)
 {
     std::vector<std::string> splitArg = splitString(str, " ");
     if (splitArg.size() != 2)
@@ -94,8 +93,10 @@ bool    cmd::parseNick(std::string str)
         i++;
     }
     //verifier que le nick est valide
-    //verifier si le nickname existe deja
+    if (server.nickAlreadyExist(splitArg[1]))
+        return (false);
     //set le nickname
+    //pour cela je pense qu'il faudrait recevoir le User en question dans la fonction mais comment faire :0
     return (true);
 }
 
@@ -245,7 +246,7 @@ void cmd::whichCmd(std::string cmd, std::string str, Server server)
             break;
 
         case 1:
-             if (parseNick(str) == false)
+             if (parseNick(str, server) == false)
             {
                 std::cerr << "Usage: NICK [nickname]" << std::endl;
                 return ;
