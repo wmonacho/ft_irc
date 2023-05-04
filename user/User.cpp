@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 15:54:01 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/04 18:02:04 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/05/04 18:38:52 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,9 +84,4 @@ void	User::setFullname( std::string new_string )
 void	User::setAdmin( int admin)
 {
 	this->_admin = admin;
-}
-
-std::string	User::createRandomUserName( void) const
-{
-	
 }
