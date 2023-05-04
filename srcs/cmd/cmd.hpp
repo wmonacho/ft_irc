@@ -19,8 +19,8 @@ public:
     cmd &operator=(const cmd &rhs);
     ~cmd();
 
-    void    whichCmd(std::string cmd, std::string str);
-    bool    parsePass(std::string str);
+    void    whichCmd(std::string cmd, std::string str, Server server);
+    bool    parsePass(std::string str, Server server);
     bool    parseNick(std::string str);
     bool    parseUser(std::string str);
     /*bool    parseMode(std::string str);

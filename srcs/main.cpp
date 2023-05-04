@@ -83,7 +83,7 @@ int main(int ac, char **av)
                                               std::cerr << "Usage: ./irc [command]" << std::endl;
                                             return (1);
                                         }
-                                        inst.whichCmd(splitBuffer[0], buffer);
+                                        inst.whichCmd(splitBuffer[0], buffer, server);
                                         std::cout << "Message from the client : " << buffer;
                                    }
 				}

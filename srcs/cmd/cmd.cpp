@@ -1,4 +1,5 @@
 #include "cmd.hpp"
+#include "../server/server.hpp"
 
 cmd::cmd()
 {
@@ -66,7 +67,7 @@ std::vector<std::string> cmd::splitString(std::string str)
     return (out);
 }
 
-bool    cmd::parsePass(std::string str)
+bool    cmd::parsePass(std::string str, Server server)
 {
     std::vector<std::string> splitArg = splitString(str);
     if (splitArg.size() != 2)
@@ -188,7 +189,7 @@ bool    cmd::parseNotice(std::string str)
     std::cout << "str: " << str << std::endl;
 }*/
 
-void cmd::whichCmd(std::string cmd, std::string str)
+void cmd::whichCmd(std::string cmd, std::string str, Server server)
 {
     int j = -1;
     for (int i = 0; i < 14; i++)
@@ -206,7 +207,7 @@ void cmd::whichCmd(std::string cmd, std::string str)
             return ;
 
         case 0:
-            if (parsePass(str) == false)
+            if (parsePass(str, server) == false)
             {
                 std::cerr << "Usage: PASS [password]" << std::endl;
                 return ;

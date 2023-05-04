@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 15:54:01 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/03 17:30:47 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/05/04 11:29:22 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,11 @@
 
 User::User( void )
 {
-
+	this->_nickname = "";
+	this->_username = "";
+	this->_full_name = "";
+	this->_password = "";
+	this->_admin = 0;
 }
 
 User::User( User const & obj)
@@ -24,7 +28,11 @@ User::User( User const & obj)
 
 User	&User::operator=( User const & rhs)
 {
-	(void)rhs;
+	this->_nickname = rhs._nickname;
+	this->_username = rhs._username;
+	this->_full_name = rhs._full_name;
+	this->_password = rhs._password;
+	this->_admin = rhs._admin;
 	return (*this);
 }
 
