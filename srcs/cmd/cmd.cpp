@@ -58,10 +58,8 @@ void tokenize(std::string const &str, const char* delim, std::vector<std::string
     }
 }
 
-std::vector<std::string> cmd::splitString(std::string str)
+std::vector<std::string> cmd::splitString(std::string str, const char *delim)
 {
-    const char* delim = " ";
-
     std::vector<std::string> out;
     tokenize(str, delim, out);
     return (out);
@@ -69,7 +67,7 @@ std::vector<std::string> cmd::splitString(std::string str)
 
 bool    cmd::parsePass(std::string str, Server server)
 {
-    std::vector<std::string> splitArg = splitString(str);
+    std::vector<std::string> splitArg = splitString(str, " ");
     if (splitArg.size() != 2)
         return (false);
     //check si l'user a deja set son password
@@ -79,7 +77,7 @@ bool    cmd::parsePass(std::string str, Server server)
 
 bool    cmd::parseNick(std::string str)
 {
-    std::vector<std::string> splitArg = splitString(str);
+    std::vector<std::string> splitArg = splitString(str, " ");
     if (splitArg.size() != 2)
         return (false);
     int i = 0;
@@ -104,7 +102,7 @@ bool    cmd::parseNick(std::string str)
 bool    cmd::parseUser(std::string str)
 {
     //verifier si le user existe
-    std::vector<std::string> splitArg = splitString(str);
+    std::vector<std::string> splitArg = splitString(str, " ");
     std::cout << "splitArg.size() == " << splitArg.size() << std::endl;
     if (splitArg.size() < 5)
     {
@@ -135,24 +133,56 @@ bool    cmd::parseQuit(std::string str)
 
 bool    cmd::parseJoin(std::string str)
 {
+
     std::cout << "Join cmd found" << std::endl;
     std::cout << "str: " << str << std::endl;
 }
-
+*/
 bool    cmd::parsePart(std::string str)
 {
-    std::cout << "Part cmd found" << std::endl;
-    std::cout << "str: " << str << std::endl;
+    std::vector<std::string> splitArg = splitString(str, " ");
+    if (splitArg.size() < 2)
+    {
+        //numeric reply
+        std::cerr << "ERR_NEEDMOREPARAMS" << std::endl;
+        return (false);
+    }
+    std::vector<std::string> chan = splitString(str, ",");
+    std::vector<std::string>::iterator it = chan.begin();
+    while (it != chan.end())
+    {
+        //verifier si le channel existe
+        //verifier si l'user est bien dans le channel
+        //si l'user est bien dans le channel:
+        //- ecrire un message annoncant le depart de l'user
+        //- delete l'user de la liste du chan
+        it++;
+    }
+    return true;
 }
 
 bool    cmd::parseTopic(std::string str)
 {
-    std::cout << "Topic cmd found" << std::endl;
-    std::cout << "str: " << str << std::endl;
-
+    std::vector<std::string> arg = splitString(str, " ");
+    if (arg.size() < 2)
+    {
+        std::cerr << "ERR_NEEDMOREPARAMS" << std::endl;
+        return false;
+    }
+    //verifier si le channel existe
+    //verifier si le client est dans le channel
+    if (arg.size() == 2)
+    {
+        //verifier que le topic existe
+        //ensuite verifier si l'user est operateur :
+        //- si oui : set le topic
+        //- si non : numeric replies + erreur
+        std::cout << "a completer willy" << std::endl;
+    }
+    return true;
 }
 
-bool    cmd::parseNames(std::string str)
+/*bool    cmd::parseNames(std::string str)
 {
     std::cout << "Names cmd found" << std::endl;
     std::cout << "str: " << str << std::endl;
@@ -241,16 +271,26 @@ void cmd::whichCmd(std::string cmd, std::string str, Server server)
         case 5:
             parseJoin(str);
             break;
-
+        */
         case 6:
-            parsePart(str);
+
+            if (parsePart(str) == false)
+            {
+                std::cerr << "Usage: PART <channel> *( \",\" <channel> ) [ <Part Message> ] " << std::endl;
+                return ;
+            }
             break;
 
         case 7:
-            parseTopic(str);
+
+            if (parseTopic(str) == false)
+            {
+                std::cerr << "Usage: <channel> [ <topic> ]" << std::endl;
+                return ;
+            }
             break;
 
-        case 8:
+        /*case 8:
             parseNames(str);
             break;
 

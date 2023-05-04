@@ -77,10 +77,11 @@ int main(int ac, char **av)
 					if (recv(server.getNewSocket(), buffer, 255, 0) > 0)
                                    {
                                        cmd inst;
-                                       std::vector<std::string> splitBuffer = inst.splitString(buffer);
+                                       std::vector<std::string> splitBuffer = inst.splitString(buffer, " ");
                                         if (splitBuffer.size() < 2)
                                         {
-                                              std::cerr << "Usage: ./irc [command]" << std::endl;
+                                            //to change
+                                            std::cerr << "Usage: ./irc [command]" << std::endl;
                                             return (1);
                                         }
                                         inst.whichCmd(splitBuffer[0], buffer, server);
