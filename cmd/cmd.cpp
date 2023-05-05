@@ -143,13 +143,17 @@ bool    cmd::parseMode(std::string str, Server server)
     */
    return (true);
 }
-/*
+
 bool    cmd::parseQuit(std::string str)
 {
-    std::cout << "Quit cmd found" << std::endl;
-    std::cout << "str: " << str << std::endl;
+    std::vector<std::string> arg = splitString(str, " ");
+    if (arg.size() != 2)
+        return false;
+    //remplacer ça par un throw d'exception ça serait sympa nan ?
+    std::cerr << "QUIT: user has quit IRC: " << arg[1] << std::endl;
+    return true;
 }
-
+/*
 bool    cmd::parseJoin(std::string str)
 {
 
@@ -279,15 +283,20 @@ void cmd::whichCmd(std::string cmd, std::string str, Server server, User user)
             }
             break;
 
-        /*case 3:
+        case 3:
             parseMode(str, server);
             break;
 
         case 4:
-            parseQuit(str);
+
+            if (parseQuit(str) == false)
+            {
+                std::cerr << "Usage: QUIT [ <Quit Message> ]" << std::endl;
+                return ;
+            }
             break;
 
-        case 5:
+        /*case 5:
             parseJoin(str);
             break;
         */
