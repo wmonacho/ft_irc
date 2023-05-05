@@ -28,9 +28,9 @@ public:
     bool    parseUser(std::string str, Server server);
     bool    parsePart(std::string str);
     bool    parseTopic(std::string str);
+    bool    parseQuit(std::string str);
     /*bool    parseMode(std::string str);
     bool    parseJoin(std::string str);
-    bool    parseQuit(std::string str);
     bool    parseNames(std::string str);
     bool    parseList(std::string str);
     bool    parseInvite(std::string str);

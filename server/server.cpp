@@ -205,8 +205,7 @@ void	Server::createRandomUsername( User user )
     	i = rand() % 999;
         str << i;
         id = str.str();
-        new_username = "Guest" + id;
-        j++;
+         j++;
     }
     user.setUsername("Guest" + id);
 }
