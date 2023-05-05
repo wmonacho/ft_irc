@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:31:22 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/03 17:21:47 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/05/04 17:07:35 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -50,10 +50,10 @@ void	Channel::setName( std::string new_string )
 
 void				Channel::setUserList(const User & user)
 {
-	this->_user_list.push_back(user);
+	this->_channel_user_list.push_back(user);
 }
 
 std::vector<User>	Channel::getUserList( void ) const
 {
-	return (this->_user_list);
+	return (this->_channel_user_list);
 }

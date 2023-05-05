@@ -16,7 +16,7 @@ int main(int ac, char **av)
 		Server server;
 		char buffer[256]; // for testing purpose
 
-
+		srand(42);
 		// We create a socket that can communicate with IPv4 (AddressFamily_INET)
 		server.setSocketfd(socket(AF_INET, SOCK_STREAM, 0));
 		if (server.getSocketfd() < 0) {
@@ -84,7 +84,7 @@ int main(int ac, char **av)
                                             std::cerr << "Usage: ./irc [command]" << std::endl;
                                             return (1);
                                         }
-                                        inst.whichCmd(splitBuffer[0], buffer);
+                                        inst.whichCmd(splitBuffer[0], buffer, server);
                                         std::cout << "Message from the client : " << buffer;
                                    }
 				}

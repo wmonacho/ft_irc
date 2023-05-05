@@ -1,4 +1,5 @@
 #include "cmd.hpp"
+#include "../server/server.hpp"
 
 cmd::cmd()
 {
@@ -64,17 +65,16 @@ std::vector<std::string> cmd::splitString(std::string str, const char *delim)
     return (out);
 }
 
-bool    cmd::parsePass(std::string str)
+bool    cmd::parsePass(std::string str, Server server)
 {
     std::vector<std::string> splitArg = splitString(str, " ");
-    if (splitArg.size() != 2)
+    if (splitArg.size() != 2 || server.alreadyRegistred())
         return (false);
-    //check si l'user a deja set son password
-    //set son password
+    server.setPassword(splitArg[1]);
     return (true);
 }
 
-bool    cmd::parseNick(std::string str)
+bool    cmd::parseNick(std::string str, Server server)
 {
     std::vector<std::string> splitArg = splitString(str, " ");
     if (splitArg.size() != 2)
@@ -93,12 +93,14 @@ bool    cmd::parseNick(std::string str)
         i++;
     }
     //verifier que le nick est valide
-    //verifier si le nickname existe deja
+    if (server.nickAlreadyExist(splitArg[1]))
+        return (false);
     //set le nickname
+    //pour cela je pense qu'il faudrait recevoir le User en question dans la fonction mais comment faire :0
     return (true);
 }
 
-bool    cmd::parseUser(std::string str)
+bool    cmd::parseUser(std::string str, Server server)
 {
     //verifier si le user existe
     std::vector<std::string> splitArg = splitString(str, " ");
@@ -112,7 +114,11 @@ bool    cmd::parseUser(std::string str)
     if (splitArg.size() > 4 && (splitArg[2] == "0" && splitArg[3] == "*"))
     {
         //setuser
-        //setrealname splitArg[4] et + si il y a
+        User    new_user;
+
+        server.createRandomUsername(new_user);
+        //set realname splitArg[4] et + si il y a
+        server.setUserList(new_user);
         std::cout << "hello from parseUser, it's working bitch" << std::endl;
     }
     return (true);
@@ -218,7 +224,7 @@ bool    cmd::parseNotice(std::string str)
     std::cout << "str: " << str << std::endl;
 }*/
 
-void cmd::whichCmd(std::string cmd, std::string str)
+void cmd::whichCmd(std::string cmd, std::string str, Server server)
 {
     int j = -1;
     for (int i = 0; i < 14; i++)
@@ -236,7 +242,7 @@ void cmd::whichCmd(std::string cmd, std::string str)
             return ;
 
         case 0:
-            if (parsePass(str) == false)
+            if (parsePass(str, server) == false)
             {
                 std::cerr << "Usage: PASS [password]" << std::endl;
                 return ;
@@ -244,7 +250,7 @@ void cmd::whichCmd(std::string cmd, std::string str)
             break;
 
         case 1:
-             if (parseNick(str) == false)
+             if (parseNick(str, server) == false)
             {
                 std::cerr << "Usage: NICK [nickname]" << std::endl;
                 return ;
@@ -252,7 +258,7 @@ void cmd::whichCmd(std::string cmd, std::string str)
             break;
 
         case 2:
-            if (parseUser(str) == false)
+            if (parseUser(str, server) == false)
             {
                 std::cerr << "Usage: USER <user> <mode> <unused> <realname>";
                 return ;
