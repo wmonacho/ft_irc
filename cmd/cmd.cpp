@@ -100,7 +100,7 @@ bool    cmd::parseNick(std::string str, Server server)
     return (true);
 }
 
-bool    cmd::parseUser(std::string str)
+bool    cmd::parseUser(std::string str, Server server)
 {
     //verifier si le user existe
     std::vector<std::string> splitArg = splitString(str, " ");
@@ -114,7 +114,11 @@ bool    cmd::parseUser(std::string str)
     if (splitArg.size() > 4 && (splitArg[2] == "0" && splitArg[3] == "*"))
     {
         //setuser
-        //setrealname splitArg[4] et + si il y a
+        User    new_user;
+
+        server.createRandomUsername(new_user);
+        //set realname splitArg[4] et + si il y a
+        server.setUserList(new_user);
         std::cout << "hello from parseUser, it's working bitch" << std::endl;
     }
     return (true);
@@ -254,7 +258,7 @@ void cmd::whichCmd(std::string cmd, std::string str, Server server)
             break;
 
         case 2:
-            if (parseUser(str) == false)
+            if (parseUser(str, server) == false)
             {
                 std::cerr << "Usage: USER <user> <mode> <unused> <realname>";
                 return ;

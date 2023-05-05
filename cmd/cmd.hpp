@@ -25,7 +25,7 @@ public:
     void    whichCmd(std::string cmd, std::string str, Server server);
     bool    parsePass(std::string str, Server server);
     bool    parseNick(std::string str, Server server);
-    bool    parseUser(std::string str);
+    bool    parseUser(std::string str, Server server);
     bool    parsePart(std::string str);
     bool    parseTopic(std::string str);
     /*bool    parseMode(std::string str);

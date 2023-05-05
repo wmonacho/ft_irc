@@ -58,12 +58,12 @@ class Server {
         void    setPassword(std::string new_password);
         void    setNewChannelInMap(const Channel& channel);
         void    joinChannel( std::string channel_name, User new_user );
+        void	createRandomUsername( User user );
 
         bool    alreadyRegistred( void );
         bool    nickAlreadyExist( std::string new_nick );
         bool    usernameAlreadyExist( std::string new_username );
 
-        std::string	createRandomUserName( void);
 };
 
 #endif

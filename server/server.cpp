@@ -171,7 +171,7 @@ bool    Server::alreadyRegistred( void )
 
 bool    Server::nickAlreadyExist( std::string new_nick )
 {
-    for(int i = 0; i < this->_user_list.size(); i++)
+    for(unsigned int i = 0; i < this->_user_list.size(); i++)
     {
         if (this->_user_list[i].getNickname() == new_nick)
             return (0);
@@ -181,7 +181,7 @@ bool    Server::nickAlreadyExist( std::string new_nick )
 
 bool    Server::usernameAlreadyExist( std::string new_username )
 {
-    for(int i = 0; i < this->_user_list.size(); i++)
+    for(unsigned int i = 0; i < this->_user_list.size(); i++)
     {
         if (this->_user_list[i].getNickname() == new_username)
             return (0);
@@ -191,21 +191,22 @@ bool    Server::usernameAlreadyExist( std::string new_username )
 
 
 //Cree un Username unique pour qu'aucun User ne possede un username par defaut identique
-std::string	Server::createRandomUserName( void)
+void	Server::createRandomUsername( User user )
 {
     int i = 1;
+    int j = 0;
 
     std::stringstream   str;
     str << i;
     std::string id = str.str();
     std::string new_username = "Guest" + id;
-    while (this->usernameAlreadyExist(new_username))
+    while (this->usernameAlreadyExist(new_username) || j < 10000)
     {
     	i = rand() % 999;
-        str;
         str << i;
         id = str.str();
         new_username = "Guest" + id;
+        j++;
     }
-    return ("Guest" + id);
+    user.setUsername("Guest" + id);
 }
