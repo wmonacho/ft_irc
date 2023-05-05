@@ -74,7 +74,7 @@ bool    cmd::parsePass(std::string str, Server server)
     return (true);
 }
 
-bool    cmd::parseNick(std::string str, Server server)
+bool    cmd::parseNick(std::string str, Server server, User user) //recup le User originaire de la commande
 {
     std::vector<std::string> splitArg = splitString(str, " ");
     if (splitArg.size() != 2)
@@ -95,8 +95,7 @@ bool    cmd::parseNick(std::string str, Server server)
     //verifier que le nick est valide
     if (server.nickAlreadyExist(splitArg[1]))
         return (false);
-    //set le nickname
-    //pour cela je pense qu'il faudrait recevoir le User en question dans la fonction mais comment faire :0
+    user.setNickname(splitArg[1]);
     return (true);
 }
 
@@ -117,19 +116,34 @@ bool    cmd::parseUser(std::string str, Server server)
         User    new_user;
 
         server.createRandomUsername(new_user);
-        //set realname splitArg[4] et + si il y a
+        std::string real_name;
+        for (unsigned int i = 4; i < splitArg.size(); i++)
+        {
+            real_name += splitArg[i];
+        }
+        new_user.setRealname(real_name);
         server.setUserList(new_user);
         std::cout << "hello from parseUser, it's working bitch" << std::endl;
     }
     return (true);
 }
 
-/*bool    cmd::parseMode(std::string str)
+bool    cmd::parseMode(std::string str, Server server)
 {
     std::cout << "Mode cmd found" << std::endl;
     std::cout << "str: " << str << std::endl;
-}
+    (void)server;
+    /*  mode a faire :      +i invite only
+                            +m seulent les users admins peuvent parler dans le channel
+                            +v donne le droit a un user de parler meme si +m
+                            +n empeche les users externe de rejoinde le channel
+        ceux ci pas sur :   +l definit une limite de user
+                            +k definit un mdp pour le channel
 
+    */
+   return (true);
+}
+/*
 bool    cmd::parseQuit(std::string str)
 {
     std::cout << "Quit cmd found" << std::endl;
@@ -224,7 +238,7 @@ bool    cmd::parseNotice(std::string str)
     std::cout << "str: " << str << std::endl;
 }*/
 
-void cmd::whichCmd(std::string cmd, std::string str, Server server)
+void cmd::whichCmd(std::string cmd, std::string str, Server server, User user)
 {
     int j = -1;
     for (int i = 0; i < 14; i++)
@@ -250,7 +264,7 @@ void cmd::whichCmd(std::string cmd, std::string str, Server server)
             break;
 
         case 1:
-             if (parseNick(str, server) == false)
+             if (parseNick(str, server, user) == false)
             {
                 std::cerr << "Usage: NICK [nickname]" << std::endl;
                 return ;
@@ -266,7 +280,7 @@ void cmd::whichCmd(std::string cmd, std::string str, Server server)
             break;
 
         /*case 3:
-            parseMode(str);
+            parseMode(str, server);
             break;
 
         case 4:
