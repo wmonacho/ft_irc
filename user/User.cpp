@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 15:54:01 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/04 18:38:52 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/05/05 13:37:19 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@ User::User( void )
 {
 	this->_nickname = "";
 	this->_username = "";
-	this->_full_name = "";
+	this->_realname = "";
 	this->_password = "";
 	this->_admin = 0;
 }
@@ -30,7 +30,7 @@ User	&User::operator=( User const & rhs)
 {
 	this->_nickname = rhs._nickname;
 	this->_username = rhs._username;
-	this->_full_name = rhs._full_name;
+	this->_realname = rhs._realname;
 	this->_password = rhs._password;
 	this->_admin = rhs._admin;
 	return (*this);
@@ -56,9 +56,9 @@ std::string	User::getPassword( void ) const
 	return (this->_password);
 }
 
-std::string	User::getFullname( void ) const
+std::string	User::getRealname( void ) const
 {
-	return (this->_full_name);
+	return (this->_realname);
 }
 
 void	User::setNickname( std::string new_string )
@@ -76,9 +76,9 @@ void	User::setPassword( std::string new_string )
 	this->_password = new_string;
 }
 
-void	User::setFullname( std::string new_string )
+void	User::setRealname( std::string new_string )
 {
-	this->_full_name = new_string;
+	this->_realname = new_string;
 }
 
 void	User::setAdmin( int admin)
