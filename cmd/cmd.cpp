@@ -132,7 +132,24 @@ bool    cmd::parseMode(std::string str, Server server)
 {
     std::cout << "Mode cmd found" << std::endl;
     std::cout << "str: " << str << std::endl;
+    std::vector<std::string> splitArg = splitString(str, " ");
+    if (splitArg.size() < 3)
+    {
+        //envoyer numeric replies
+        std::cerr << "MODE: need more params " << std::endl;
+        return (false);
+    }
+    //check si # devant la cible
+    //check si + ou - apres la cible
     (void)server;
+    /*      ERR_NEEDMOREPARAMS              ERR_KEYSET
+            ERR_NOCHANMODES                 ERR_CHANOPRIVSNEEDED
+            ERR_USERNOTINCHANNEL            ERR_UNKNOWNMODE
+            RPL_CHANNELMODEIS
+            RPL_BANLIST                     RPL_ENDOFBANLIST
+            RPL_EXCEPTLIST                  RPL_ENDOFEXCEPTLIST
+            RPL_INVITELIST                  RPL_ENDOFINVITELIST
+            RPL_UNIQOPIS */
     /*  mode a faire :      +i invite only
                             +m seulent les users admins peuvent parler dans le channel
                             +v donne le droit a un user de parler meme si +m
