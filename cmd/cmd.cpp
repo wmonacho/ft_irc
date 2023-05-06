@@ -139,7 +139,8 @@ bool    cmd::parseMode(std::string str, Server server)
         std::cerr << "MODE: need more params " << std::endl;
         return (false);
     }
-    //check si # devant la cible
+	//MODE <cible> <mode> <argument(s)>
+    //check si # devant la cible si c'est un server
     //check si + ou - apres la cible
     (void)server;
     /*      ERR_NEEDMOREPARAMS              ERR_KEYSET
@@ -154,8 +155,9 @@ bool    cmd::parseMode(std::string str, Server server)
                             +m seulent les users admins peuvent parler dans le channel
                             +v donne le droit a un user de parler meme si +m
                             +n empeche les users externe de rejoinde le channel
-        ceux ci pas sur :   +l definit une limite de user
+						   	+l definit une limite de user
                             +k definit un mdp pour le channel
+							+ bien d'autres... a voir
 
     */
    return (true);
