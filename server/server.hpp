@@ -57,7 +57,6 @@ class Server {
         void    setUserList(User new_user);
         void    setPassword(std::string new_password);
         void    setNewChannelInMap(const Channel& channel);
-        void    joinChannel( std::string channel_name, User new_user );
         void	createRandomUsername( User user );
 
         bool    alreadyRegistred( void );

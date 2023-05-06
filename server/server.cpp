@@ -147,21 +147,6 @@ void    Server::setNewChannelInMap(const Channel& channel) {
 
 /* SERVER FUNCTIONS */
 
-void    Server::joinChannel( std::string channel_name, User new_user )
-{
-    for (std::map<std::string, Channel>::iterator it = this->_channels.begin(); it != this->_channels.end(); it++)
-        if (channel_name == it->second.getName()) {
-    /*rejoindre le User dans le Channel deja existant*/
-            it->second.setUserList(new_user);
-            return ;
-        }
-            /*sinon creer un nouveau Channel y ajouter le User avec les droits admin et utiliser setNewChannelInMap ensuite*/
-    Channel new_channel(channel_name);
-    new_user.setAdmin(1);
-    new_channel.setUserList(new_user);
-    setNewChannelInMap(new_channel);
-}
-
 bool    Server::alreadyRegistred( void )
 {
     if (this->_password == "")
