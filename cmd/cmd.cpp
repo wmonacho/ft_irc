@@ -242,6 +242,7 @@ bool    cmd::parseJoin(std::string str, Server server, User new_user)
 	std::vector<std::string> splitArg = splitString(str, " ");
 	if (splitArg.size() != 2)
 		return false;
+	//check si pas de # devant le channel (jwe crois que l'on peut mettre & aussi a verifier)
 	if (splitArg[1][0] != '#')
 	{
 		std::cerr << " " << std::endl;
@@ -256,9 +257,9 @@ bool    cmd::parseJoin(std::string str, Server server, User new_user)
         }
      /*sinon creer un nouveau Channel y ajouter le User avec les droits admin et utiliser setNewChannelInMap ensuite*/
     Channel new_channel(channel_name);
-    new_user.setAdmin(1);
-    new_channel.setUserList(new_user);
-    server.setNewChannelInMap(new_channel);
+    new_user.setAdmin(1); //donne les droits admin
+    new_channel.setUserList(new_user); // entre le user dans la list du channel
+    server.setNewChannelInMap(new_channel); // entre le channel dans la list des channels du serveur
     std::cout << "Join cmd found" << std::endl;
     std::cout << "str: " << str << std::endl;
 	return true;
