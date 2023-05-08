@@ -308,14 +308,12 @@ bool    cmd::parseTopic(std::string str)
     return true;
 }
 
-/*bool    cmd::parseNames(std::string str)
+bool    cmd::parseNames(std::string str)
 {
-    std::cout << "Names cmd found" << std::endl;
-    std::cout << "str: " << str << std::endl;
 
 }
 
-bool    cmd::parseList(std::string str)
+/*bool    cmd::parseList(std::string str)
 {
     std::cout << "List cmd found" << std::endl;
     std::cout << "str: " << str << std::endl;
@@ -421,11 +419,11 @@ void cmd::whichCmd(std::string cmd, std::string str, Server server, User user)
             }
             break;
 
-        /*case 8:
-            parseNames(str);
+        case 8:
+            parseNames(str, server);
             break;
 
-        case 9:
+        /*case 9:
             parseList(str);
             break;
 

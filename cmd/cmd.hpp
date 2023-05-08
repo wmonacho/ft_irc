@@ -31,8 +31,8 @@ public:
     bool    parseQuit(std::string str);
     bool    parseMode(std::string str, Server server, User user);
     bool    parseJoin(std::string str, Server server, User new_user);
-    /*bool    parseNames(std::string str);
-    bool    parseList(std::string str);
+    bool    parseNames(std::string str);
+    /*bool    parseList(std::string str);
     bool    parseInvite(std::string str);
     bool    parseKick(std::string str);
     bool    parsePrivmsg(std::string str);
@@ -40,4 +40,4 @@ public:
     std::vector<std::string> splitString(std::string str, const char *delim);
 };
 
-#endif
+#endifva
