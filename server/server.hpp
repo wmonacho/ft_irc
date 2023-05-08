@@ -62,6 +62,19 @@ class Server {
         bool    alreadyRegistred( void );
         bool    nickAlreadyExist( std::string new_nick );
         bool    usernameAlreadyExist( std::string new_username );
+		bool	userIsInChannel(std::string channel_name, User user);
+		bool 	channelAlreadyExist(std::string channel_name);
+		bool	getUserAdmin(std::string channel_name, User user);
+
+		User	getChannelUser(std::string channel_name, User user);
+
+		std::string	getChannelUserUsername(std::string channel_name, User user);
+		std::string	getChannelUserRealname(std::string channel_name, User user);
+		std::string	getChannelUserPassword(std::string channel_name, User user);
+		std::string	getChannelUserNickname(std::string channel_name, User user);
+		std::string	getChannelTopic(std::string	channel_name);
+
+		std::vector<User> getChannelUserList(std::string channel_name);
 
 };
 

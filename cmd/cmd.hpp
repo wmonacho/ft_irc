@@ -26,11 +26,11 @@ public:
     bool    parsePass(std::string str, Server server);
     bool    parseNick(std::string str, Server server, User user);
     bool    parseUser(std::string str, Server server);
-    bool    parsePart(std::string str);
-    bool    parseTopic(std::string str);
+    bool    parsePart(std::string str, Server server, User user);
+    bool    parseTopic(std::string str, Server server, User user);
     bool    parseQuit(std::string str);
     bool    parseMode(std::string str, Server server, User user);
-    bool    parseJoin(std::string str, Server server, User new_user);
+    bool    parseJoin(std::string str, Server server, User user);
     /*bool    parseNames(std::string str);
     bool    parseList(std::string str);
     bool    parseInvite(std::string str);

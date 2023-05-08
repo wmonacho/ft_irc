@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
+/*   By: will <will@student.42lyon.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:31:22 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/04 17:07:35 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/05/08 16:53:44 by will             ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,7 +14,8 @@
 
 Channel::Channel( void )
 {
-
+	this->_name = "";
+	this->_topic = "";
 }
 
 Channel::Channel( std::string name)
@@ -46,6 +47,16 @@ std::string	Channel::getName( void ) const
 void	Channel::setName( std::string new_string )
 {
 	this->_name = new_string;
+}
+
+std::string	Channel::getTopic( void ) const
+{
+	return (this->_topic);
+}
+
+void	Channel::setTopic( std::string new_string )
+{
+	this->_topic = new_string;
 }
 
 void				Channel::setUserList(const User & user)
