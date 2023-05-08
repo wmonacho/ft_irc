@@ -237,11 +237,12 @@ bool    cmd::parseQuit(std::string str)
     return true;
 }
 
-bool    cmd::parseJoin(std::string str, Server server, User new_user)
+bool    cmd::parseJoin(std::string str, Server server, User user)
 {
 	std::vector<std::string> splitArg = splitString(str, " ");
 	if (splitArg.size() != 2)
 		return false;
+	//check si pas de # devant le channel (jwe crois que l'on peut mettre & aussi a verifier)
 	if (splitArg[1][0] != '#')
 	{
 		std::cerr << " " << std::endl;
@@ -251,20 +252,20 @@ bool    cmd::parseJoin(std::string str, Server server, User new_user)
 	for (std::map<std::string, Channel>::iterator it = server.getMap().begin(); it != server.getMap().end(); it++)
         if (channel_name == it->second.getName()) {
     /*rejoindre le User dans le Channel deja existant*/
-            it->second.setUserList(new_user);
+            it->second.setUserList(user);
             return true;
         }
      /*sinon creer un nouveau Channel y ajouter le User avec les droits admin et utiliser setNewChannelInMap ensuite*/
     Channel new_channel(channel_name);
-    new_user.setAdmin(1);
-    new_channel.setUserList(new_user);
-    server.setNewChannelInMap(new_channel);
+    user.setAdmin(1); //donne les droits admin
+    new_channel.setUserList(user); // entre le user dans la list du channel
+    server.setNewChannelInMap(new_channel); // entre le channel dans la list des channels du serveur
     std::cout << "Join cmd found" << std::endl;
     std::cout << "str: " << str << std::endl;
 	return true;
 }
 
-bool    cmd::parsePart(std::string str)
+bool    cmd::parsePart(std::string str, Server server, User user)
 {
     std::vector<std::string> splitArg = splitString(str, " ");
     if (splitArg.size() < 2)
@@ -277,17 +278,25 @@ bool    cmd::parsePart(std::string str)
     std::vector<std::string>::iterator it = chan.begin();
     while (it != chan.end())
     {
+
         //verifier si le channel existe
+		if (!server.channelAlreadyExist(*it))
+			return false;
         //verifier si l'user est bien dans le channel
-        //si l'user est bien dans le channel:
+		if (!server.userIsInChannel(*it, user))
+			return false;
+		//si l'user est bien dans le channel:
         //- ecrire un message annoncant le depart de l'user
+		//si le message est dans la commande :
+		//sinon afficher
+		std::cout << "User lost baby" << std::endl;
         //- delete l'user de la liste du chan
         it++;
     }
     return true;
 }
 
-bool    cmd::parseTopic(std::string str)
+bool    cmd::parseTopic(std::string str, Server server, User user)
 {
     std::vector<std::string> arg = splitString(str, " ");
     if (arg.size() < 2)
@@ -296,12 +305,17 @@ bool    cmd::parseTopic(std::string str)
         return false;
     }
     //verifier si le channel existe
+	if (arg[1][0] == '#' || !server.channelAlreadyExist(&arg[1][1]))
+		return false;
     //verifier si le client est dans le channel
+	if (!server.userIsInChannel(arg[1], user))
+		return false;
     if (arg.size() == 2)
     {
         //verifier que le topic existe
         //ensuite verifier si l'user est operateur :
-        //- si oui : set le topic
+		// if (server.getUserAdmin(&arg[1][1], user))
+        	//- si oui : set le topic
         //- si non : numeric replies + erreur
         std::cout << "a completer willy" << std::endl;
     }
@@ -403,7 +417,7 @@ void cmd::whichCmd(std::string cmd, std::string str, Server server, User user)
         */
         case 6:
 
-            if (parsePart(str) == false)
+            if (parsePart(str, server, user) == false)
             {
                 std::cerr << "Usage: PART <channel> *( \",\" <channel> ) [ <Part Message> ] " << std::endl;
                 return ;
@@ -412,7 +426,7 @@ void cmd::whichCmd(std::string cmd, std::string str, Server server, User user)
 
         case 7:
 
-            if (parseTopic(str) == false)
+            if (parseTopic(str, server, user) == false)
             {
                 std::cerr << "Usage: <channel> [ <topic> ]" << std::endl;
                 return ;
