@@ -194,3 +194,76 @@ void	Server::createRandomUsername( User user )
     }
     user.setUsername("Guest" + id);
 }
+
+bool	Server::userIsInChannel(std::string channel_name, User user)
+{
+	for (std::vector<User>::iterator it = this->getChannelUserList(channel_name).begin(); it != this->getChannelUserList(channel_name).end(); it++) 
+	{
+		if (*it == user)
+			return true;
+	}
+	return false;
+}
+
+
+//il faudra checker si le channel existe avant d'utiliser cette focntion
+std::vector<User> Server::getChannelUserList(std::string channel_name)
+{
+	std::map<std::string, Channel>::iterator it_channel = this->getMap().find(channel_name);
+
+	return(it_channel->second.getUserList());
+}
+
+//il faudra checker si le user existe avant d'utiliser cette focntion
+User Server::getChannelUser(std::string channel_name, User user)
+{
+	for (std::vector<User>::iterator it = this->getChannelUserList(channel_name).begin(); it != this->getChannelUserList(channel_name).end(); it++) 
+	{
+		if (*it == user)
+			return (*it);
+	}
+	return (user);
+}
+
+bool	Server::channelAlreadyExist(std::string channel_name)
+{
+	std::map<std::string, Channel>::iterator it_channel = this->getMap().find(channel_name);
+
+	if (it_channel == this->getMap().end())
+		return false;
+	return true;
+}
+
+bool	Server::getUserAdmin(std::string channel_name, User user)
+{
+	if (this->getChannelUser(channel_name, user).getAdmin())
+		return true;
+	return false;
+}
+
+std::string	Server::getChannelUserUsername(std::string channel_name, User user)
+{
+	return this->getChannelUser(channel_name, user).getUsername();
+}
+
+std::string	Server::getChannelUserNickname(std::string channel_name, User user)
+{
+	return this->getChannelUser(channel_name, user).getNickname();
+}
+
+std::string	Server::getChannelUserPassword(std::string channel_name, User user)
+{
+	return this->getChannelUser(channel_name, user).getPassword();
+}
+
+std::string	Server::getChannelUserRealname(std::string channel_name, User user)
+{
+	return this->getChannelUser(channel_name, user).getRealname();
+}
+
+std::string	Server::getChannelTopic(std::string	channel_name)
+{
+	std::map<std::string, Channel>::iterator it_channel = this->getMap().find(channel_name);
+
+	return (it_channel->second.getTopic());
+}

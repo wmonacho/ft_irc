@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.cpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
+/*   By: will <will@student.42lyon.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 15:54:01 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/05 13:37:19 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/05/08 16:22:19 by will             ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -84,4 +84,16 @@ void	User::setRealname( std::string new_string )
 void	User::setAdmin( int admin)
 {
 	this->_admin = admin;
+}
+
+bool User::operator==(const User& other) const
+{
+	return this->_nickname == other._nickname;
+}
+
+bool	User::getAdmin( void ) const
+{
+	if (this->_admin)
+		return true;
+	return false;
 }
