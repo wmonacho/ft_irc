@@ -147,7 +147,7 @@ void    Server::setNewChannelInMap(const Channel& channel) {
 
 /* SERVER FUNCTIONS */
 
-bool    Server::alreadyRegistred( void )
+bool    Server::passwordAlreadyRegistred( void )
 {
     if (this->_password == "")
         return (0);
@@ -197,7 +197,7 @@ void	Server::createRandomUsername( User user )
 
 bool	Server::userIsInChannel(std::string channel_name, User user)
 {
-	for (std::vector<User>::iterator it = this->getChannelUserList(channel_name).begin(); it != this->getChannelUserList(channel_name).end(); it++) 
+	for (std::vector<User&>::iterator it = this->getChannelUserList(channel_name).begin(); it != this->getChannelUserList(channel_name).end(); it++) 
 	{
 		if (*it == user)
 			return true;
@@ -207,21 +207,22 @@ bool	Server::userIsInChannel(std::string channel_name, User user)
 
 
 //il faudra checker si le channel existe avant d'utiliser cette focntion
-std::vector<User> Server::getChannelUserList(std::string channel_name)
+std::vector<User&> Server::getChannelUserList(std::string channel_name) const
 {
 	std::map<std::string, Channel>::iterator it_channel = this->getMap().find(channel_name);
-
+	//throw une exception si possible en checkant s'il existe
 	return(it_channel->second.getUserList());
 }
 
 //il faudra checker si le user existe avant d'utiliser cette focntion
-User Server::getChannelUser(std::string channel_name, User user)
+User& Server::getChannelUser(std::string channel_name, User user) const
 {
-	for (std::vector<User>::iterator it = this->getChannelUserList(channel_name).begin(); it != this->getChannelUserList(channel_name).end(); it++) 
+	for (std::vector<User&>::iterator it = this->getChannelUserList(channel_name).begin(); it != this->getChannelUserList(channel_name).end(); it++) 
 	{
 		if (*it == user)
 			return (*it);
 	}
+	//throw une exception si possible a la place de return cet merde
 	return (user);
 }
 
@@ -239,6 +240,18 @@ bool	Server::getUserAdmin(std::string channel_name, User user)
 	if (this->getChannelUser(channel_name, user).getAdmin())
 		return true;
 	return false;
+}
+
+User	Server::getUser(std::string user_nickname)
+{
+	for (std::vector<User>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
+	{
+		if (it->getNickname() == user_nickname)
+			return (*it);
+	}
+	//throw une exception si possible a la place de return cet merde
+	User user;
+	return (user);
 }
 
 std::string	Server::getChannelUserUsername(std::string channel_name, User user)
@@ -266,4 +279,18 @@ std::string	Server::getChannelTopic(std::string	channel_name)
 	std::map<std::string, Channel>::iterator it_channel = this->getMap().find(channel_name);
 
 	return (it_channel->second.getTopic());
+}
+
+void	Server::kickChannelUser(std::string channel_name, User user)
+{
+	for (std::vector<User&>iterator it = this->getChannelUserList(channel_name, user).begin(); it != this->getChannelUserList(channel_name, user).end(); it++)
+	{
+		if (it == user)
+		{
+			*it.erase();
+			return ;
+		}
+	}
+	std::cerr << "Error: user not in channel" << std::endl;
+
 }

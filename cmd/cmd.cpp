@@ -339,14 +339,68 @@ bool    cmd::parseInvite(std::string str)
 {
     std::cout << "Invite cmd found" << std::endl;
     std::cout << "str: " << str << std::endl;
-}
+}*/
 
-bool    cmd::parseKick(std::string str)
+bool    cmd::parseKick(std::string str, Server server, User user)
 {
     std::cout << "Kick cmd found" << std::endl;
     std::cout << "str: " << str << std::endl;
+    std::vector<std::string> arg = splitString(str, " ");
+
+	(void) user;
+    //check si au moins 3 param : need more params
+    if (arg.size() < 3)
+    {
+        std::cerr << "Error: need more params" << std::endl;
+        return false;
+    }
+    //check si # ou & devant le server
+    if (arg[1][0] != '#' && arg[1][0] != '&')
+    {
+        std::cerr << "Error: bad channel mask" << std::endl;
+        return false;
+    }
+    //check si le server existe
+    if (!server.channelAlreadyExist(&arg[1][1]))
+    {
+        std::cerr << "Error: no such channel" << std::endl;
+        return false;
+    }
+    //check si le User exist dans le channel
+    User kick_user = server.getUser(arg[2]);
+    if (!server.userIsInChannel(&arg[1][1], kick_user))
+	{
+		std::cerr << "Error: not on channel" << std::endl;
+		return false;
+	}
+    //check si il y a un commentaire : si oui l'afficher
+	if (arg.size() > 3)
+	{
+		if (arg[3][0] != ':')
+		{
+			std::cerr << "Error: wrong parameters" << std::endl;
+			return false;
+		}
+		//bannir le User du channel
+		server.kickChannelUser(&arg[2][1], kick_user);
+		//ecris le commentaire de kick
+		unsigned int i = 3;
+		while (i < arg.size() - 1)
+		{
+			std::cout << arg[i] << " ";
+			i++;
+		}
+		std::cout << arg[i] << std::endl;
+		return true;
+	}
+	//bannir le User du channel
+	server.kickChannelUser(&arg[2][1], kick_user);
+	//ecris la phrase de kick par default
+	std::cout << "You're banned, go find somewhere else to be." << std::endl;
+    return true;
 }
 
+/*
 bool    cmd::parsePrivmsg(std::string str)
 {
     std::cout << "Privmsg cmd found" << std::endl;
@@ -448,7 +502,7 @@ void cmd::whichCmd(std::string cmd, std::string str, Server server, User user)
              break;
 
         case 11:
-            parseKick(str);
+            parseKick(str, server, user);
             break;
 
         case 12:

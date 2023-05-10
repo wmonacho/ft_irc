@@ -37,45 +37,50 @@ class Server {
         Server& operator=(const Server& obj);
         ~Server();
 
-        int                             getSocketfd(void);
-        int                             getNewSocket(void);
-        ssize_t                         getValRead(void);
-        int                             getPort(void);
-        socklen_t                       getServLen(void);
-        socklen_t*                      getClientLen(void);
-        sockaddr_in*                    getServAddr(void);
-        sockaddr_in*                    getClientAddr(void);
-        std::string                     getPassword(void);
-        std::vector<User>               getUserList(void);
-        std::map<std::string, Channel>  getMap(void);
+        int		getPort(void);
+        int		getSocketfd(void);
+        int		getNewSocket(void);
 
-        void    setSocketfd(int fd);
-        void    setNewSocket(int fd);
-        void    setValRead(ssize_t value);
-        void    setPort(int port);
-        void    setServAddr(int port);
-        void    setUserList(User new_user);
-        void    setPassword(std::string new_password);
-        void    setNewChannelInMap(const Channel& channel);
+        ssize_t		getValRead(void);
+        socklen_t   getServLen(void);
+        socklen_t*  getClientLen(void);
+
+        std::string 	getPassword(void);
+        
+		sockaddr_in*	getServAddr(void);
+        sockaddr_in*	getClientAddr(void);
+		
+        void   	setPort(int port);
+        void   	setSocketfd(int fd);
+        void   	setNewSocket(int fd);
+        void   	setServAddr(int port);
+        void   	setValRead(ssize_t value);
+        void   	setUserList(User new_user);
         void	createRandomUsername( User user );
-
-        bool    alreadyRegistred( void );
-        bool    nickAlreadyExist( std::string new_nick );
-        bool    usernameAlreadyExist( std::string new_username );
-		bool	userIsInChannel(std::string channel_name, User user);
+        void   	setPassword(std::string new_password);
+        void   	setNewChannelInMap(const Channel& channel);
+		void	kickChannelUser(std::string channel_name, User user);
+        
+		bool   	passwordAlreadyRegistred( void );
+        bool   	nickAlreadyExist( std::string new_nick );
 		bool 	channelAlreadyExist(std::string channel_name);
+        bool   	usernameAlreadyExist( std::string new_username );
 		bool	getUserAdmin(std::string channel_name, User user);
+		bool	userIsInChannel(std::string channel_name, User user);
+        
+		User   	getUser(std::string user_nickname);
+		User&	getChannelUser(std::string channel_name, User user) const;
+		
+		std::string		getChannelTopic(std::string	channel_name);
+		std::string		getChannelUserUsername(std::string channel_name, User user);
+		std::string		getChannelUserRealname(std::string channel_name, User user);
+		std::string		getChannelUserPassword(std::string channel_name, User user);
+		std::string		getChannelUserNickname(std::string channel_name, User user);
+        
+		std::vector<User>	getUserList(void);
+		std::vector<User&>	getChannelUserList(std::string channel_name) const;
 
-		User	getChannelUser(std::string channel_name, User user);
-
-		std::string	getChannelUserUsername(std::string channel_name, User user);
-		std::string	getChannelUserRealname(std::string channel_name, User user);
-		std::string	getChannelUserPassword(std::string channel_name, User user);
-		std::string	getChannelUserNickname(std::string channel_name, User user);
-		std::string	getChannelTopic(std::string	channel_name);
-
-		std::vector<User> getChannelUserList(std::string channel_name);
-
+        std::map<std::string, Channel>	getMap(void);
 };
 
 #endif

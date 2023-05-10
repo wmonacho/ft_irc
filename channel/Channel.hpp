@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: will <will@student.42lyon.fr>              +#+  +:+       +#+        */
+/*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 13:57:00 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/08 16:54:42 by will             ###   ########lyon.fr   */
+/*   Updated: 2023/05/10 13:23:10 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -22,7 +22,7 @@ class Channel
 	private :
 		std::string	_name;
 		std::string	_topic;
-		std::vector<User> _channel_user_list;
+		std::vector<User&> _channel_user_list;
 	public :
 		Channel();
 		Channel( std::string name);
