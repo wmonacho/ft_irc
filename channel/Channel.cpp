@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: will <will@student.42lyon.fr>              +#+  +:+       +#+        */
+/*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:31:22 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/08 16:53:44 by will             ###   ########lyon.fr   */
+/*   Updated: 2023/05/10 17:32:17 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -64,7 +64,19 @@ void				Channel::setUserList(const User & user)
 	this->_channel_user_list.push_back(user);
 }
 
-std::vector<User>	Channel::getUserList( void ) const
+std::vector<User&>	Channel::getUserList( void ) const
 {
 	return (this->_channel_user_list);
+}
+
+bool	Channel::channelIsSecret( void )
+{
+	if (this->_secret)
+		return true;
+	return false;
+}
+
+void	Channel::kickUserFromChannel(User user)
+{
+	
 }

@@ -211,7 +211,7 @@ std::vector<User&> Server::getChannelUserList(std::string channel_name) const
 {
 	std::map<std::string, Channel>::iterator it_channel = this->getMap().find(channel_name);
 	//throw une exception si possible en checkant s'il existe
-	return(it_channel->second.getUserList());
+	return (it_channel->second.getUserList());
 }
 
 //il faudra checker si le user existe avant d'utiliser cette focntion
@@ -281,16 +281,18 @@ std::string	Server::getChannelTopic(std::string	channel_name)
 	return (it_channel->second.getTopic());
 }
 
-void	Server::kickChannelUser(std::string channel_name, User user)
+void	Server::kickUserFromChannel(std::string channel_name, User user)
 {
-	for (std::vector<User&>iterator it = this->getChannelUserList(channel_name, user).begin(); it != this->getChannelUserList(channel_name, user).end(); it++)
-	{
-		if (it == user)
-		{
-			*it.erase();
-			return ;
-		}
-	}
-	std::cerr << "Error: user not in channel" << std::endl;
+	std::map<std::string, Channel>::iterator it_channel = this->getMap().find(channel_name);
 
+	it_channel->second.kickUserFromChannel(user);
 }
+	//for (std::vector<User&>iterator it = this->getChannelUserList(channel_name, user).begin(); it != this->getChannelUserList(channel_name, user).end(); it++)
+	//{
+	//	if (it == user)
+	//	{
+	//		*it.erase();
+	//		return ;
+	//	}
+	//}
+	//std::cerr << "Error: user not in channel" << std::endl;

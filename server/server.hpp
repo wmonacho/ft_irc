@@ -59,7 +59,7 @@ class Server {
         void	createRandomUsername( User user );
         void   	setPassword(std::string new_password);
         void   	setNewChannelInMap(const Channel& channel);
-		void	kickChannelUser(std::string channel_name, User user);
+		void	kickUserFromChannel(std::string channel_name, User user);
         
 		bool   	passwordAlreadyRegistred( void );
         bool   	nickAlreadyExist( std::string new_nick );
