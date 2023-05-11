@@ -229,21 +229,6 @@ void    Server::setNewChannelInMap(const Channel& channel) {
 
 /* SERVER FUNCTIONS */
 
-void    Server::joinChannel( std::string channel_name, User new_user )
-{
-    for (std::map<std::string, Channel>::iterator it = this->_channels.begin(); it != this->_channels.end(); it++)
-        if (channel_name == it->second.getName()) {
-    /*rejoindre le User dans le Channel deja existant*/
-            it->second.setUserList(new_user);
-            return ;
-        }
-            /*sinon creer un nouveau Channel y ajouter le User avec les droits admin et utiliser setNewChannelInMap ensuite*/
-    Channel new_channel(channel_name);
-    new_user.setAdmin(1);
-    new_channel.setUserList(new_user);
-    setNewChannelInMap(new_channel);
-}
-
 bool    Server::alreadyRegistred( void )
 {
     if (this->_password == "")
@@ -287,8 +272,80 @@ void	Server::createRandomUsername( User user )
     	i = rand() % 999;
         str << i;
         id = str.str();
-        new_username = "Guest" + id;
-        j++;
+         j++;
     }
     user.setUsername("Guest" + id);
+}
+
+bool	Server::userIsInChannel(std::string channel_name, User user)
+{
+	for (std::vector<User>::iterator it = this->getChannelUserList(channel_name).begin(); it != this->getChannelUserList(channel_name).end(); it++) 
+	{
+		if (*it == user)
+			return true;
+	}
+	return false;
+}
+
+
+//il faudra checker si le channel existe avant d'utiliser cette focntion
+std::vector<User> Server::getChannelUserList(std::string channel_name)
+{
+	std::map<std::string, Channel>::iterator it_channel = this->getMap().find(channel_name);
+
+	return(it_channel->second.getUserList());
+}
+
+//il faudra checker si le user existe avant d'utiliser cette focntion
+User Server::getChannelUser(std::string channel_name, User user)
+{
+	for (std::vector<User>::iterator it = this->getChannelUserList(channel_name).begin(); it != this->getChannelUserList(channel_name).end(); it++) 
+	{
+		if (*it == user)
+			return (*it);
+	}
+	return (user);
+}
+
+bool	Server::channelAlreadyExist(std::string channel_name)
+{
+	std::map<std::string, Channel>::iterator it_channel = this->getMap().find(channel_name);
+
+	if (it_channel == this->getMap().end())
+		return false;
+	return true;
+}
+
+bool	Server::getUserAdmin(std::string channel_name, User user)
+{
+	if (this->getChannelUser(channel_name, user).getAdmin())
+		return true;
+	return false;
+}
+
+std::string	Server::getChannelUserUsername(std::string channel_name, User user)
+{
+	return this->getChannelUser(channel_name, user).getUsername();
+}
+
+std::string	Server::getChannelUserNickname(std::string channel_name, User user)
+{
+	return this->getChannelUser(channel_name, user).getNickname();
+}
+
+std::string	Server::getChannelUserPassword(std::string channel_name, User user)
+{
+	return this->getChannelUser(channel_name, user).getPassword();
+}
+
+std::string	Server::getChannelUserRealname(std::string channel_name, User user)
+{
+	return this->getChannelUser(channel_name, user).getRealname();
+}
+
+std::string	Server::getChannelTopic(std::string	channel_name)
+{
+	std::map<std::string, Channel>::iterator it_channel = this->getMap().find(channel_name);
+
+	return (it_channel->second.getTopic());
 }

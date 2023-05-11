@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
+/*   By: will <will@student.42lyon.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 15:54:00 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/04 18:02:27 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/05/08 16:21:22 by will             ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -23,7 +23,7 @@ class User
 		std::string	_nickname;
 		std::string	_username;
 		std::string	_password;
-		std::string	_full_name;
+		std::string	_realname;
 		bool		_admin;
 	public :
 		User( void );
@@ -31,13 +31,17 @@ class User
 		User( User const & obj);
 		User		&operator=( User const & rhs);
 		void		setEmailaddress( std::string new_string );
-		void		setFullname( std::string new_string );
+		void		setRealname( std::string new_string );
 		void		setPassword( std::string new_string );
 		void		setUsername( std::string new_string );
 		void		setNickname( std::string new_string );
 		void		setAdmin( int admin);
+		
+		bool	operator==(const User& other) const;
+		bool	getAdmin( void ) const;
+		
 		std::string	getEmailaddress( void );
-		std::string	getFullname( void ) const;
+		std::string	getRealname( void ) const;
 		std::string	getPassword( void ) const;
 		std::string	getUsername( void ) const;
 		std::string	getNickname( void ) const;

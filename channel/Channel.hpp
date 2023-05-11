@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
+/*   By: will <will@student.42lyon.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 13:57:00 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/04 17:07:44 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/05/08 16:54:42 by will             ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,6 +21,7 @@ class Channel
 {
 	private :
 		std::string	_name;
+		std::string	_topic;
 		std::vector<User> _channel_user_list;
 	public :
 		Channel();
@@ -29,9 +30,12 @@ class Channel
         Channel& operator=(const Channel& obj);
         ~Channel();
 		
-		void				setName( std::string new_string );
-		void				setUserList(const User & user);
+		void	setName( std::string new_string );
+		void	setTopic( std::string new_string );
+		void	setUserList(const User & user);
+		
 		std::string			getName( void ) const;
+		std::string			getTopic( void ) const;
 		std::vector<User>	getUserList( void ) const;
 };
 

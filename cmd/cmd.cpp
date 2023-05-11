@@ -74,7 +74,7 @@ bool    cmd::parsePass(std::string str, Server server)
     return (true);
 }
 
-bool    cmd::parseNick(std::string str, Server server)
+bool    cmd::parseNick(std::string str, Server server, User user) //recup le User originaire de la commande
 {
     std::vector<std::string> splitArg = splitString(str, " ");
     if (splitArg.size() != 2)
@@ -95,8 +95,7 @@ bool    cmd::parseNick(std::string str, Server server)
     //verifier que le nick est valide
     if (server.nickAlreadyExist(splitArg[1]))
         return (false);
-    //set le nickname
-    //pour cela je pense qu'il faudrait recevoir le User en question dans la fonction mais comment faire :0
+    user.setNickname(splitArg[1]);
     return (true);
 }
 
@@ -117,33 +116,156 @@ bool    cmd::parseUser(std::string str, Server server)
         User    new_user;
 
         server.createRandomUsername(new_user);
-        //set realname splitArg[4] et + si il y a
+        std::string real_name;
+        for (unsigned int i = 4; i < splitArg.size(); i++)
+        {
+            real_name += splitArg[i];
+        }
+        new_user.setRealname(real_name);
         server.setUserList(new_user);
         std::cout << "hello from parseUser, it's working bitch" << std::endl;
     }
     return (true);
 }
 
-/*bool    cmd::parseMode(std::string str)
+bool    cmd::parseMode(std::string str, Server server, User user)
 {
+	(void) user;
     std::cout << "Mode cmd found" << std::endl;
     std::cout << "str: " << str << std::endl;
+    std::vector<std::string> splitArg = splitString(str, " ");
+	//MODE <cible> <mode> <argument(s)>
+    if (splitArg.size() < 3)
+    {
+        //envoyer numeric replies
+        std::cerr << "MODE: need more params " << std::endl;
+        return (false);
+    }
+    //check si # devant la cible et si le channel existe
+	if (splitArg[1][0] != '#' || server.getMap().find(&splitArg[1][1]) == server.getMap().end())
+	{
+		std::cerr << "MODE: can't find this channel " << std::endl;
+        return (false);	
+	}
+	//check si le User est bien dans la userlist du channel
+    //check si + ou - devant le mode
+	if (splitArg[2][0] != '-' && splitArg[2][0] != '+')
+	{
+		std::cerr << "MODE: no chan modes " << std::endl;
+        return (false);	
+	}
+    //check si le mode existe (tout depend de ceux que l'on prend)
+	std::string modes = "iklmnv";
+	if (modes.find(&splitArg[2][1]) == std::string::npos)
+	{
+		std::cerr << "MODE: unknow mode " << std::endl;
+        return (false);	
+	}
+	//execute les modes +
+	for (unsigned int i = 1; splitArg[2][0] == '+' && i < splitArg[2].size(); i++)
+	{
+		switch(splitArg[2][i] + 48)
+		{
+			case 105:
+				//execute mode i
+				break;
+			case 107:
+				//execute mode k
+				break;
+			case 108:
+				//execute mode l
+				break;
+			case 109:
+				//execute mode m
+				break;
+			case 110:
+				//execute mode n
+				break;
+			case 118:
+				//execute mode v
+				break;
+		}
+	}
+	//execute les modes -
+	for (unsigned int i = 1; splitArg[2][0] == '-' && i < splitArg[2].size(); i++)
+	{
+		switch(splitArg[2][i] + 48)
+		{
+			case 105:
+				//execute mode i
+				break;
+			case 107:
+				//execute mode k
+				break;
+			case 108:
+				//execute mode l
+				break;
+			case 109:
+				//execute mode m
+				break;
+			case 110:
+				//execute mode n
+				break;
+			case 118:
+				//execute mode v
+				break;
+		}
+	}
+    /*      ERR_NEEDMOREPARAMS              ERR_KEYSET
+            ERR_NOCHANMODES                 ERR_CHANOPRIVSNEEDED
+            ERR_USERNOTINCHANNEL            ERR_UNKNOWNMODE */
+	// executer les differents modes
+    /*  mode a faire :      +i invite only
+                            +m seulent les users admins peuvent parler dans le channel
+                            +v donne le droit a un user de parler meme si +m
+                            +n empeche les users externe de rejoinde le channel
+						   	+l definit une limite de user
+                            +k definit un mdp pour le channel
+							+ bien d'autres... a voir
+
+    */
+   return (true);
 }
 
 bool    cmd::parseQuit(std::string str)
 {
-    std::cout << "Quit cmd found" << std::endl;
-    std::cout << "str: " << str << std::endl;
+    std::vector<std::string> arg = splitString(str, " ");
+    if (arg.size() != 2)
+        return false;
+    //remplacer ça par un throw d'exception ça serait sympa nan ?
+    std::cerr << "QUIT: user has quit IRC: " << arg[1] << std::endl;
+    return true;
 }
 
-bool    cmd::parseJoin(std::string str)
+bool    cmd::parseJoin(std::string str, Server server, User user)
 {
-
+	std::vector<std::string> splitArg = splitString(str, " ");
+	if (splitArg.size() != 2)
+		return false;
+	//check si pas de # devant le channel (jwe crois que l'on peut mettre & aussi a verifier)
+	if (splitArg[1][0] != '#')
+	{
+		std::cerr << " " << std::endl;
+		return false;
+	}
+	std::string channel_name = &splitArg[1][1];
+	for (std::map<std::string, Channel>::iterator it = server.getMap().begin(); it != server.getMap().end(); it++)
+        if (channel_name == it->second.getName()) {
+    /*rejoindre le User dans le Channel deja existant*/
+            it->second.setUserList(user);
+            return true;
+        }
+     /*sinon creer un nouveau Channel y ajouter le User avec les droits admin et utiliser setNewChannelInMap ensuite*/
+    Channel new_channel(channel_name);
+    user.setAdmin(1); //donne les droits admin
+    new_channel.setUserList(user); // entre le user dans la list du channel
+    server.setNewChannelInMap(new_channel); // entre le channel dans la list des channels du serveur
     std::cout << "Join cmd found" << std::endl;
     std::cout << "str: " << str << std::endl;
+	return true;
 }
-*/
-bool    cmd::parsePart(std::string str)
+
+bool    cmd::parsePart(std::string str, Server server, User user)
 {
     std::vector<std::string> splitArg = splitString(str, " ");
     if (splitArg.size() < 2)
@@ -156,17 +278,25 @@ bool    cmd::parsePart(std::string str)
     std::vector<std::string>::iterator it = chan.begin();
     while (it != chan.end())
     {
+
         //verifier si le channel existe
+		if (!server.channelAlreadyExist(*it))
+			return false;
         //verifier si l'user est bien dans le channel
-        //si l'user est bien dans le channel:
+		if (!server.userIsInChannel(*it, user))
+			return false;
+		//si l'user est bien dans le channel:
         //- ecrire un message annoncant le depart de l'user
+		//si le message est dans la commande :
+		//sinon afficher
+		std::cout << "User lost baby" << std::endl;
         //- delete l'user de la liste du chan
         it++;
     }
     return true;
 }
 
-bool    cmd::parseTopic(std::string str)
+bool    cmd::parseTopic(std::string str, Server server, User user)
 {
     std::vector<std::string> arg = splitString(str, " ");
     if (arg.size() < 2)
@@ -175,12 +305,17 @@ bool    cmd::parseTopic(std::string str)
         return false;
     }
     //verifier si le channel existe
+	if (arg[1][0] == '#' || !server.channelAlreadyExist(&arg[1][1]))
+		return false;
     //verifier si le client est dans le channel
+	if (!server.userIsInChannel(arg[1], user))
+		return false;
     if (arg.size() == 2)
     {
         //verifier que le topic existe
         //ensuite verifier si l'user est operateur :
-        //- si oui : set le topic
+		// if (server.getUserAdmin(&arg[1][1], user))
+        	//- si oui : set le topic
         //- si non : numeric replies + erreur
         std::cout << "a completer willy" << std::endl;
     }
@@ -224,7 +359,7 @@ bool    cmd::parseNotice(std::string str)
     std::cout << "str: " << str << std::endl;
 }*/
 
-void cmd::whichCmd(std::string cmd, std::string str, Server server)
+void cmd::whichCmd(std::string cmd, std::string str, Server server, User user)
 {
     int j = -1;
     for (int i = 0; i < 14; i++)
@@ -250,7 +385,7 @@ void cmd::whichCmd(std::string cmd, std::string str, Server server)
             break;
 
         case 1:
-             if (parseNick(str, server) == false)
+             if (parseNick(str, server, user) == false)
             {
                 std::cerr << "Usage: NICK [nickname]" << std::endl;
                 return ;
@@ -265,21 +400,26 @@ void cmd::whichCmd(std::string cmd, std::string str, Server server)
             }
             break;
 
-        /*case 3:
-            parseMode(str);
+        case 3:
+            parseMode(str, server, user);
             break;
 
         case 4:
-            parseQuit(str);
+
+            if (parseQuit(str) == false)
+            {
+                std::cerr << "Usage: QUIT [ <Quit Message> ]" << std::endl;
+                return ;
+            }
             break;
 
-        case 5:
-            parseJoin(str);
+        /*case 5:
+            parseJoin(str, server, user);
             break;
         */
         case 6:
 
-            if (parsePart(str) == false)
+            if (parsePart(str, server, user) == false)
             {
                 std::cerr << "Usage: PART <channel> *( \",\" <channel> ) [ <Part Message> ] " << std::endl;
                 return ;
@@ -288,7 +428,7 @@ void cmd::whichCmd(std::string cmd, std::string str, Server server)
 
         case 7:
 
-            if (parseTopic(str) == false)
+            if (parseTopic(str, server, user) == false)
             {
                 std::cerr << "Usage: <channel> [ <topic> ]" << std::endl;
                 return ;
