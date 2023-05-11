@@ -148,6 +148,8 @@ bool    cmd::parseMode(std::string str, Server server, User user)
         return (false);	
 	}
 	//check si le User est bien dans la userlist du channel
+	if (!server.userIsInChannel(&splitArg[1][1], user))
+			return false;
     //check si + ou - devant le mode
 	if (splitArg[2][0] != '-' && splitArg[2][0] != '+')
 	{
@@ -308,11 +310,13 @@ bool    cmd::parseTopic(std::string str, Server server, User user)
 	if (arg[1][0] == '#' || !server.channelAlreadyExist(&arg[1][1]))
 		return false;
     //verifier si le client est dans le channel
-	if (!server.userIsInChannel(arg[1], user))
+	if (!server.userIsInChannel(&arg[1][1], user))
 		return false;
     if (arg.size() == 2)
     {
         //verifier que le topic existe
+		if (!server.topicAlreadyExist(&arg[1][1]))
+			return false;
         //ensuite verifier si l'user est operateur :
 		// if (server.getUserAdmin(&arg[1][1], user))
         	//- si oui : set le topic

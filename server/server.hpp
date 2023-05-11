@@ -65,6 +65,7 @@ class Server {
 		bool	userIsInChannel(std::string channel_name, User user);
 		bool 	channelAlreadyExist(std::string channel_name);
 		bool	getUserAdmin(std::string channel_name, User user);
+		bool	topicAlreadyExist(std::string channel_name);
 
 		User	getChannelUser(std::string channel_name, User user);
 
