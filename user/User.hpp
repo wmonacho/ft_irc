@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   User.hpp                                           :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: will <will@student.42lyon.fr>              +#+  +:+       +#+        */
+/*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 15:54:00 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/08 16:21:22 by will             ###   ########lyon.fr   */
+/*   Updated: 2023/05/10 17:27:19 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -24,13 +24,11 @@ class User
 		std::string	_username;
 		std::string	_password;
 		std::string	_realname;
-		bool		_admin;
 	public :
 		User( void );
 		~User( void );
 		User( User const & obj);
 		User		&operator=( User const & rhs);
-		void		setEmailaddress( std::string new_string );
 		void		setRealname( std::string new_string );
 		void		setPassword( std::string new_string );
 		void		setUsername( std::string new_string );
