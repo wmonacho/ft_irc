@@ -1,12 +1,94 @@
 #include "server.hpp"
+#include <iomanip>
 
 // *** CONSTRUCTORS AND DESTRUCTOR ***
 
-Server::Server() {
+Server::Server() {}
+
+Server::Server(int port, std::string password) {
 
     _servLen = sizeof(_servAddr);
     _clientLen = sizeof(_clientAddr);
-    this->_password = "";
+    _port = port;
+    _password = password;
+
+    _socketfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (_socketfd < 0) {
+        std::cout << "Error: socket creation failed" << std::endl;
+        exit(1);
+    }
+
+    setServAddr(_port);
+
+    if (bind(_socketfd, (struct sockaddr*)&_servAddr, sizeof(_servAddr)) < 0) {
+        std::cout << "Error : socket binding failed" << std::endl;
+		exit(1);
+    }
+
+    if (listen(_socketfd, 3) < 0) {
+		std::cout << "Error : listen failed" << std::endl;
+		exit(1);
+    }
+
+    startServer(this);
+    return ;
+}
+
+void    Server::startServer(Server* server) {
+
+    int     newSocket;
+    char    buffer[1024];
+    struct pollfd fds;
+
+    // accept() will create a new socket and give a fd related to it and write the information of the remote_host in the struct we give
+    newSocket = accept(server->_socketfd, (struct sockaddr*)&server->_clientAddr, &server->_clientLen);
+    if (newSocket < 0) {
+		std::cout << "Error : new socket creation failed" << std::endl;
+		exit(1);
+    }
+
+    std::cout << "Server got a connection from " << inet_ntoa(server->_clientAddr.sin_addr) << " on port " << server->_clientAddr.sin_port << std::endl;
+
+    fds.fd = newSocket;
+	fds.events = POLLIN;
+
+    int bytesReceived;
+    bytesReceived = recv(newSocket, buffer, 1023, 0);
+    if (bytesReceived <= 0) {
+        close(newSocket);
+        close(server->_socketfd);
+        std::cout << "Error" << std::endl;
+        exit(1);
+    }
+
+    std::cout << "Buffer : " << std::endl;
+    std::cout << buffer << "\n" << std::endl; 
+
+	while (1) {
+		int num_events = poll(&fds, 1, -1); // Wait indefinitely for events
+		if (num_events == -1) {
+			// Handle poll error
+			std::cout << "Poll error" << std::endl;
+			close(newSocket);
+			close(server->_socketfd);
+			exit(1);
+		}
+		else if (num_events == 0) {
+			// No events occurred before timeout
+			std::cout << "RAS je sais pas encore quoi faire ici" << std::endl;
+		}
+		else {
+			// Check if the client socket has data available for reading
+			if (fds.revents & POLLIN) {
+				// Handle incoming messages from the client
+				memset(buffer, 0, 255);
+				if (recv(newSocket, buffer, 1023, 0) > 0) {
+					std::cout << "Message from the client : " << buffer;
+                }
+			}
+		}
+	}
+
     return ;
 }
 
@@ -123,8 +205,8 @@ void    Server::setServAddr(int port) {
     // Server byte order
     this->_servAddr.sin_family = AF_INET;
     // Fill with current host's IP address
-    // this->_servAddr.sin_addr.s_addr = INADDR_ANY;
-    this->_servAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
+    this->_servAddr.sin_addr.s_addr = INADDR_ANY;
+    // this->_servAddr.sin_addr.s_addr = inet_addr("127.0.0.1");
     // The htons() function converts the unsigned short integer hostshort from host byte order to network byte order
     this->_servAddr.sin_port = htons(port);
 }

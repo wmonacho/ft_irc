@@ -33,6 +33,7 @@ class Server {
     public :
 
         Server();
+        Server(int port, std::string password);
         Server(const Server& obj);
         Server& operator=(const Server& obj);
         ~Server();
@@ -63,6 +64,8 @@ class Server {
         bool    alreadyRegistred( void );
         bool    nickAlreadyExist( std::string new_nick );
         bool    usernameAlreadyExist( std::string new_username );
+
+        void    startServer(Server* obj);
 
 };
 
