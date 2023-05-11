@@ -74,7 +74,7 @@ bool    cmd::parsePass(std::string str, Server server)
     return (true);
 }
 
-bool    cmd::parseNick(std::string str, Server server, User user) //recup le User originaire de la commande
+bool    cmd::parseNick(std::string str, Server server) //recup le User originaire de la commande
 {
     std::vector<std::string> splitArg = splitString(str, " ");
     if (splitArg.size() != 2)
@@ -382,7 +382,7 @@ bool    cmd::parseKick(std::string str, Server server, User user)
 			return false;
 		}
 		//bannir le User du channel
-		server.kickChannelUser(&arg[2][1], kick_user);
+		//server.kickChannelUser(&arg[2][1], kick_user);
 		//ecris le commentaire de kick
 		unsigned int i = 3;
 		while (i < arg.size() - 1)

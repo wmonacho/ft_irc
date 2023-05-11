@@ -25,7 +25,7 @@ class Server {
         socklen_t   _servLen;
         socklen_t   _clientLen;
         std::string _password;
-        std::vector<User>   _user_list;
+        std::vector<User>	_user_list;
         struct sockaddr_in  _servAddr;
         struct sockaddr_in  _clientAddr;
         std::map<std::string, Channel>  _channels;
@@ -65,22 +65,22 @@ class Server {
         bool   	nickAlreadyExist( std::string new_nick );
 		bool 	channelAlreadyExist(std::string channel_name);
         bool   	usernameAlreadyExist( std::string new_username );
-		bool	getUserAdmin(std::string channel_name, User user);
-		bool	userIsInChannel(std::string channel_name, User user);
+		bool	getUserAdmin(std::string channel_name, User *user);
+		bool	userInChannel(std::string channel_name, User *user);
         
-		User   	getUser(std::string user_nickname);
-		User&	getChannelUser(std::string channel_name, User user) const;
+		User   		getUser(std::string user_nickname);
+		const User*	getChannelUser(std::string channel_name, User *user);
 		
 		std::string		getChannelTopic(std::string	channel_name);
-		std::string		getChannelUserUsername(std::string channel_name, User user);
-		std::string		getChannelUserRealname(std::string channel_name, User user);
-		std::string		getChannelUserPassword(std::string channel_name, User user);
-		std::string		getChannelUserNickname(std::string channel_name, User user);
+		std::string		getChannelUserUsername(std::string channel_name, User *user);
+		std::string		getChannelUserRealname(std::string channel_name, User *user);
+		std::string		getChannelUserPassword(std::string channel_name, User *user);
+		std::string		getChannelUserNickname(std::string channel_name, User *user);
         
 		std::vector<User>	getUserList(void);
-		std::vector<User&>	getChannelUserList(std::string channel_name) const;
 
         std::map<std::string, Channel>	getMap(void);
+		std::map<const User*, ChannelAspects>	getChannelUserList(std::string channel_name);
 };
 
 #endif

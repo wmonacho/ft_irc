@@ -2,6 +2,7 @@
 
 ChannelAspects::ChannelAspects( void )
 {
+	this->_admin = false;
 }
 
 
@@ -19,4 +20,16 @@ ChannelAspects	&ChannelAspects::operator=( ChannelAspects const & rhs)
 ChannelAspects::~ChannelAspects( void )
 {
 
+}
+
+bool	ChannelAspects::getAdmin( void )
+{
+	if(this->_admin)
+		return true;
+	return false;
+}
+
+void	ChannelAspects::setAdmin( bool new_right )
+{
+	this->_admin = new_right;
 }
