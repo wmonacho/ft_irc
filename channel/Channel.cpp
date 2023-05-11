@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:31:22 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/11 14:43:09 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/05/11 16:30:43 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -76,7 +76,7 @@ bool	Channel::channelIsSecret( void )
 	return false;
 }
 
-bool	Channel::userInChannel(User *user)
+bool	Channel::userInChannel(const User *user)
 {
 	std::map<const User*, ChannelAspects>::iterator it_user = this->getUserList().find(user);
 
@@ -85,7 +85,7 @@ bool	Channel::userInChannel(User *user)
 	return true;
 }
 
-const User* Channel::getChannelUser(User *user) const
+const User* Channel::getUser(const User *user)
 {
 	std::map<const User*, ChannelAspects>::iterator it_user = this->getUserList().find(user);
 	
@@ -103,22 +103,30 @@ bool	Channel::getUserAdmin(User *user)
 	return false;
 }
 
-std::string		Channel::getUserUsername(User *user)
+const std::string		Channel::getUserUsername(User *user)
 {
+	std::map<const User*, ChannelAspects>::iterator it_user = this->getUserList().find(user);
 	
+	return (it_user->first->getUsername());
 }
 
-std::string		Channel::getUserNickname(User *user)
+const std::string		Channel::getUserNickname(User *user)
 {
-	
+	std::map<const User*, ChannelAspects>::iterator it_user = this->getUserList().find(user);
+
+	return (it_user->first->getNickname());
 }
 
-std::string		Channel::getUserPassword(User *user)
+const std::string		Channel::getUserPassword(User *user)
 {
-	
+	std::map<const User*, ChannelAspects>::iterator it_user = this->getUserList().find(user);
+
+	return (it_user->first->getPassword());
 }
 
-std::string		Channel::getUserRealname(User *user)
+const std::string		Channel::getUserRealname(User *user)
 {
-	
+	std::map<const User*, ChannelAspects>::iterator it_user = this->getUserList().find(user);
+
+	return (it_user->first->getRealname());
 }

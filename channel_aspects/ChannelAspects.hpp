@@ -3,7 +3,6 @@
 
 
 #include <vector>
-#include "../user/User.hpp"
 
 class ChannelAspects
 {
@@ -11,7 +10,13 @@ class ChannelAspects
 		bool		_admin;
 	public :
 		ChannelAspects();
+		ChannelAspects( bool right);
         ChannelAspects(const ChannelAspects& obj);
         ChannelAspects& operator=(const ChannelAspects& obj);
         ~ChannelAspects();
+
+		bool	getAdmin( void );
+		void	setAdmin( bool new_right );
 };
+
+#endif

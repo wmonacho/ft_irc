@@ -5,6 +5,10 @@ ChannelAspects::ChannelAspects( void )
 	this->_admin = false;
 }
 
+ChannelAspects::ChannelAspects( bool right )
+{
+	this->_admin = right;
+}
 
 ChannelAspects::ChannelAspects( ChannelAspects const & obj)
 {

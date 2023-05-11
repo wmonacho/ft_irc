@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 13:57:00 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/11 13:36:49 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/05/11 16:47:14 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -15,9 +15,11 @@
 
 
 #include <vector>
-#include "../../user/User.hpp"
-#include "ChannelAspects/ChannelAspects.hpp"
+#include "../user/User.hpp"
+#include "../channel_aspects/ChannelAspects.hpp"
 
+class User;
+class ChannelApects;
 class Channel
 {
 	private :
@@ -39,13 +41,18 @@ class Channel
 		
 		bool	channelIsSecret( void );
 		bool	getUserAdmin(User *user);
-		bool	userInChannel(User *user);
+		bool	userInChannel(const User *user);
 		
-		const User*		getUser(User *user) const;
+		const User* 	getUser(const User *user);
 		
 		std::string			getName( void ) const;
 		std::string			getTopic( void ) const;
-		std::string			getUserUsername(User *user);
+		
+
+		const std::string			getUserUsername(User *user);
+		const std::string			getUserRealname(User *user);
+		const std::string			getUserPassword(User *user);
+		const std::string			getUserNickname(User *user);
 
 		std::map<const User*, ChannelAspects>	getUserList( void ) const;
 };

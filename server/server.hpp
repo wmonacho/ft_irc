@@ -14,6 +14,8 @@
 #include <map>
 
 class Channel;
+class User;
+class ChannelApects;
 class Server {
 
     private :
@@ -65,17 +67,21 @@ class Server {
         bool   	nickAlreadyExist( std::string new_nick );
 		bool 	channelAlreadyExist(std::string channel_name);
         bool   	usernameAlreadyExist( std::string new_username );
-		bool	getUserAdmin(std::string channel_name, User *user);
-		bool	userInChannel(std::string channel_name, User *user);
+		bool	getChannelUserAdmin(std::string channel_name, User *user);
+		bool	userInChannel(std::string channel_name, const User *user);
         
 		User   		getUser(std::string user_nickname);
-		const User*	getChannelUser(std::string channel_name, User *user);
+		const User*	getChannelUser(std::string channel_name, const User *user);
 		
 		std::string		getChannelTopic(std::string	channel_name);
-		std::string		getChannelUserUsername(std::string channel_name, User *user);
-		std::string		getChannelUserRealname(std::string channel_name, User *user);
-		std::string		getChannelUserPassword(std::string channel_name, User *user);
-		std::string		getChannelUserNickname(std::string channel_name, User *user);
+		const std::string		getChannelUserUsername(std::string channel_name, User *user);
+		const std::string		getChannelUserRealname(std::string channel_name, User *user);
+		const std::string		getChannelUserPassword(std::string channel_name, User *user);
+		const std::string		getChannelUserNickname(std::string channel_name, User *user);
+		void					setUserUsername(User user, std::string new_username);
+		void					setUserNickname(User user, std::string new_nickname);
+		void					setUserPassword(User user, std::string new_password);
+		void					setUserRealname(User user, std::string new_realname);
         
 		std::vector<User>	getUserList(void);
 
