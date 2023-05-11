@@ -306,6 +306,13 @@ bool	Server::channelAlreadyExist(std::string channel_name)
 	return true;
 }
 
+// bool	Server::topicAlreadyExist(std::string channel_name)
+// {
+
+// 	if (this->getChannelTopic( channel_name).size() < 1)
+// 		return false;
+// 	return true;
+// }
 //void	Server::kickUserFromChannel(std::string channel_name, User user)
 //{
 //	std::map<std::string, Channel>::iterator it_channel = this->getMap().find(channel_name);
