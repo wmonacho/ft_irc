@@ -6,6 +6,7 @@ NAME =		ircserv
 FILES =		main.cpp							\
 			server/server.cpp					\
 			channel/Channel.cpp					\
+			channel_aspects/ChannelAspects.cpp	\
 			user/User.cpp						\
 			cmd/cmd.cpp							\
 # ====================================================================
@@ -13,6 +14,7 @@ FILES =		main.cpp							\
 # HEADER =============================================================
 HEADER =	server/server.hpp					\
 			channel/Channel.hpp					\
+			channel_aspects/ChannelAspects.hpp	\
 			user/User.hpp						\
 			cmd/cmd.hpp							\
 
@@ -27,7 +29,7 @@ CC =		c++
 # ====================================================================
 
 # SUB_DIR_LST ========================================================
-SUB_DIR_LST =	server channel user cmd
+SUB_DIR_LST =	server channel user cmd channel_aspects
 # ====================================================================
 
 # OBJS_DIR ===========================================================

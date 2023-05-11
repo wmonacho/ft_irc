@@ -85,7 +85,7 @@ int main(int ac, char **av)
                                             std::cerr << "Usage: ./irc [command]" << std::endl;
                                             return (1);
                                         }
-                                        inst.whichCmd(splitBuffer[0], buffer, server, user_test); //user_test sera change par le User originaire de la commande
+                                        inst.whichCmd(splitBuffer[0], buffer, server, &user_test); //user_test sera change par le User originaire de la commande
                                         std::cout << "Message from the client : " << buffer;
                                    }
 				}
