@@ -74,7 +74,7 @@ class Server {
 		User   		getUser(std::string user_nickname);
 		const User*	getChannelUser(std::string channel_name, const User *user);
 		
-		std::string		getChannelTopic(std::string	channel_name);
+		std::string		        getChannelTopic(std::string	channel_name);
 		const std::string		getChannelUserUsername(std::string channel_name, User *user);
 		const std::string		getChannelUserRealname(std::string channel_name, User *user);
 		const std::string		getChannelUserPassword(std::string channel_name, User *user);
@@ -84,7 +84,9 @@ class Server {
 		void					setUserPassword(User user, std::string new_password);
 		void					setUserRealname(User user, std::string new_realname);
         
-		std::vector<User>	getUserList(void);
+		std::vector<User>	                    getUserList(void);
+        std::map<std::string, Channel>          getMap(void);
+        std::map<const User*, ChannelAspects>   getChannelUserList(std::string channel_name);
     
     void    startServer(Server* obj);
 };
