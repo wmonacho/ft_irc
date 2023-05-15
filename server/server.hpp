@@ -14,6 +14,8 @@
 #include <map>
 
 class Channel;
+class User;
+class ChannelApects;
 class Server {
 
     private :
@@ -25,7 +27,7 @@ class Server {
         socklen_t   _servLen;
         socklen_t   _clientLen;
         std::string _password;
-        std::vector<User>   _user_list;
+        std::vector<User>	_user_list;
         struct sockaddr_in  _servAddr;
         struct sockaddr_in  _clientAddr;
         std::map<std::string, Channel>  _channels;
@@ -38,47 +40,53 @@ class Server {
         Server& operator=(const Server& obj);
         ~Server();
 
-        int                             getSocketfd(void);
-        int                             getNewSocket(void);
-        ssize_t                         getValRead(void);
-        int                             getPort(void);
-        socklen_t                       getServLen(void);
-        socklen_t*                      getClientLen(void);
-        sockaddr_in*                    getServAddr(void);
-        sockaddr_in*                    getClientAddr(void);
-        std::string                     getPassword(void);
-        std::vector<User>               getUserList(void);
-        std::map<std::string, Channel>  getMap(void);
+        int		getPort(void);
+        int		getSocketfd(void);
+        int		getNewSocket(void);
 
-        void    setSocketfd(int fd);
-        void    setNewSocket(int fd);
-        void    setValRead(ssize_t value);
-        void    setPort(int port);
-        void    setServAddr(int port);
-        void    setUserList(User new_user);
-        void    setPassword(std::string new_password);
-        void    setNewChannelInMap(const Channel& channel);
+        ssize_t		getValRead(void);
+        socklen_t   getServLen(void);
+        socklen_t*  getClientLen(void);
+
+        std::string 	getPassword(void);
+        
+		sockaddr_in*	getServAddr(void);
+        sockaddr_in*	getClientAddr(void);
+		
+        void   	setPort(int port);
+        void   	setSocketfd(int fd);
+        void   	setNewSocket(int fd);
+        void   	setServAddr(int port);
+        void   	setValRead(ssize_t value);
+        void   	setUserList(User new_user);
         void	createRandomUsername( User user );
-
-        bool    alreadyRegistred( void );
-        bool    nickAlreadyExist( std::string new_nick );
-        bool    usernameAlreadyExist( std::string new_username );
-		bool	userIsInChannel(std::string channel_name, User user);
+        void   	setPassword(std::string new_password);
+        void   	setNewChannelInMap(const Channel& channel);
+		void	kickUserFromChannel(std::string channel_name, User user);
+        
+		bool   	passwordAlreadyRegistred( void );
+        bool   	nickAlreadyExist( std::string new_nick );
 		bool 	channelAlreadyExist(std::string channel_name);
-		bool	getUserAdmin(std::string channel_name, User user);
-
-		User	getChannelUser(std::string channel_name, User user);
-
-		std::string	getChannelUserUsername(std::string channel_name, User user);
-		std::string	getChannelUserRealname(std::string channel_name, User user);
-		std::string	getChannelUserPassword(std::string channel_name, User user);
-		std::string	getChannelUserNickname(std::string channel_name, User user);
-		std::string	getChannelTopic(std::string	channel_name);
-
-		std::vector<User> getChannelUserList(std::string channel_name);
-
-        void    startServer(Server* obj);
-
+        bool   	usernameAlreadyExist( std::string new_username );
+		bool	getChannelUserAdmin(std::string channel_name, User *user);
+		bool	userInChannel(std::string channel_name, const User *user);
+        
+		User   		getUser(std::string user_nickname);
+		const User*	getChannelUser(std::string channel_name, const User *user);
+		
+		std::string		getChannelTopic(std::string	channel_name);
+		const std::string		getChannelUserUsername(std::string channel_name, User *user);
+		const std::string		getChannelUserRealname(std::string channel_name, User *user);
+		const std::string		getChannelUserPassword(std::string channel_name, User *user);
+		const std::string		getChannelUserNickname(std::string channel_name, User *user);
+		void					setUserUsername(User user, std::string new_username);
+		void					setUserNickname(User user, std::string new_nickname);
+		void					setUserPassword(User user, std::string new_password);
+		void					setUserRealname(User user, std::string new_realname);
+        
+		std::vector<User>	getUserList(void);
+    
+    void    startServer(Server* obj);
 };
 
 #endif
