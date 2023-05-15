@@ -76,6 +76,7 @@
 		"sstream": "cpp",
 		"variant": "cpp",
 		"__functional_base": "cpp",
-		"fstream": "cpp"
+		"fstream": "cpp",
+		"iomanip": "cpp"
 	}
 }
