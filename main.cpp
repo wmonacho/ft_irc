@@ -17,6 +17,8 @@ int main(int ac, char **av)
 	{
 		Server server(atoi(av[1]), av[2]);
 
+		server.startServer();
+
 		// closing the connected socket
 		close(server.getNewSocket());
 		// closing the listening socket

@@ -63,7 +63,7 @@ class Server {
         void   	setPassword(std::string new_password);
         void   	setNewChannelInMap(const Channel& channel);
 		void	kickUserFromChannel(std::string channel_name, User user);
-        void    startServer(Server* obj);
+        void    startServer();
         
 		bool   	passwordAlreadyRegistred( void );
         bool   	nickAlreadyExist( std::string new_nick );

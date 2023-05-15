@@ -61,11 +61,10 @@ Server::Server(int port, std::string password) {
 		exit(1);
     }
 
-    startServer(this);
     return ;
 }
 
-void    Server::startServer(Server* server) {
+void    Server::startServer() {
 
     // We create a socket for client/server communication
     int     newSocket;
@@ -73,13 +72,13 @@ void    Server::startServer(Server* server) {
     struct pollfd fds;
 
     // accept() will create a new socket and give a fd related to it and write the information of the remote_host in the struct we give
-    newSocket = accept(server->_socketfd, (struct sockaddr*)&server->_clientAddr, &server->_clientLen);
+    newSocket = accept(this->_socketfd, (struct sockaddr*)&this->_clientAddr, &this->_clientLen);
     if (newSocket < 0) {
 		std::cout << "Error : new socket creation failed" << std::endl;
 		exit(1);
     }
 
-    std::cout << "Server got a connection from " << inet_ntoa(server->_clientAddr.sin_addr) << " on port " << server->_clientAddr.sin_port << std::endl;
+    std::cout << "Server got a connection from " << inet_ntoa(this->_clientAddr.sin_addr) << " on port " << this->_clientAddr.sin_port << std::endl;
 
     fds.fd = newSocket;
 	fds.events = POLLIN;
@@ -92,7 +91,7 @@ void    Server::startServer(Server* server) {
 			// Handle poll error
 			std::cout << "Poll error" << std::endl;
 			close(newSocket);
-			close(server->_socketfd);
+			close(this->_socketfd);
 			exit(1);
 		}
 		else if (num_events == 0) {
