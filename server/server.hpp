@@ -85,6 +85,8 @@ class Server {
 		void					setUserRealname(User user, std::string new_realname);
         
 		std::vector<User>	getUserList(void);
+
+		std::map<std::string, Channel>  getMap(void);
     
     void    startServer(Server* obj);
 };
