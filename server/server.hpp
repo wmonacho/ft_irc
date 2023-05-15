@@ -35,6 +35,7 @@ class Server {
     public :
 
         Server();
+        Server(int port, std::string password);
         Server(const Server& obj);
         Server& operator=(const Server& obj);
         ~Server();
@@ -84,9 +85,8 @@ class Server {
 		void					setUserRealname(User user, std::string new_realname);
         
 		std::vector<User>	getUserList(void);
-
-        std::map<std::string, Channel>	getMap(void);
-		std::map<const User*, ChannelAspects>	getChannelUserList(std::string channel_name);
+    
+    void    startServer(Server* obj);
 };
 
 #endif
