@@ -322,24 +322,121 @@ bool    cmd::parseTopic(std::string str, Server server, User user)
     return true;
 }
 
-bool    cmd::parseNames(std::string str)
+bool    cmd::parseNames(std::string str, Server server)
 {
+    std::vector<std::string> arg = splitString(str, " ");
 
+    std::map<std::string, Channel> map = server.getMap();
+    std::vector<User> copy_list_user = server.getUserList();
+
+    if (arg.size() == 1)
+    {
+        for (std::map<std::string, Channel>::iterator it = map.begin(); it != map.end(); it++)
+        {
+            //checkez si channel secrete ou pas
+            std::cout << "Channel: " << it->first << std::endl;
+            std::vector<User> userlist = it->second.getUserList();
+            for (std::vector<User>::iterator itUser = userlist.begin(); itUser != userlist.end(); itUser++)
+            {
+                std::cout << (*itUser).getUsername() << std::endl;
+                std::vector<User>::iterator iter = std::find(copy_list_user.begin(), copy_list_user.end(), *itUser);
+                if (iter != copy_list_user.end())
+                    copy_list_user.erase(iter);
+            }
+        }
+        for (std::vector<User>::iterator cpyIt = copy_list_user.begin(); cpyIt != copy_list_user.end(); cpyIt++)
+            std::cout << (*cpyIt).getUsername() << std::endl;
+    }
+    else
+    {
+        std::vector<std::string> chan = splitString(arg[1], ",");
+        //print les channels passes en parametre ainsi que leurs users respectifs tout en faisant attention
+        //a ne pas afficher les utilisateurs qui ne sont pas visibles.
+    }
+    //petite boucle while pour faire les checks
+    return true;
 }
 
-/*bool    cmd::parseList(std::string str)
+bool    cmd::parseList(std::string str, Server server)
 {
-    std::cout << "List cmd found" << std::endl;
-    std::cout << "str: " << str << std::endl;
+    std::vector<std::string> arg = splitString(str, " ");
+    std::map<std::string, Channel> map = server.getMap();
+    std::vector<std::string> chans;
+
+    if (arg.size() == 1)
+    {
+        for (std::map<std::string, Channel>::iterator it = map.begin(); it != map.end(); it++)
+        {
+            std::cout << "Channel: " << it->second.getName() << std::endl;
+            std::cout << " - topic: " << it->second.getTopic() << std::endl;
+            std::cout << std::endl;
+        }
+        return true;
+    }
+    arg.erase(arg.begin());
+    chans = splitString(arg[1], ",");
+    for (std::vector<std::string>::iterator it = arg.begin(); it != arg.end(); it++)
+    {
+        std::map<std::string, Channel>::iterator itMap = map.begin();
+        int isValid = 0;
+        while (itMap != map.end())
+        {
+            if (itMap->second.getName() == *it)
+            {
+                std::cout << "Channel: " << itMap->second.getName() << std::endl;
+                std::cout << " - topic: " << itMap->second.getTopic() << std::endl;
+                isValid = 1;
+            }
+            else
+                itMap++;
+        }
+        if (isValid == 0)
+        {
+            std::cerr << "Channel: " << itMap->second.getName() << "doesn't exist."  << std::endl;
+            return false;
+        }
+    }
+    return true;
 }
 
-bool    cmd::parseInvite(std::string str)
+bool    cmd::parseInvite(std::string str, Server server)
 {
-    std::cout << "Invite cmd found" << std::endl;
-    std::cout << "str: " << str << std::endl;
+    std::vector<std::string> arg = splitString(str, " ");
+
+    if (arg.size() != 3)
+        return false;
+    std::string nick = arg[1];
+    std::string chan = arg[2];
+    std::map<std::string, Channel> map = server.getMap();
+    int chanFound = 0;
+    for (std::map<std::string, Channel>::iterator it = map.begin(); it != map.end(); it++)
+    {
+        if (it->first == chan)
+        {
+            chanFound = 1;
+            break ;
+        }
+    }
+    if (chanFound == 0)
+        return false;
+    if (server.nickAlreadyExist(nick) == false)
+    {
+        std::cerr << "ERR_NOSUCHNICK" << std::endl;
+        return false;
+    }
+
+    //recuperer le chan grace au nick
+    //verifier que l'user soit bien dans le channel
+
+    //channel pas valide = pas d erreur
+    //seulement les users du channel peuvent inviter des gens
+    //si le channel a le flag invite only set, seulement les channels operators peuvent inviter
+
+    //checker si l'user est deja sur le chan
+    return true;
 }
 
-bool    cmd::parseKick(std::string str)
+/*bool    cmd::parseKick(std::string str)
 {
     std::cout << "Kick cmd found" << std::endl;
     std::cout << "str: " << str << std::endl;
@@ -411,10 +508,10 @@ void cmd::whichCmd(std::string cmd, std::string str, Server server, User user)
             }
             break;
 
-        /*case 5:
+        case 5:
             parseJoin(str, server, user);
             break;
-        */
+
         case 6:
 
             if (parsePart(str, server, user) == false)
@@ -437,15 +534,15 @@ void cmd::whichCmd(std::string cmd, std::string str, Server server, User user)
             parseNames(str, server);
             break;
 
-        /*case 9:
-            parseList(str);
+        case 9:
+            parseList(str, server);
             break;
 
         case 10:
-             parseInvite(str);
+             parseInvite(str, server);
              break;
 
-        case 11:
+        /*case 11:
             parseKick(str);
             break;
 

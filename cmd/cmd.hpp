@@ -29,17 +29,15 @@ public:
     bool    parsePart(std::string str, Server server, User user);
     bool    parseTopic(std::string str, Server server, User user);
     bool    parseQuit(std::string str);
-    bool    parseMode(std::string str, Server server, User user);bool    parseJoin(std::string str, Server server, User new_user);
-    bool    parseNames(std::string str);
-    /*bool    parseList(std::string str);
+    bool    parseMode(std::string str, Server server, User user);
+    bool    parseNames(std::string str, Server server);
+    bool    parseList(std::string str, Server server);
     bool    parseJoin(std::string str, Server server, User user);
-    /*bool    parseNames(std::string str);
-    bool    parseList(std::string str);
-    bool    parseInvite(std::string str);
-    bool    parseKick(std::string str);
+    bool    parseInvite(std::string str, Server server);
+    /*bool    parseKick(std::string str);
     bool    parsePrivmsg(std::string str);
     bool    parseNotice(std::string str);*/
     std::vector<std::string> splitString(std::string str, const char *delim);
 };
 
-#endifva
+#endif

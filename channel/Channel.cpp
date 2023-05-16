@@ -59,7 +59,7 @@ void	Channel::setTopic( std::string new_string )
 	this->_topic = new_string;
 }
 
-void				Channel::setUserList(const User & user)
+void	Channel::setUserList(const User & user)
 {
 	this->_channel_user_list.push_back(user);
 }
