@@ -63,6 +63,7 @@ class Server {
         void   	setPassword(std::string new_password);
         void   	setNewChannelInMap(const Channel& channel);
 		void	kickUserFromChannel(std::string channel_name, User user);
+        void    startServer();
         
 		bool   	passwordAlreadyRegistred( void );
         bool   	nickAlreadyExist( std::string new_nick );
@@ -70,6 +71,8 @@ class Server {
         bool   	usernameAlreadyExist( std::string new_username );
 		bool	getChannelUserAdmin(std::string channel_name, User *user);
 		bool	userInChannel(std::string channel_name, const User *user);
+
+        int     parseAndConnect(std::string buffer, int socket);
         
 		User   		getUser(std::string user_nickname);
 		const User*	getChannelUser(std::string channel_name, const User *user);
@@ -84,11 +87,10 @@ class Server {
 		void					setUserPassword(User user, std::string new_password);
 		void					setUserRealname(User user, std::string new_realname);
         
-		std::vector<User>	                    getUserList(void);
+		std::vector<User>                       getUserList(void);
         std::map<std::string, Channel>          getMap(void);
         std::map<const User*, ChannelAspects>   getChannelUserList(std::string channel_name);
     
-    void    startServer(Server* obj);
 };
 
 #endif

@@ -239,34 +239,34 @@ bool    cmd::parseQuit(std::string str)
     return true;
 }
 
-bool    cmd::parseJoin(std::string str, Server server, User *user)
-{
-	std::vector<std::string> splitArg = splitString(str, " ");
-	if (splitArg.size() != 2)
-		return false;
-	//check si pas de # devant le channel (jwe crois que l'on peut mettre & aussi a verifier)
-	if (splitArg[1][0] != '#')
-	{
-		std::cerr << " " << std::endl;
-		return false;
-	}
-	std::string channel_name = &splitArg[1][1];
-	for (std::map<std::string, Channel>::iterator it = server.getMap().begin(); it != server.getMap().end(); it++)
-        if (channel_name == it->second.getName()) {
-    /*rejoindre le User dans le Channel deja existant*/
-			ChannelAspects	new_aspects(0);
-            it->second.setUserList(user, new_aspects);
-            return true;
-        }
-     /*sinon creer un nouveau Channel y ajouter le User avec les droits admin et utiliser setNewChannelInMap ensuite*/
-    Channel new_channel(channel_name);
-	ChannelAspects	new_aspects(1);
-    new_channel.setUserList(user, new_aspects); // entre le user dans la list du channel
-    server.setNewChannelInMap(new_channel); // entre le channel dans la list des channels du serveur
-    std::cout << "Join cmd found" << std::endl;
-    std::cout << "str: " << str << std::endl;
-	return true;
-}
+// bool    cmd::parseJoin(std::string str, Server server, User *user)
+// {
+// 	std::vector<std::string> splitArg = splitString(str, " ");
+// 	if (splitArg.size() != 2)
+// 		return false;
+// 	//check si pas de # devant le channel (jwe crois que l'on peut mettre & aussi a verifier)
+// 	if (splitArg[1][0] != '#')
+// 	{
+// 		std::cerr << " " << std::endl;
+// 		return false;
+// 	}
+// 	std::string channel_name = &splitArg[1][1];
+// 	for (std::map<std::string, Channel>::iterator it = server.getMap().begin(); it != server.getMap().end(); it++)
+//         if (channel_name == it->second.getName()) {
+//     /*rejoindre le User dans le Channel deja existant*/
+// 			ChannelAspects	new_aspects(0);
+//             it->second.setUserList(user, new_aspects);
+//             return true;
+//         }
+//      /*sinon creer un nouveau Channel y ajouter le User avec les droits admin et utiliser setNewChannelInMap ensuite*/
+//     Channel new_channel(channel_name);
+// 	ChannelAspects	new_aspects(1);
+//     new_channel.setUserList(user, new_aspects); // entre le user dans la list du channel
+//     server.setNewChannelInMap(new_channel); // entre le channel dans la list des channels du serveur
+//     std::cout << "Join cmd found" << std::endl;
+//     std::cout << "str: " << str << std::endl;
+// 	return true;
+// }
 
 bool    cmd::parsePart(std::string str, Server server, User *user)
 {
