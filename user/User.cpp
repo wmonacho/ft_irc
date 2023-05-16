@@ -44,7 +44,7 @@ std::string	User::getNickname( void ) const
 	return (this->_nickname);
 }
 
-std::string	User::getUsername( void ) const
+const std::string	User::getUsername( void ) const
 {
 	return (this->_username);
 }
@@ -79,7 +79,7 @@ void	User::setRealname( std::string new_string )
 	this->_realname = new_string;
 }
 
-bool User::operator==(const User& other) const
+bool User::operator==(const User* other) const
 {
-	return this->_nickname == other._nickname;
+	return this->_nickname == other->_nickname;
 }

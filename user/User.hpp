@@ -35,13 +35,13 @@ class User
 		void		setNickname( std::string new_string );
 		void		setAdmin( int admin);
 		
-		bool	operator==(const User& other) const;
+		bool	operator==(const User* other) const;
 		bool	getAdmin( void ) const;
 		
 		std::string	getEmailaddress( void );
 		std::string	getRealname( void ) const;
 		std::string	getPassword( void ) const;
-		std::string	getUsername( void ) const;
+		const std::string	getUsername( void ) const;
 		std::string	getNickname( void ) const;
 };
 

@@ -340,11 +340,11 @@ bool    cmd::parseNames(std::string str, Server server)
         {
             //checkez si channel secrete ou pas
             std::cout << "Channel: " << it->first << std::endl;
-            std::vector<User> userlist = it->second.getUserList();
-            for (std::vector<User>::iterator itUser = userlist.begin(); itUser != userlist.end(); itUser++)
+            std::map<const User*, ChannelAspects> userlist = it->second.getUserList();
+            for (std::map<const User*, ChannelAspects>::iterator itUser = userlist.begin(); itUser != userlist.end(); itUser++)
             {
-                std::cout << (*itUser).getUsername() << std::endl;
-                std::vector<User>::iterator iter = std::find(copy_list_user.begin(), copy_list_user.end(), *itUser);
+                std::cout << itUser->first->getUsername() << std::endl;
+                std::vector<User>::iterator iter = std::find(copy_list_user.begin(), copy_list_user.end(), itUser->first);
                 if (iter != copy_list_user.end())
                     copy_list_user.erase(iter);
             }
@@ -571,9 +571,9 @@ void cmd::whichCmd(std::string cmd, std::string str, Server server, User *user)
             }
             break;
 
-        case 5:
+        /*case 5:
             parseJoin(str, server, user);
-            break;
+            break;*/
 
         case 6:
 
