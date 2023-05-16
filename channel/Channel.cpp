@@ -6,7 +6,7 @@
 /*   By: will <will@student.42lyon.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:31:22 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/08 16:53:44 by will             ###   ########lyon.fr   */
+/*   Updated: 2023/05/15 14:56:41 by will             ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -59,12 +59,60 @@ void	Channel::setTopic( std::string new_string )
 	this->_topic = new_string;
 }
 
-void	Channel::setUserList(const User & user)
+void	Channel::setUserList(const User * new_user, ChannelAspects channel_aspects)
 {
-	this->_channel_user_list.push_back(user);
+	this->_channel_user_list[new_user] = channel_aspects;
 }
 
-std::vector<User>	Channel::getUserList( void ) const
+std::map<const User*, ChannelAspects>	Channel::getUserList( void ) const
 {
 	return (this->_channel_user_list);
+}
+
+bool	Channel::channelIsSecret( void )
+{
+	if (this->_secret)
+		return true;
+	return false;
+}
+
+bool	Channel::userInChannel(const User *user)
+{
+	if (this->getUserList().find(user) == this->getUserList().end())
+		return (false);
+	return true;
+}
+
+const User* Channel::getUser(const User *user)
+{
+	if (this->getUserList().find(user) == this->getUserList().end())
+		return (this->getUserList().find(user)->first);
+	return this->getUserList().find(user)->first;
+}
+
+bool	Channel::getUserAdmin(User *user)
+{
+	if (this->getUserList().find(user)->second.getAdmin())
+		return true;
+	return false;
+}
+
+const std::string		Channel::getUserUsername(User *user)
+{
+	return (this->getUserList().find(user)->first->getUsername());
+}
+
+const std::string		Channel::getUserNickname(User *user)
+{
+	return (this->getUserList().find(user)->first->getNickname());
+}
+
+const std::string		Channel::getUserPassword(User *user)
+{
+	return (this->getUserList().find(user)->first->getPassword());
+}
+
+const std::string		Channel::getUserRealname(User *user)
+{
+	return (this->getUserList().find(user)->first->getRealname());
 }
