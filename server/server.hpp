@@ -5,6 +5,8 @@
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netinet/in.h>
+#include <sys/ioctl.h>
+#include <errno.h>
 #include <iostream>
 #include <sstream>
 #include <unistd.h>

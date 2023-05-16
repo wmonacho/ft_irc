@@ -42,6 +42,7 @@ Server::Server(int port, std::string password) {
     _clientLen = sizeof(_clientAddr);
     _port = port;
     _password = password;
+    int on = -1;
 
     _socketfd = socket(AF_INET, SOCK_STREAM, 0);
     if (_socketfd < 0) {
@@ -49,6 +50,7 @@ Server::Server(int port, std::string password) {
         exit(1);
     }
 
+    ioctl(_socketfd, FIONBIO, (char *)&on);
     setServAddr(_port);
 
     if (bind(_socketfd, (struct sockaddr*)&_servAddr, sizeof(_servAddr)) < 0) {
@@ -68,58 +70,85 @@ void    Server::startServer() {
 
     // We create a socket for client/server communication
     int     newSocket;
+    int     recvReturn;
+    int     pollReturn;
+    int     nfds = 1;
+    int     currentSize = 0;
+    int     i = 0;
     char    buffer[1024];
-    struct pollfd fds;
+    bool    closeConnection = false;
+    struct pollfd fds[42];
 
-    // accept() will create a new socket and give a fd related to it and write the information of the remote_host in the struct we give
-    newSocket = accept(this->_socketfd, (struct sockaddr*)&this->_clientAddr, &this->_clientLen);
-    if (newSocket < 0) {
-		std::cout << "Error : new socket creation failed" << std::endl;
-		exit(1);
-    }
+    // std::cout << "Server got a connection from " << inet_ntoa(this->_clientAddr.sin_addr) << " on port " << this->_clientAddr.sin_port << std::endl;
+    
+    memset(fds, 0, sizeof(fds));
+    fds[0].fd = this->_socketfd;
+	fds[0].events = POLLIN;
 
-    std::cout << "Server got a connection from " << inet_ntoa(this->_clientAddr.sin_addr) << " on port " << this->_clientAddr.sin_port << std::endl;
-
-    fds.fd = newSocket;
-	fds.events = POLLIN;
-
-    // Loop of interaction 
-    int connection_done = 0;
-	while (1) {
-		int num_events = poll(&fds, 1, -1); // Wait indefinitely for events
-		if (num_events == -1) {
-			// Handle poll error
-			std::cout << "Poll error" << std::endl;
-			close(newSocket);
-			close(this->_socketfd);
-			exit(1);
-		}
-		else if (num_events == 0) {
-			// No events occurred before timeout
-			std::cout << "Client closed the connection" << std::endl;
-		}
-		else {
-			// Check if the client socket has data available for reading
-			if (fds.revents & POLLIN) {
-				// Handle incoming messages from the client
-                std::cout << "===============================" << std::endl;
-				memset(buffer, 0, 1023);
-				if (recv(newSocket, buffer, 1023, 0) > 0) {
-					std::cout << buffer;
-                    // We get here only for the first loop (new user joining the server)
-                    if (connection_done == 0) {
-                        std::string buffer_str = buffer;
-                        parseAndConnect(buffer_str, newSocket);
+    while (closeConnection == false) {
+        pollReturn = poll(fds, nfds, -1);
+        if (pollReturn < 0) {
+            std::cerr << "Error: poll() failed" << std::endl;
+            break ;
+        }
+        if (pollReturn == 0) {
+            std::cerr << "Error: poll() timed out" << std::endl;
+            break ;
+        }
+        currentSize = nfds;
+        std::cout << "Current Size --> " << nfds << std::endl;
+        for (i = 0; i < currentSize; i++) {
+            std::cout << "loop [i] " << i << std::endl;
+            if (fds[i].revents != POLLIN) {
+                std::cerr << "Error" << std::endl;
+                closeConnection = true;
+            }
+            if (fds[i].fd == this->_socketfd) {
+                std::cout << "== New socket connection ==" << std::endl;
+                do {
+                    newSocket = accept(this->_socketfd, NULL, NULL);
+                    std::cout << "newSocket " << newSocket << std::endl;
+                    if (newSocket < 0) {
+                        if (errno != EWOULDBLOCK) {
+                            std::cerr << "Error: accept() failed" << std::endl;
+                            closeConnection = true;
+                        }
+                        break ;
                     }
-
-                    // THIS IS WHERE WE WILL HANDLE THE COMMAND AFTER CONNECTION AND USER CREATION
-                    
-                    connection_done = 1;
+                    std::cout << "New connection accepted: socket " << nfds << std::endl;
+                    fds[nfds].fd = newSocket;
+                    fds[nfds].events = POLLIN;
+                    nfds++;
+                } while (newSocket != -1);
+            }
+            else {
+                closeConnection = false;
+                while (true) {
+                    std::cout << "fds[i] --> " << i << std::endl;
+                    memset(buffer, 0, sizeof(buffer));
+                    recvReturn = recv(fds[i].fd, buffer, sizeof(buffer) - 1, 0);
+                    if (recvReturn < 0) {
+                        if (errno != EWOULDBLOCK) {
+                            std::cerr << "Error: recv() failed" << std::endl;
+                            closeConnection = true;
+                        }
+                        break ;
+                    }
+                    std::cout << "===============" << std::endl;
+                    std::cout << buffer << std::endl;
+                    send(fds[i].fd, buffer, recvReturn, 0);
                 }
-			}
-		}
-	}
-
+                if (closeConnection) {
+                    close(fds[i].fd);
+                    fds[i].fd = -1;
+                }
+            }
+        }
+    }
+    for (int i = 0; i < nfds; i++) {
+        if (fds[i].fd >= 0)
+            close(fds[i].fd);
+    }
     return ;
 }
 

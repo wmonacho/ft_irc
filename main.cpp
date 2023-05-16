@@ -29,3 +29,6 @@ int main(int ac, char **av)
 	std::cout << "Usage : ./ircserv [PORT] [PASSWORD]" << std::endl;
 	return 1;
 }
+
+// In serverStart :
+	// je creer un socketPool (vector ou array de pollfd?)
