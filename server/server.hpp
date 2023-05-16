@@ -12,6 +12,7 @@
 #include <poll.h>
 #include <string.h>
 #include <map>
+#include <algorithm>
 
 class Channel;
 class User;
