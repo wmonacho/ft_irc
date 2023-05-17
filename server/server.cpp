@@ -215,6 +215,11 @@ std::map<std::string, Channel>  Server::getMap(void) {
     return this->_channels;
 }
 
+Channel              Server::getChannel(std::string channel_name)
+{
+    return (this->getMap().find(channel_name)->second);
+}
+
 const std::string	Server::getChannelUserUsername(std::string channel_name, User *user)
 {
 	return (this->getMap().find(channel_name)->second.getUserUsername(user));
@@ -246,6 +251,7 @@ bool	Server::getChannelUserAdmin(std::string channel_name, User *user)
 		return true;
 	return false;
 }
+
 
 User	Server::getUser(std::string user_nickname)
 {
