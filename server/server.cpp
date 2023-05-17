@@ -42,7 +42,7 @@ Server::Server(int port, std::string password) {
     _clientLen = sizeof(_clientAddr);
     _port = port;
     _password = password;
-    int on = -1;
+    int on = 1;
 
     _socketfd = socket(AF_INET, SOCK_STREAM, 0);
     if (_socketfd < 0) {
@@ -50,6 +50,9 @@ Server::Server(int port, std::string password) {
         exit(1);
     }
 
+    // Allow socket descriptor to be reuseable 
+    setsockopt(_socketfd, SOL_SOCKET,  SO_REUSEADDR, (char *)&on, sizeof(on));
+    // Set the socket to be non-blocking (the sockets created after will inherit)
     ioctl(_socketfd, FIONBIO, (char *)&on);
     setServAddr(_port);
 
@@ -58,7 +61,8 @@ Server::Server(int port, std::string password) {
 		exit(1);
     }
 
-    if (listen(_socketfd, 3) < 0) {
+    // ATTENTIOn au deuxieme arg (backlog queue)
+    if (listen(_socketfd, 6) < 0) {
 		std::cout << "Error : listen failed" << std::endl;
 		exit(1);
     }
@@ -69,23 +73,26 @@ Server::Server(int port, std::string password) {
 void    Server::startServer() {
 
     // We create a socket for client/server communication
-    int     newSocket;
-    int     recvReturn;
-    int     pollReturn;
+    int     newSocket, recvReturn, pollReturn;
     int     nfds = 1;
     int     currentSize = 0;
-    int     i = 0;
-    char    buffer[1024];
+    int     i;
     bool    closeConnection = false;
+    bool    endOfServer = false;
+    char    buffer[1024];
     struct pollfd fds[42];
 
     // std::cout << "Server got a connection from " << inet_ntoa(this->_clientAddr.sin_addr) << " on port " << this->_clientAddr.sin_port << std::endl;
     
+    // Initialize the array of pollfd structures
     memset(fds, 0, sizeof(fds));
+    // Set the first struct to the listenning socket
     fds[0].fd = this->_socketfd;
 	fds[0].events = POLLIN;
 
-    while (closeConnection == false) {
+    do {
+        // Thanks to poll we can check if something happened to a socket
+        std::cout << "NFDS : " << nfds << std::endl;
         pollReturn = poll(fds, nfds, -1);
         if (pollReturn < 0) {
             std::cerr << "Error: poll() failed" << std::endl;
@@ -95,56 +102,73 @@ void    Server::startServer() {
             std::cerr << "Error: poll() timed out" << std::endl;
             break ;
         }
+        // pollReturn indicates that something happened on one of our socket
+        // We set the currentSize to the number of sockets in our pollfd array
         currentSize = nfds;
-        std::cout << "Current Size --> " << nfds << std::endl;
         for (i = 0; i < currentSize; i++) {
-            std::cout << "loop [i] " << i << std::endl;
-            if (fds[i].revents != POLLIN) {
-                std::cerr << "Error" << std::endl;
-                closeConnection = true;
-            }
+            std::cout << "loop [i] = " << i << std::endl;
+            // if (fds[i].revents == 0) {
+            //     ;
+            // }
+            // revents should be POLLIN 
+            // if (fds[i].revents != POLLIN) {
+            //     std::cerr << "Error: revents: " << fds[i].revents << std::endl;
+            //     endOfServer = true;
+            //     break ;
+            // }
+            // If it is a connecting socket we accept the connection and add it to the socket pool 
             if (fds[i].fd == this->_socketfd) {
-                std::cout << "== New socket connection ==" << std::endl;
+                std::cerr << "== New socket connection ==" << std::endl;
                 do {
                     newSocket = accept(this->_socketfd, NULL, NULL);
-                    std::cout << "newSocket " << newSocket << std::endl;
+                    std::cout << "newSocket : " << newSocket << std::endl;
                     if (newSocket < 0) {
                         if (errno != EWOULDBLOCK) {
                             std::cerr << "Error: accept() failed" << std::endl;
-                            closeConnection = true;
+                            endOfServer = true;
                         }
+                        std::cout << "Socket is already connected" << std::endl;
                         break ;
                     }
-                    std::cout << "New connection accepted: socket " << nfds << std::endl;
                     fds[nfds].fd = newSocket;
                     fds[nfds].events = POLLIN;
+                    std::cerr << "Parse and send RPL_WELCOME" << nfds << std::endl;
+                    parseAndConnect(fds[nfds]);
                     nfds++;
                 } while (newSocket != -1);
             }
+            // It is already a connected socket so we try to receive the data
             else {
                 closeConnection = false;
-                while (true) {
-                    std::cout << "fds[i] --> " << i << std::endl;
+                do {
+                    std::cout << "Connected socket: fds[i] --> " << i << std::endl;
                     memset(buffer, 0, sizeof(buffer));
-                    recvReturn = recv(fds[i].fd, buffer, sizeof(buffer) - 1, 0);
+                    recvReturn = recv(fds[i].fd, buffer, sizeof(buffer), 0);
                     if (recvReturn < 0) {
                         if (errno != EWOULDBLOCK) {
                             std::cerr << "Error: recv() failed" << std::endl;
                             closeConnection = true;
                         }
+                        std::cout << "Breaking connection loop" << std::endl;
+                        break ;
+                    }
+                    if (recvReturn == 0) {
+                        std::cerr << "Connection closed" << std::endl;
+                        closeConnection = true;
                         break ;
                     }
                     std::cout << "===============" << std::endl;
                     std::cout << buffer << std::endl;
                     send(fds[i].fd, buffer, recvReturn, 0);
-                }
+                } while (true);
                 if (closeConnection) {
+                    std::cout << "Closing connection for socket " << i << std::endl;
                     close(fds[i].fd);
                     fds[i].fd = -1;
                 }
             }
         }
-    }
+    } while (endOfServer == false);
     for (int i = 0; i < nfds; i++) {
         if (fds[i].fd >= 0)
             close(fds[i].fd);
@@ -152,10 +176,36 @@ void    Server::startServer() {
     return ;
 }
 
-int Server::parseAndConnect(std::string buffer, int socket) {
+int Server::parseAndConnect(struct pollfd fds) {
 
     // We retrieve the information sent by the client to create the new user that connected to our server
     // and we send back the RPL_WELCOME
+
+    char    buff[1024];
+
+    // poll loop to get connection informations from the client and send RPL_WELCOME
+	memset(buff, 0, 1023);
+    while (1) {
+        int num_events = poll(&fds, 1, -1);
+		if (num_events == -1) {
+			std::cout << "Poll error" << std::endl;
+			exit(1);
+		}
+		else if (num_events == 0) {
+			std::cout << "Client closed the connection" << std::endl;
+		}
+		else {
+			if (fds.revents & POLLIN) {
+				recv(fds.fd, buff, 1023, 0);
+                if (buff != NULL)
+                    break ;
+            }
+        }
+	}
+
+    // Parse buff to get informations about the newly connected user and send RPL_WELCOME
+    std::string buffer = buff;
+
     std::cout << "= Parse and connect =" << std::endl;
 
     size_t nickPos = buffer.find("NICK");
@@ -182,7 +232,7 @@ int Server::parseAndConnect(std::string buffer, int socket) {
 
     std::string server_response = ":localhost 001 " + userName + " :Welcome to the Internet Relay Network " + nickName + "!" + userName + "@localhost\r\n";
     // std::cout << server_response << std::endl;
-    send(socket, server_response.c_str(), server_response.size(), 0);
+    send(fds.fd, server_response.c_str(), server_response.size(), 0);
     std::cout << "= end of parse / connection done =" << std::endl;
     return (0);
 }

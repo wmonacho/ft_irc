@@ -74,7 +74,7 @@ class Server {
 		bool	getChannelUserAdmin(std::string channel_name, User *user);
 		bool	userInChannel(std::string channel_name, const User *user);
 
-        int     parseAndConnect(std::string buffer, int socket);
+        int     parseAndConnect(struct pollfd fds);
         
 		User   		getUser(std::string user_nickname);
 		const User*	getChannelUser(std::string channel_name, const User *user);
