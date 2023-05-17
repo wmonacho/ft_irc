@@ -259,6 +259,38 @@ User	Server::getUser(std::string user_nickname)
 	return (user);
 }
 
+const User*  Server::getConstUser(std::string user_nickname)
+{
+	for (std::vector<User>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
+	{
+		if (it->getNickname() == user_nickname)
+			return (&*it);
+	}
+	//throw une exception si possible a la place de return cette merde
+	std::vector<User>::iterator it = this->_user_list.begin();
+	return (&*it);
+}
+
+//il faudra checker si le channel existe avant d'utiliser cette focntion
+std::map<const User*, ChannelAspects>	Server::getChannelUserList(std::string channel_name)
+{
+	//throw une exception si possible en checkant s'il existe
+	return (this->getMap().find(channel_name)->second.getUserList());
+}
+
+//il faudra checker si le user existe avant d'utiliser cette focntion
+const User* Server::getChannelUser(std::string channel_name, const User *user)
+{
+	//throw une exception si possible a la place de return cet merde
+	return (this->getMap().find(channel_name)->second.getUser(user));
+}
+
+const User* Server::getChannelUser(std::string channel_name, std::string user_name)
+{
+	//throw une exception si possible a la place de return cet merde
+	return (this->getMap().find(channel_name)->second.getUser(this->getConstUser(user_name)));
+}
+
 // *** SETTERS ***
 
 void    Server::setSocketfd(int fd) {
@@ -382,21 +414,6 @@ bool	Server::userInChannel(std::string channel_name, const User *user)
 	if (this->getMap().find(channel_name) == this->getMap().end())
 		return (false);
 	return (this->getMap().find(channel_name)->second.userInChannel(user));
-}
-
-
-//il faudra checker si le channel existe avant d'utiliser cette focntion
-std::map<const User*, ChannelAspects>	Server::getChannelUserList(std::string channel_name)
-{
-	//throw une exception si possible en checkant s'il existe
-	return (this->getMap().find(channel_name)->second.getUserList());
-}
-
-//il faudra checker si le user existe avant d'utiliser cette focntion
-const User* Server::getChannelUser(std::string channel_name, const User *user)
-{
-	//throw une exception si possible a la place de return cet merde
-	return (this->getMap().find(channel_name)->second.getUser(user));
 }
 
 bool	Server::channelAlreadyExist(std::string channel_name)

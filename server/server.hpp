@@ -60,37 +60,37 @@ class Server {
         void   	setServAddr(int port);
         void   	setValRead(ssize_t value);
         void   	setUserList(User new_user);
-        void	createRandomUsername( User user );
         void   	setPassword(std::string new_password);
         void   	setNewChannelInMap(const Channel& channel);
-		void	kickUserFromChannel(std::string channel_name, User user);
-        void    startServer();
+		void	setUserUsername(User user, std::string new_username);
+		void	setUserNickname(User user, std::string new_nickname);
+		void	setUserPassword(User user, std::string new_password);
+		void	setUserRealname(User user, std::string new_realname);
         
-		bool   	passwordAlreadyRegistred( void );
-        bool   	nickAlreadyExist( std::string new_nick );
-		bool 	channelAlreadyExist(std::string channel_name);
-        bool   	usernameAlreadyExist( std::string new_username );
-		bool	getChannelUserAdmin(std::string channel_name, User *user);
-		bool	userInChannel(std::string channel_name, const User *user);
-
-        int     parseAndConnect(std::string buffer, int socket);
         
+		bool		getChannelUserAdmin(std::string channel_name, User *user);
 		User   		getUser(std::string user_nickname);
+		const User*	getConstUser(std::string user_nickname);
 		const User*	getChannelUser(std::string channel_name, const User *user);
-		
+		const User* getChannelUser(std::string channel_name, std::string user_name);
 		std::string		        getChannelTopic(std::string	channel_name);
 		const std::string		getChannelUserUsername(std::string channel_name, User *user);
 		const std::string		getChannelUserRealname(std::string channel_name, User *user);
 		const std::string		getChannelUserPassword(std::string channel_name, User *user);
 		const std::string		getChannelUserNickname(std::string channel_name, User *user);
-		void					setUserUsername(User user, std::string new_username);
-		void					setUserNickname(User user, std::string new_nickname);
-		void					setUserPassword(User user, std::string new_password);
-		void					setUserRealname(User user, std::string new_realname);
-        
 		std::vector<User>                       getUserList(void);
         std::map<std::string, Channel>          getMap(void);
         std::map<const User*, ChannelAspects>   getChannelUserList(std::string channel_name);
+        
+		void	kickUserFromChannel(std::string channel_name, User user);
+        void	createRandomUsername( User user );
+		void    startServer();
+		bool   	passwordAlreadyRegistred( void );
+        bool   	nickAlreadyExist( std::string new_nick );
+		bool 	channelAlreadyExist(std::string channel_name);
+        bool   	usernameAlreadyExist( std::string new_username );
+		bool	userInChannel(std::string channel_name, const User *user);
+        int     parseAndConnect(std::string buffer, int socket);
     
 };
 
