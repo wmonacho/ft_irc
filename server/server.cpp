@@ -247,6 +247,19 @@ bool	Server::getChannelUserAdmin(std::string channel_name, User *user)
 	return false;
 }
 
+const User	Server::getConstUser(std::string user_nickname)
+{
+    for (std::vector<User>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
+    {
+        if (it->getNickname() == user_nickname)
+            return (*it);
+    }
+    //throw une exception si possible a la place de return cette merde
+    User user;
+    return (user);
+}
+
+
 User	Server::getUser(std::string user_nickname)
 {
 	for (std::vector<User>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
@@ -397,6 +410,12 @@ const User* Server::getChannelUser(std::string channel_name, const User *user)
 {
 	//throw une exception si possible a la place de return cet merde
 	return (this->getMap().find(channel_name)->second.getUser(user));
+}
+
+Channel Server::getChannel(std::string channel_name)
+{
+    std::map<std::string, Channel>::iterator it = this->getMap().find(channel_name);
+        return (it->second);
 }
 
 bool	Server::channelAlreadyExist(std::string channel_name)

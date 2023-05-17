@@ -16,6 +16,8 @@ Channel::Channel( void )
 {
 	this->_name = "";
 	this->_topic = "";
+       this->_password = "";
+       this ->_inviteOnly = false;
 }
 
 Channel::Channel( std::string name)
@@ -39,24 +41,43 @@ Channel::~Channel( void )
 
 }
 
-std::string	Channel::getName( void ) const
-{
-	return (this->_name);
-}
-
-void	Channel::setName( std::string new_string )
-{
-	this->_name = new_string;
-}
-
 std::string	Channel::getTopic( void ) const
 {
 	return (this->_topic);
 }
 
+std::string Channel::getPassword() const
+{
+    return (this->_password);
+}
+std::string	Channel::getName( void ) const
+{
+    return (this->_name);
+}
+
+bool    Channel::getInviteOnly() const
+{
+    return (this->_inviteOnly);
+}
+
 void	Channel::setTopic( std::string new_string )
 {
 	this->_topic = new_string;
+}
+
+void	Channel::setName( std::string new_string )
+{
+    this->_name = new_string;
+}
+
+void    Channel::setInviteOnly(bool i)
+{
+    this->_inviteOnly = i;
+}
+
+void    Channel::setPassword(std::string pass)
+{
+    this->_password = pass;
 }
 
 void	Channel::setUserList(const User * new_user, ChannelAspects channel_aspects)

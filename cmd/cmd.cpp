@@ -128,11 +128,10 @@ bool    cmd::parseUser(std::string str, Server server)
     return (true);
 }
 
+
 bool    cmd::parseMode(std::string str, Server server, User *user)
 {
-	(void) user;
-    std::cout << "Mode cmd found" << std::endl;
-    std::cout << "str: " << str << std::endl;
+    //mode i, t, k, o
     std::vector<std::string> splitArg = splitString(str, " ");
 	//MODE <cible> <mode> <argument(s)>
     if (splitArg.size() < 3)
@@ -144,48 +143,47 @@ bool    cmd::parseMode(std::string str, Server server, User *user)
     //check si # devant la cible et si le channel existe
 	if (splitArg[1][0] != '#' || server.getMap().find(&splitArg[1][1]) == server.getMap().end())
 	{
-		std::cerr << "MODE: can't find this channel " << std::endl;
-        return (false);	
+           std::cerr << "MODE: can't find this channel " << std::endl;
+           return (false);
 	}
 	//check si le User est bien dans la userlist du channel
 	if (!server.userInChannel(&splitArg[1][1], user))
-			return false;
+           return false;
     //check si + ou - devant le mode
-	if (splitArg[2][0] != '-' && splitArg[2][0] != '+')
+	if ((splitArg[2][0] != '-' && splitArg[2][0] != '+') || splitArg[2].size() != 2)
 	{
-		std::cerr << "MODE: no chan modes " << std::endl;
-        return (false);	
+           std::cerr << "MODE: no chan modes " << std::endl;
+           return (false);
 	}
     //check si le mode existe (tout depend de ceux que l'on prend)
-	std::string modes = "iklmnv";
+	std::string modes = "ikto";
 	if (modes.find(&splitArg[2][1]) == std::string::npos)
 	{
-		std::cerr << "MODE: unknow mode " << std::endl;
-        return (false);	
+           std::cerr << "MODE: unknow mode " << std::endl;
+           return (false);
 	}
+
+       Channel chan = server.getChannel(splitArg[1]);
 	//execute les modes +
 	for (unsigned int i = 1; splitArg[2][0] == '+' && i < splitArg[2].size(); i++)
 	{
 		switch(splitArg[2][i] + 48)
 		{
-			case 105:
-				//execute mode i
-				break;
-			case 107:
-				//execute mode k
-				break;
-			case 108:
-				//execute mode l
-				break;
-			case 109:
-				//execute mode m
-				break;
-			case 110:
-				//execute mode n
-				break;
-			case 118:
-				//execute mode v
-				break;
+                  case 105:
+                      //execute mode i
+                      chan.setInviteOnly(true);
+                      break;
+                  case 107:
+                      //execute mode k
+                      chan.setPassword(splitArg[3]);
+                      break;
+                  case 111:
+                      //execute mode o
+                      const User* u = server.getChannelUser(splitArg[1], &server.getConstUser(splitArg[3]));
+                      break;
+                  case 116:
+                      //execute mode t
+                      break;
 		}
 	}
 	//execute les modes -
@@ -193,39 +191,20 @@ bool    cmd::parseMode(std::string str, Server server, User *user)
 	{
 		switch(splitArg[2][i] + 48)
 		{
-			case 105:
-				//execute mode i
-				break;
-			case 107:
-				//execute mode k
-				break;
-			case 108:
-				//execute mode l
-				break;
-			case 109:
-				//execute mode m
-				break;
-			case 110:
-				//execute mode n
-				break;
-			case 118:
-				//execute mode v
-				break;
+                  case 105:
+                      //execute mode i
+                      break;
+                  case 107:
+                      //execute mode k
+                      break;
+                  case 111:
+                      //execute mode o
+                      break;
+                  case 116:
+                      //execute mode t
+                      break;
 		}
 	}
-    /*      ERR_NEEDMOREPARAMS              ERR_KEYSET
-            ERR_NOCHANMODES                 ERR_CHANOPRIVSNEEDED
-            ERR_USERNOTINCHANNEL            ERR_UNKNOWNMODE */
-	// executer les differents modes
-    /*  mode a faire :      +i invite only
-                            +m seulent les users admins peuvent parler dans le channel
-                            +v donne le droit a un user de parler meme si +m
-                            +n empeche les users externe de rejoinde le channel
-						   	+l definit une limite de user
-                            +k definit un mdp pour le channel
-							+ bien d'autres... a voir
-
-    */
    return (true);
 }
 
