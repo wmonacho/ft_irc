@@ -359,6 +359,8 @@ void	Server::setUserRealname(User user, std::string new_realname)
 	user.setRealname(new_realname);
 }
 
+//void	Server::setChannelUserAdmin
+
 /* SERVER FUNCTIONS */
 
 bool    Server::passwordAlreadyRegistred( void )

@@ -166,6 +166,11 @@ bool    cmd::parseMode(std::string str, Server server, User *user)
 	//execute les modes +
 	for (unsigned int i = 1; splitArg[2][0] == '+' && i < splitArg[2].size(); i++)
 	{
+		Channel channel;
+
+		const User* u = server.getChannelUser(splitArg[1], splitArg[3]);
+		std::map<const User*, ChannelAspects> channel_list = channel.getUserList();
+		channel_list[u].setAdmin(true);
 		switch(splitArg[2][i] + 48)
 		{
 			case 105:
