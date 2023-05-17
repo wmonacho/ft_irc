@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 15:54:01 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/11 16:00:50 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/05/17 15:58:13 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -44,7 +44,7 @@ std::string	User::getNickname( void ) const
 	return (this->_nickname);
 }
 
-const std::string	User::getUsername( void ) const
+std::string	User::getUsername( void ) const
 {
 	return (this->_username);
 }

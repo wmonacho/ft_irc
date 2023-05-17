@@ -164,7 +164,10 @@ bool    cmd::parseMode(std::string str, Server server, User *user)
 	}
 
        Channel chan = server.getChannel(splitArg[1]);
-	//execute les modes +
+       const User* u = server.getChannelUser(splitArg[1], splitArg[3]);
+       std::map<const User*, ChannelAspects> ChannelUserlist = chan.getUserList();
+    //execute les modes +
+    //il restera a modifier les fonctions affectees par les modes
 	for (unsigned int i = 1; splitArg[2][0] == '+' && i < splitArg[2].size(); i++)
 	{
 		switch(splitArg[2][i] + 48)
@@ -179,10 +182,11 @@ bool    cmd::parseMode(std::string str, Server server, User *user)
                       break;
                   case 111:
                       //execute mode o
-                      const User* u = server.getChannelUser(splitArg[1], &server.getConstUser(splitArg[3]));
+                      ChannelUserlist[u].setAdmin(true);
                       break;
                   case 116:
                       //execute mode t
+                      chan.setTopicAdmin(true);
                       break;
 		}
 	}
@@ -193,15 +197,18 @@ bool    cmd::parseMode(std::string str, Server server, User *user)
 		{
                   case 105:
                       //execute mode i
+                      chan.setInviteOnly(false);
                       break;
                   case 107:
                       //execute mode k
+                      chan.setPassword("");
                       break;
                   case 111:
                       //execute mode o
+                      ChannelUserlist[u].setAdmin(false);
                       break;
                   case 116:
-                      //execute mode t
+                      chan.setTopicAdmin(false);
                       break;
 		}
 	}
