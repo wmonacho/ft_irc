@@ -181,7 +181,6 @@ bool    cmd::parseMode(std::string str, Server server, User *user)
 				//execute mode m
 				break;
 			case 110:
-				//execute mode n
 				break;
 			case 118:
 				//execute mode v
