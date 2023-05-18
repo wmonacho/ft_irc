@@ -1,9 +1,54 @@
 #include "server.hpp"
-#include <iomanip>
 
-// *** CONSTRUCTORS AND DESTRUCTOR ***
+/* *************************************** */
+/* *********** CANONICAL CLASS *********** */
+/* *************************************** */
 
 Server::Server() {}
+
+// This Server constructor sets up a listening socket
+Server::Server(int port, std::string password) {
+
+    // We create and initiate a new server, a listening socket is created and he's listening for connection
+    _servLen = sizeof(_servAddr);
+    _clientLen = sizeof(_clientAddr);
+    _port = port;
+    _password = password;
+    int on = 1;
+
+    _socketfd = socket(AF_INET, SOCK_STREAM, 0);
+    if (_socketfd < 0) {
+        std::cout << "Error: socket creation failed" << std::endl;
+        exit(1);
+    }
+
+    // Allow socket descriptor to be reuseable 
+    if (setsockopt(_socketfd, SOL_SOCKET,  SO_REUSEADDR, (char *)&on, sizeof(on)) < 0) {
+        std::cerr << "Error: setsockopt() failed" << std::endl;
+        exit(1);
+    }
+
+    // Set the socket to be non-blocking (the sockets created after will inherit)
+    if (ioctl(_socketfd, FIONBIO, (char *)&on) < 0) {
+        std::cerr << "Error: ioctl() failed" << std::endl;
+        exit(1);
+    } 
+
+    setServAddr(_port);
+
+    if (bind(_socketfd, (struct sockaddr*)&_servAddr, sizeof(_servAddr)) < 0) {
+        std::cout << "Error : socket binding failed" << std::endl;
+		exit(1);
+    }
+
+    // ATTENTION au deuxieme arg (backlog queue)
+    if (listen(_socketfd, 6) < 0) {
+		std::cout << "Error : listen failed" << std::endl;
+		exit(1);
+    }
+
+    return ;
+}
 
 Server::Server(const Server& obj) {
 
@@ -35,131 +80,9 @@ Server& Server::operator=(const Server& obj) {
 
 Server::~Server() {}
 
-Server::Server(int port, std::string password) {
-
-    // We create and initiate a new server, a listening socket is created and he's listening for connection
-    _servLen = sizeof(_servAddr);
-    _clientLen = sizeof(_clientAddr);
-    _port = port;
-    _password = password;
-
-    _socketfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (_socketfd < 0) {
-        std::cout << "Error: socket creation failed" << std::endl;
-        exit(1);
-    }
-
-    setServAddr(_port);
-
-    if (bind(_socketfd, (struct sockaddr*)&_servAddr, sizeof(_servAddr)) < 0) {
-        std::cout << "Error : socket binding failed" << std::endl;
-		exit(1);
-    }
-
-    if (listen(_socketfd, 3) < 0) {
-		std::cout << "Error : listen failed" << std::endl;
-		exit(1);
-    }
-
-    return ;
-}
-
-void    Server::startServer() {
-
-    // We create a socket for client/server communication
-    int     newSocket;
-    char    buffer[1024];
-    struct pollfd fds;
-
-    // accept() will create a new socket and give a fd related to it and write the information of the remote_host in the struct we give
-    newSocket = accept(this->_socketfd, (struct sockaddr*)&this->_clientAddr, &this->_clientLen);
-    if (newSocket < 0) {
-		std::cout << "Error : new socket creation failed" << std::endl;
-		exit(1);
-    }
-
-    std::cout << "Server got a connection from " << inet_ntoa(this->_clientAddr.sin_addr) << " on port " << this->_clientAddr.sin_port << std::endl;
-
-    fds.fd = newSocket;
-	fds.events = POLLIN;
-
-    // Loop of interaction 
-    int connection_done = 0;
-	while (1) {
-		int num_events = poll(&fds, 1, -1); // Wait indefinitely for events
-		if (num_events == -1) {
-			// Handle poll error
-			std::cout << "Poll error" << std::endl;
-			close(newSocket);
-			close(this->_socketfd);
-			exit(1);
-		}
-		else if (num_events == 0) {
-			// No events occurred before timeout
-			std::cout << "Client closed the connection" << std::endl;
-		}
-		else {
-			// Check if the client socket has data available for reading
-			if (fds.revents & POLLIN) {
-				// Handle incoming messages from the client
-                std::cout << "===============================" << std::endl;
-				memset(buffer, 0, 1023);
-				if (recv(newSocket, buffer, 1023, 0) > 0) {
-					std::cout << buffer;
-                    // We get here only for the first loop (new user joining the server)
-                    if (connection_done == 0) {
-                        std::string buffer_str = buffer;
-                        parseAndConnect(buffer_str, newSocket);
-                    }
-
-                    // THIS IS WHERE WE WILL HANDLE THE COMMAND AFTER CONNECTION AND USER CREATION
-                    
-                    connection_done = 1;
-                }
-			}
-		}
-	}
-
-    return ;
-}
-
-int Server::parseAndConnect(std::string buffer, int socket) {
-
-    // We retrieve the information sent by the client to create the new user that connected to our server
-    // and we send back the RPL_WELCOME
-    std::cout << "= Parse and connect =" << std::endl;
-
-    size_t nickPos = buffer.find("NICK");
-    size_t userPos = buffer.find("USER");
-    if (nickPos == std::string::npos || userPos == std::string::npos) {
-        std::cout << "Error while retrieving connection informations" << std::endl;
-        exit(1);
-    }
-    nickPos += 5;
-    userPos += 5;
-    std::string nickName = buffer.substr(nickPos);
-    size_t limiter = nickName.find("\r\n");
-    nickName = nickName.substr(0, limiter);
-    std::cout << nickName << std::endl;
-    std::string userName = buffer.substr(userPos, nickName.size());
-    std::cout << userName << std::endl;
-
-    // We create a new user and set his nickname and realname thanks to the message the client sent
-    User new_user;
-    new_user.setNickname(nickName);
-    new_user.setRealname(userName);
-    // we add the new user that connected to the server to the USER_LIST of the server
-    this->setUserList(new_user);
-
-    std::string server_response = ":localhost 001 " + userName + " :Welcome to the Internet Relay Network " + nickName + "!" + userName + "@localhost\r\n";
-    // std::cout << server_response << std::endl;
-    send(socket, server_response.c_str(), server_response.size(), 0);
-    std::cout << "= end of parse / connection done =" << std::endl;
-    return (0);
-}
-
-
-// *** GETTERS ***
+/* *************************************** */
+/* *************** GETTERS *************** */
+/* *************************************** */
 
 int Server::getSocketfd(void) {
 
@@ -252,7 +175,6 @@ bool	Server::getChannelUserAdmin(std::string channel_name, User *user)
 	return false;
 }
 
-
 User	Server::getUser(std::string user_nickname)
 {
 	for (std::vector<User>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
@@ -297,7 +219,9 @@ const User* Server::getChannelUser(std::string channel_name, std::string user_na
 	return (this->getMap().find(channel_name)->second.getUser(this->getConstUser(user_name)));
 }
 
-// *** SETTERS ***
+/* *************************************** */
+/* *************** SETTERS *************** */
+/* *************************************** */
 
 void    Server::setSocketfd(int fd) {
 
