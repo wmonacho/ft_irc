@@ -5,6 +5,7 @@ NAME =		ircserv
 # FILES ==============================================================
 FILES =		main.cpp							\
 			server/server.cpp					\
+			server/socketManager.cpp			\
 			channel/Channel.cpp					\
 			channel_aspects/ChannelAspects.cpp	\
 			user/User.cpp						\

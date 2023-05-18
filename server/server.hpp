@@ -74,7 +74,14 @@ class Server {
 		bool	getChannelUserAdmin(std::string channel_name, User *user);
 		bool	userInChannel(std::string channel_name, const User *user);
 
-        int     parseAndConnect(struct pollfd fds);
+
+        // Socket connection and user registration for "socketManager.cpp"
+        int             verifyClientAndServerResponse(struct pollfd fds);
+        int             acceptNewConnection(struct pollfd *fds, int nfds);
+        int             retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bool closeConnection);
+        std::string     createServerResponseForConnection(std::string buffer);
+        std::string     getClientInformationsOnConnection(struct pollfd fds);
+        void            createNewUserAtConnection(std::string nickname, std::string username);
         
 		User   		getUser(std::string user_nickname);
 		const User*	getChannelUser(std::string channel_name, const User *user);
