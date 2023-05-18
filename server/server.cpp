@@ -1,5 +1,4 @@
 #include "server.hpp"
-#include <iomanip>
 
 /* *************************************** */
 /* *********** CANONICAL CLASS *********** */
@@ -7,6 +6,7 @@
 
 Server::Server() {}
 
+// This Server constructor sets up a listening socket
 Server::Server(int port, std::string password) {
 
     // We create and initiate a new server, a listening socket is created and he's listening for connection
@@ -23,9 +23,16 @@ Server::Server(int port, std::string password) {
     }
 
     // Allow socket descriptor to be reuseable 
-    setsockopt(_socketfd, SOL_SOCKET,  SO_REUSEADDR, (char *)&on, sizeof(on));
+    if (setsockopt(_socketfd, SOL_SOCKET,  SO_REUSEADDR, (char *)&on, sizeof(on)) < 0) {
+        std::cerr << "Error: setsockopt() failed" << std::endl;
+        exit(1);
+    }
+
     // Set the socket to be non-blocking (the sockets created after will inherit)
-    ioctl(_socketfd, FIONBIO, (char *)&on);
+    if (ioctl(_socketfd, FIONBIO, (char *)&on) < 0) {
+        std::cerr << "Error: ioctl() failed" << std::endl;
+        exit(1);
+    } 
 
     setServAddr(_port);
 

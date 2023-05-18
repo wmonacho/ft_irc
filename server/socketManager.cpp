@@ -197,6 +197,9 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
         }
         std::cout << "===============" << std::endl;
         std::cout << buffer << std::endl;
+
+        // HANDLE CLIENT MESSAGE HERE
+
         // We send the message back to the client (TESTING PURPOSE)
         send(fds[socketID].fd, buffer, recvReturn, 0);
     } while (true);
