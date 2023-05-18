@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 15:54:00 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/10 17:27:19 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/05/17 15:58:00 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -35,14 +35,14 @@ class User
 		void		setNickname( std::string new_string );
 		void		setAdmin( int admin);
 		
-		bool	operator==(const User& other) const;
-		bool	getAdmin( void ) const;
+		bool	operator==(const User* other) const;
 		
-		std::string	getEmailaddress( void );
-		std::string	getRealname( void ) const;
-		std::string	getPassword( void ) const;
-		std::string	getUsername( void ) const;
-		std::string	getNickname( void ) const;
+		bool				getAdmin( void ) const;
+		std::string			getEmailaddress( void );
+		std::string			getRealname( void ) const;
+		std::string			getPassword( void ) const;
+		std::string			getUsername( void ) const;
+		std::string			getNickname( void ) const;
 };
 
 

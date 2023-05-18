@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 15:54:01 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/11 16:00:50 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/05/17 15:58:13 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -79,7 +79,7 @@ void	User::setRealname( std::string new_string )
 	this->_realname = new_string;
 }
 
-bool User::operator==(const User& other) const
+bool User::operator==(const User* other) const
 {
-	return this->_nickname == other._nickname;
+	return this->_nickname == other->_nickname;
 }

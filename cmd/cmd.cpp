@@ -128,11 +128,10 @@ bool    cmd::parseUser(std::string str, Server server)
     return (true);
 }
 
+
 bool    cmd::parseMode(std::string str, Server server, User *user)
 {
-	(void) user;
-    std::cout << "Mode cmd found" << std::endl;
-    std::cout << "str: " << str << std::endl;
+    //mode i, t, k, o
     std::vector<std::string> splitArg = splitString(str, " ");
 	//MODE <cible> <mode> <argument(s)>
     if (splitArg.size() < 3)
@@ -144,48 +143,51 @@ bool    cmd::parseMode(std::string str, Server server, User *user)
     //check si # devant la cible et si le channel existe
 	if (splitArg[1][0] != '#' || server.getMap().find(&splitArg[1][1]) == server.getMap().end())
 	{
-		std::cerr << "MODE: can't find this channel " << std::endl;
-        return (false);	
+           std::cerr << "MODE: can't find this channel " << std::endl;
+           return (false);
 	}
 	//check si le User est bien dans la userlist du channel
 	if (!server.userInChannel(&splitArg[1][1], user))
-			return false;
+           return false;
     //check si + ou - devant le mode
-	if (splitArg[2][0] != '-' && splitArg[2][0] != '+')
+	if ((splitArg[2][0] != '-' && splitArg[2][0] != '+') || splitArg[2].size() != 2)
 	{
-		std::cerr << "MODE: no chan modes " << std::endl;
-        return (false);	
+           std::cerr << "MODE: no chan modes " << std::endl;
+           return (false);
 	}
     //check si le mode existe (tout depend de ceux que l'on prend)
-	std::string modes = "iklmnv";
+	std::string modes = "ikto";
 	if (modes.find(&splitArg[2][1]) == std::string::npos)
 	{
-		std::cerr << "MODE: unknow mode " << std::endl;
-        return (false);	
+           std::cerr << "MODE: unknow mode " << std::endl;
+           return (false);
 	}
-	//execute les modes +
+
+       Channel chan = server.getChannel(splitArg[1]);
+       const User* u = server.getChannelUser(splitArg[1], splitArg[3]);
+       std::map<const User*, ChannelAspects> ChannelUserlist = chan.getUserList();
+    //execute les modes +
+    //il restera a modifier les fonctions affectees par les modes
 	for (unsigned int i = 1; splitArg[2][0] == '+' && i < splitArg[2].size(); i++)
 	{
 		switch(splitArg[2][i] + 48)
 		{
-			case 105:
-				//execute mode i
-				break;
-			case 107:
-				//execute mode k
-				break;
-			case 108:
-				//execute mode l
-				break;
-			case 109:
-				//execute mode m
-				break;
-			case 110:
-				//execute mode n
-				break;
-			case 118:
-				//execute mode v
-				break;
+                  case 105:
+                      //execute mode i
+                      chan.setInviteOnly(true);
+                      break;
+                  case 107:
+                      //execute mode k
+                      chan.setPassword(splitArg[3]);
+                      break;
+                  case 111:
+                      //execute mode o
+                      ChannelUserlist[u].setAdmin(true);
+                      break;
+                  case 116:
+                      //execute mode t
+                      chan.setTopicAdmin(true);
+                      break;
 		}
 	}
 	//execute les modes -
@@ -193,39 +195,23 @@ bool    cmd::parseMode(std::string str, Server server, User *user)
 	{
 		switch(splitArg[2][i] + 48)
 		{
-			case 105:
-				//execute mode i
-				break;
-			case 107:
-				//execute mode k
-				break;
-			case 108:
-				//execute mode l
-				break;
-			case 109:
-				//execute mode m
-				break;
-			case 110:
-				//execute mode n
-				break;
-			case 118:
-				//execute mode v
-				break;
+                  case 105:
+                      //execute mode i
+                      chan.setInviteOnly(false);
+                      break;
+                  case 107:
+                      //execute mode k
+                      chan.setPassword("");
+                      break;
+                  case 111:
+                      //execute mode o
+                      ChannelUserlist[u].setAdmin(false);
+                      break;
+                  case 116:
+                      chan.setTopicAdmin(false);
+                      break;
 		}
 	}
-    /*      ERR_NEEDMOREPARAMS              ERR_KEYSET
-            ERR_NOCHANMODES                 ERR_CHANOPRIVSNEEDED
-            ERR_USERNOTINCHANNEL            ERR_UNKNOWNMODE */
-	// executer les differents modes
-    /*  mode a faire :      +i invite only
-                            +m seulent les users admins peuvent parler dans le channel
-                            +v donne le droit a un user de parler meme si +m
-                            +n empeche les users externe de rejoinde le channel
-						   	+l definit une limite de user
-                            +k definit un mdp pour le channel
-							+ bien d'autres... a voir
-
-    */
    return (true);
 }
 
@@ -327,21 +313,121 @@ bool    cmd::parseTopic(std::string str, Server server, User *user)
     return true;
 }
 
-/*bool    cmd::parseNames(std::string str)
+bool    cmd::parseNames(std::string str, Server server)
 {
-    std::cout << "Names cmd found" << std::endl;
-    std::cout << "str: " << str << std::endl;
+    std::vector<std::string> arg = splitString(str, " ");
 
+    std::map<std::string, Channel> map = server.getMap();
+    std::vector<User> copy_list_user = server.getUserList();
+
+    if (arg.size() == 1)
+    {
+        for (std::map<std::string, Channel>::iterator it = map.begin(); it != map.end(); it++)
+        {
+            //checkez si channel secrete ou pas
+            std::cout << "Channel: " << it->first << std::endl;
+            std::map<const User*, ChannelAspects> userlist = it->second.getUserList();
+            for (std::map<const User*, ChannelAspects>::iterator itUser = userlist.begin(); itUser != userlist.end(); itUser++)
+            {
+                std::cout << itUser->first->getUsername() << std::endl;
+                std::vector<User>::iterator iter = std::find(copy_list_user.begin(), copy_list_user.end(), itUser->first);
+                if (iter != copy_list_user.end())
+                    copy_list_user.erase(iter);
+            }
+        }
+        for (std::vector<User>::iterator cpyIt = copy_list_user.begin(); cpyIt != copy_list_user.end(); cpyIt++)
+            std::cout << (*cpyIt).getUsername() << std::endl;
+    }
+    else
+    {
+        std::vector<std::string> chan = splitString(arg[1], ",");
+        //print les channels passes en parametre ainsi que leurs users respectifs tout en faisant attention
+        //a ne pas afficher les utilisateurs qui ne sont pas visibles.
+    }
+    //petite boucle while pour faire les checks
+    return true;
 }
 
-bool    cmd::parseList(std::string str)
+bool    cmd::parseList(std::string str, Server server)
 {
-    std::cout << "List cmd found" << std::endl;
-    std::cout << "str: " << str << std::endl;
+    std::vector<std::string> arg = splitString(str, " ");
+    std::map<std::string, Channel> map = server.getMap();
+    std::vector<std::string> chans;
+
+    if (arg.size() == 1)
+    {
+        for (std::map<std::string, Channel>::iterator it = map.begin(); it != map.end(); it++)
+        {
+            std::cout << "Channel: " << it->second.getName() << std::endl;
+            std::cout << " - topic: " << it->second.getTopic() << std::endl;
+            std::cout << std::endl;
+        }
+        return true;
+    }
+    arg.erase(arg.begin());
+    chans = splitString(arg[1], ",");
+    for (std::vector<std::string>::iterator it = arg.begin(); it != arg.end(); it++)
+    {
+        std::map<std::string, Channel>::iterator itMap = map.begin();
+        int isValid = 0;
+        while (itMap != map.end())
+        {
+            if (itMap->second.getName() == *it)
+            {
+                std::cout << "Channel: " << itMap->second.getName() << std::endl;
+                std::cout << " - topic: " << itMap->second.getTopic() << std::endl;
+                isValid = 1;
+            }
+            else
+                itMap++;
+        }
+        if (isValid == 0)
+        {
+            std::cerr << "Channel: " << itMap->second.getName() << "doesn't exist."  << std::endl;
+            return false;
+        }
+    }
+    return true;
 }
 
-bool    cmd::parseInvite(std::string str)
+bool    cmd::parseInvite(std::string str, Server server)
 {
+    std::vector<std::string> arg = splitString(str, " ");
+
+    if (arg.size() != 3)
+        return false;
+    std::string nick = arg[1];
+    std::string chan = arg[2];
+    std::map<std::string, Channel> map = server.getMap();
+    int chanFound = 0;
+    for (std::map<std::string, Channel>::iterator it = map.begin(); it != map.end(); it++)
+    {
+        if (it->first == chan)
+        {
+            chanFound = 1;
+            break ;
+        }
+    }
+    if (chanFound == 0)
+        return false;
+    if (server.nickAlreadyExist(nick) == false)
+    {
+        std::cerr << "ERR_NOSUCHNICK" << std::endl;
+        return false;
+    }
+
+    //recuperer le chan grace au nick
+    //verifier que l'user soit bien dans le channel
+
+    //channel pas valide = pas d erreur
+    //seulement les users du channel peuvent inviter des gens
+    //si le channel a le flag invite only set, seulement les channels operators peuvent inviter
+
+    //checker si l'user est deja sur le chan
+    return true;
+}
+
+/*bool    cmd::parseKick(std::string str)
     std::cout << "Invite cmd found" << std::endl;
     std::cout << "str: " << str << std::endl;
 }*/
@@ -473,8 +559,8 @@ void cmd::whichCmd(std::string cmd, std::string str, Server server, User *user)
 
         /*case 5:
             parseJoin(str, server, user);
-            break;
-        */
+            break;*/
+
         case 6:
 
             if (parsePart(str, server, user) == false)
@@ -493,17 +579,21 @@ void cmd::whichCmd(std::string cmd, std::string str, Server server, User *user)
             }
             break;
 
-        /*case 8:
-            parseNames(str);
+        case 8:
+            parseNames(str, server);
             break;
 
         case 9:
-            parseList(str);
+            parseList(str, server);
             break;
 
         case 10:
-             parseInvite(str);
+             parseInvite(str, server);
              break;
+
+
+        /*case 11:
+            parseKick(str);
 
         case 11:
             parseKick(str, server, user);
