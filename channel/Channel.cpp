@@ -16,6 +16,8 @@ Channel::Channel( void )
 {
 	this->_name = "";
 	this->_topic = "";
+       this->_password = "";
+       this ->_inviteOnly = false;
 }
 
 Channel::Channel( std::string name)
@@ -39,17 +41,38 @@ Channel::~Channel( void )
 
 }
 
-
-// GETTER
-
-std::string	Channel::getName( void ) const
+std::string Channel::getTopic( void ) const
 {
-	return (this->_name);
+    return (this->_topic);
 }
 
-std::string	Channel::getTopic( void ) const
+std::string Channel::getPassword() const
 {
-	return (this->_topic);
+    return (this->_password);
+}
+std::string	Channel::getName( void ) const
+{
+    return (this->_name);
+}
+
+bool    Channel::getInviteOnly() const
+{
+    return (this->_inviteOnly);
+}
+
+void    Channel::setInviteOnly(bool i)
+{
+    this->_inviteOnly = i;
+}
+
+void    Channel::setTopicAdmin(bool i)
+{
+    this->_topicAdmin = i;
+}
+
+void    Channel::setPassword(std::string pass)
+{
+    this->_password = pass;
 }
 
 std::map<const User*, ChannelAspects>	Channel::getUserList( void ) const
@@ -92,7 +115,6 @@ const std::string		Channel::getUserRealname(User *user)
 }
 
 // SETTER
-
 void	Channel::setName( std::string new_string )
 {
 	this->_name = new_string;
@@ -108,9 +130,7 @@ void	Channel::setUserList(const User * new_user, ChannelAspects channel_aspects)
 	this->_channel_user_list[new_user] = channel_aspects;
 }
 
-
 // CHANNEL FUNCTIONS
-
 bool	Channel::channelIsSecret( void )
 {
 	if (this->_secret)

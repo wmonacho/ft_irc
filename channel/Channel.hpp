@@ -25,24 +25,35 @@ class Channel
 	private :
 		std::string	_name;
 		std::string	_topic;
+              std::string   _password;
 		bool		_secret;
+              bool          _inviteOnly;
+              bool          _topicAdmin;
 		std::map<const User*, ChannelAspects> _channel_user_list;
 	public :
 		Channel();
 		Channel( std::string name);
-        Channel(const Channel& obj);
+              Channel(const Channel& obj);
         Channel& operator=(const Channel& obj);
         ~Channel();
 		
-		void						setUserList(const User * new_user, ChannelAspects channel_aspects);
-		void						setName( std::string new_string );
-		void						setTopic( std::string new_string );
+		void	setUserList(const User * new_user, ChannelAspects channel_aspects);
+		void	setName( std::string new_string );
+              void   setPassword(std::string pass);
+		void	setTopic( std::string new_string );
+              void   setInviteOnly(bool i);
+              void   setTopicAdmin(bool i);
+		
+		bool	getUserAdmin(User *user);
 
-		std::string					getName( void ) const;
-		std::string					getTopic( void ) const;
-		const User* 				getUser(const User *user);
-		bool						getUserAdmin(User *user);
-		const std::string			getUserUsername(User *user);
+		const User* 	getUser(const User *user);
+		
+		std::string			getName( void ) const;
+		std::string			getTopic( void ) const;
+              bool			       getInviteOnly( void ) const;
+              std::string                 getPassword(void) const;
+
+              const std::string			getUserUsername(User *user);
 		const std::string			getUserRealname(User *user);
 		const std::string			getUserPassword(User *user);
 		const std::string			getUserNickname(User *user);
