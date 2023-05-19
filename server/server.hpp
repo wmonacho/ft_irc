@@ -91,7 +91,6 @@ class Server {
         bool   	usernameAlreadyExist( std::string new_username );
 		bool	userInChannel(std::string channel_name, const User *user);
         int     parseAndConnect(std::string buffer, int socket);
-    
 };
 
 #endif
