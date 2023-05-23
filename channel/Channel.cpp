@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:31:22 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/17 15:54:35 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/05/23 16:08:38 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,4 +159,9 @@ bool	Channel::userInChannel(const User *user)
 	if (this->getUserList().find(user) == this->getUserList().end())
 		return (false);
 	return true;
+}
+
+void	Channel::kickUserFromChannel(const User *user)
+{
+	this->_channel_user_list.erase(this->getUserList().find(user)->first);
 }
