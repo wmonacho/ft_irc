@@ -186,21 +186,20 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
     int     recvReturn;
 
     closeConnection = false;
-    // do {
         std::cout << "receive data from socket[" << socketID << "]" << std::endl;
         memset(buffer, 0, sizeof(buffer));
-        recvReturn = recv(fds[socketID].fd, buffer, sizeof(buffer), 0);
+        recvReturn = recv(fds[socketID].fd, buffer, sizeof(buffer), MSG_DONTWAIT);
         if (recvReturn < 0) {
             if (errno != EWOULDBLOCK) {
                 std::cerr << "Error: recv() failed" << std::endl;
                 closeConnection = true;
             }
-            return closeConnection; // break ;
+            return (closeConnection);
         }
         if (recvReturn == 0) {
             std::cerr << "Connection closed" << std::endl;
             closeConnection = true;
-            return closeConnection; // break ;
+            return (closeConnection);
         }
         std::cout << "** =============== **" << std::endl;
         // Affichage sur le serveur
@@ -210,7 +209,6 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
 
         // We send the message back to the client (TESTING PURPOSE)
         send(fds[socketID].fd, buffer, recvReturn, 0);
-    // } while (true);
 
     return (closeConnection);
 }
