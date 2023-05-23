@@ -20,7 +20,7 @@ void    Server::startServer() {
     // This is the main loop which implements poll() : we detect if the socket is connecting or connected and act in consequence
     do {
         std::cout << "NFDS : " << nfds << std::endl;
-        pollReturn = poll(fds, nfds, -1);
+        pollReturn = poll(fds, nfds, (1 * 60 * 1000)); // 1 min timeout
         if (pollReturn < 0) {
             std::cerr << "Error: poll() failed" << std::endl;
             break ;
@@ -32,7 +32,7 @@ void    Server::startServer() {
         // We set the currentSize to the number of sockets in our pollfd array
         currentSize = nfds;
         for (socketID = 0; socketID < currentSize; socketID++) {
-            std::cout << "loop [socketID] = " << socketID << std::endl;
+            std::cout << "SOCKETID ==> " << socketID << std::endl;
             // revents should be POLLIN 
             // if (fds[i].revents != POLLIN) {
             //     std::cerr << "Error: revents: " << fds[i].revents << std::endl;
@@ -68,6 +68,10 @@ void    Server::startServer() {
     return ;
 }
 
+/*******************************/
+/* CONNECTING SOCKET FUNCTIONS */
+/*******************************/
+
 int Server::acceptNewConnection(struct pollfd *fds, int nfds) {
 
     int newSocket;
@@ -86,7 +90,6 @@ int Server::acceptNewConnection(struct pollfd *fds, int nfds) {
         }
         fds[nfds].fd = newSocket;
         fds[nfds].events = POLLIN;
-        std::cerr << "Parse and send RPL_WELCOME" << nfds << std::endl;
         if (verifyClientAndServerResponse(fds[nfds]) == 1)
             return (-1);
         nfds++;
@@ -122,12 +125,12 @@ int Server::verifyClientAndServerResponse(struct pollfd fds) {
 std::string Server::getClientInformationsOnConnection(struct pollfd fds) {
         
     int     bytesRead;
-    char    buffer[1024];
+    char    buffer[512];
 	
-    memset(buffer, 0, 1023);
+    memset(buffer, 0, 511);
 
     //We read the socket to get the client information that we will use to create the new user (whose connected)
-	bytesRead = recv(fds.fd, buffer, 1023, 0);
+	bytesRead = recv(fds.fd, buffer, 511, 0);
     if (bytesRead <= 0) {
         std::cerr << "Error: recv() failed for connection registration: empty socket" << std::endl;
     }
@@ -173,14 +176,18 @@ std::string Server::createServerResponseForConnection(std::string buffer) {
     return (server_response);
 }
 
+/********************************/
+/*  CONNECTED SOCKET FUNCTIONS  */
+/********************************/
+
 int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bool closeConnection) {
 
-    char    buffer[1024];
+    char    buffer[512];
     int     recvReturn;
 
     closeConnection = false;
-    do {
-        std::cout << "Connected socket: fds[ID] --> " << socketID << std::endl;
+    // do {
+        std::cout << "receive data from socket[" << socketID << "]" << std::endl;
         memset(buffer, 0, sizeof(buffer));
         recvReturn = recv(fds[socketID].fd, buffer, sizeof(buffer), 0);
         if (recvReturn < 0) {
@@ -188,21 +195,22 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
                 std::cerr << "Error: recv() failed" << std::endl;
                 closeConnection = true;
             }
-            break ;
+            return closeConnection; // break ;
         }
         if (recvReturn == 0) {
             std::cerr << "Connection closed" << std::endl;
             closeConnection = true;
-            break ;
+            return closeConnection; // break ;
         }
-        std::cout << "===============" << std::endl;
-        std::cout << buffer << std::endl;
+        std::cout << "** =============== **" << std::endl;
+        // Affichage sur le serveur
+        std::cout << "Buffer from socket " << socketID << " : " << buffer << std::endl;
 
         // HANDLE CLIENT MESSAGE HERE
 
         // We send the message back to the client (TESTING PURPOSE)
         send(fds[socketID].fd, buffer, recvReturn, 0);
-    } while (true);
+    // } while (true);
 
     return (closeConnection);
 }

@@ -14,7 +14,7 @@ Server::Server(int port, std::string password) {
     _clientLen = sizeof(_clientAddr);
     _port = port;
     _password = password;
-    int on = 1;
+    int on = -1;
 
     _socketfd = socket(AF_INET, SOCK_STREAM, 0);
     if (_socketfd < 0) {
