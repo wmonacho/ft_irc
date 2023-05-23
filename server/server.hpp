@@ -70,6 +70,7 @@ class Server {
 		const std::string		                getChannelUserPassword(std::string channel_name, User *user);
 		const std::string		                getChannelUserNickname(std::string channel_name, User *user);      
 		bool	                                getChannelUserAdmin(std::string channel_name, User *user);
+		bool									getChannelInviteOnly(std::string channel_name);
         ssize_t		                            getValRead(void);
         socklen_t                               getServLen(void);
         socklen_t*                              getClientLen(void);
@@ -83,6 +84,7 @@ class Server {
 		std::vector<User>                       getUserList(void);
         std::map<std::string, Channel>          getMap(void);
         std::map<const User*, ChannelAspects>   getChannelUserList(std::string channel_name);
+		std::map<std::string, Channel>::iterator	getItMap(void);
 
         // Socket connection and user registration for "socketManager.cpp"
         int                                     verifyClientAndServerResponse(struct pollfd fds);
@@ -94,13 +96,16 @@ class Server {
 
         // Utility functions
         void                                    startServer();
-		void	                                kickUserFromChannel(std::string channel_name, User user);
         void	                                createRandomUsername( User user );
 		bool   	                                passwordAlreadyRegistred( void );
         bool   	                                nickAlreadyExist( std::string new_nick );
 		bool 	                                channelAlreadyExist(std::string channel_name);
         bool   	                                usernameAlreadyExist( std::string new_username );
 		bool	                                userInChannel(std::string channel_name, const User *user);
+		bool									channelHaveLimit(std::string channel_name);
+		bool									channelEnoughSpace(std::string channel_name);
+		bool									channelIsInviteOnly(std::string channel_name);
+		void	                                kickUserFromChannel(std::string channel_name, const User *user);
 
 };
 

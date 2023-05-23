@@ -77,6 +77,12 @@
 		"variant": "cpp",
 		"__functional_base": "cpp",
 		"fstream": "cpp",
-		"iomanip": "cpp"
+		"iomanip": "cpp",
+		"codecvt": "cpp",
+		"condition_variable": "cpp",
+		"list": "cpp",
+		"stop_token": "cpp",
+		"thread": "cpp",
+		"semaphore": "cpp"
 	}
 }

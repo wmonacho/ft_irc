@@ -138,6 +138,11 @@ std::map<std::string, Channel>  Server::getMap(void) {
     return this->_channels;
 }
 
+std::map<std::string, Channel>::iterator  Server::getItMap(void) {
+
+    return this->_channels.begin();
+}
+
 Channel              Server::getChannel(std::string channel_name)
 {
     return (this->getMap().find(channel_name)->second);
@@ -355,6 +360,19 @@ bool	Server::channelAlreadyExist(std::string channel_name)
 	return true;
 }
 
+bool	Server::channelHaveLimit(std::string channel_name)
+{
+	if (this->getChannel(channel_name).getUserLimit() < 0)
+		return false;
+	return true;
+}
+
+bool	Server::channelEnoughSpace(std::string channel_name)
+{
+	if (this->getChannelUserList(channel_name).size() >= static_cast<size_t>(this->getChannel(channel_name).getUserLimit()))
+		return false;
+	return true;
+}
 // bool	Server::topicAlreadyExist(std::string channel_name)
 // {
 
@@ -362,9 +380,12 @@ bool	Server::channelAlreadyExist(std::string channel_name)
 // 		return false;
 // 	return true;
 // }
-//void	Server::kickUserFromChannel(std::string channel_name, User user)
-//{
-//	std::map<std::string, Channel>::iterator it_channel = this->getMap().find(channel_name);
+void	Server::kickUserFromChannel(std::string channel_name, const User *user)
+{
+	this->getMap().find(channel_name)->second.kickUserFromChannel(user);
+}
 
-//	it_channel->second.kickUserFromChannel(user);
-//}
+bool	Server::channelIsInviteOnly(std::string channel_name)
+{
+	return this->getMap().find(channel_name)->second.getInviteOnly();
+}

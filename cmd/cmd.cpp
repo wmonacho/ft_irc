@@ -242,7 +242,8 @@ bool    cmd::parseJoin(std::string str, Server server, User *user)
  		return false;
  	}
  	std::string channel_name = &splitArg[1][1];
- 	for (std::map<std::string, Channel>::iterator it = server.getMap().begin(); it != server.getMap().end(); it++)
+	std::map<std::string, Channel> map = server.getMap();
+ 	for (std::map<std::string, Channel>::iterator it = map.begin(); it != map.end(); it++)
 	{
          if (channel_name == it->second.getName())
 		 {
@@ -398,14 +399,14 @@ bool    cmd::parseList(std::string str, Server server)
     return true;
 }
 
-bool    cmd::parseInvite(std::string str, Server server)
+bool    cmd::parseInvite(std::string str, Server server, User *user)
 {
     std::vector<std::string> arg = splitString(str, " ");
 
     if (arg.size() != 3)
         return false;
     std::string nick = arg[1];
-    std::string chan = arg[2];
+    std::string chan = &arg[2][1];
     std::map<std::string, Channel> map = server.getMap();
     int chanFound = 0;
     for (std::map<std::string, Channel>::iterator it = map.begin(); it != map.end(); it++)
@@ -416,6 +417,7 @@ bool    cmd::parseInvite(std::string str, Server server)
             break ;
         }
     }
+    //channel pas valide = pas d erreur
     if (chanFound == 0)
         return false;
     if (server.nickAlreadyExist(nick) == false)
@@ -424,21 +426,38 @@ bool    cmd::parseInvite(std::string str, Server server)
         return false;
     }
 
-    //recuperer le chan grace au nick
-    //verifier que l'user soit bien dans le channel
-
-    //channel pas valide = pas d erreur
     //seulement les users du channel peuvent inviter des gens
+    //verifier que l'user soit bien dans le channel
+	if (!server.userInChannel(chan, user))
+	{
+		std::cerr << "ERR_NOTONCHANNEL" << std::endl;
+		return false;
+	}
     //si le channel a le flag invite only set, seulement les channels operators peuvent inviter
-
+	if (!server.getChannelUserAdmin(chan, user) && server.channelIsInviteOnly(chan))
+	{
+		std::cerr << "ERR_CHANOPRIVSNEEDED" << std::endl;
+		return false;
+	}
     //checker si l'user est deja sur le chan
+	if (server.userInChannel(chan, server.getChannelUser(chan, nick)))
+	{
+		std::cerr << "ERR_USERONCHANNEL" << std::endl;
+		return false;
+	}
+	//check si le channel a une limit
+	if (server.channelHaveLimit(chan))
+	{
+		//check si la limit est inferieur ou egal aux users sur le channel
+		if (!server.channelEnoughSpace(chan))
+		{
+			std::cerr << "ERR_BEYONDTHELIMIT" << std::endl;
+			return false;
+		}
+	}
+	//execution de la cmd: envoyer le nouveau User dans le channel
     return true;
 }
-
-/*bool    cmd::parseKick(std::string str)
-    std::cout << "Invite cmd found" << std::endl;
-    std::cout << "str: " << str << std::endl;
-}*/
 
 bool    cmd::parseKick(std::string str, Server server, User *user)
 {
@@ -466,7 +485,7 @@ bool    cmd::parseKick(std::string str, Server server, User *user)
         return false;
     }
     //check si le User exist dans le channel
-    if (!server.userInChannel(&arg[1][1], user))
+    if (!server.userInChannel(&arg[1][1], server.getChannelUser(&arg[1][1], arg[2])))
 	{
 		std::cerr << "Error: not on channel" << std::endl;
 		return false;
@@ -492,6 +511,7 @@ bool    cmd::parseKick(std::string str, Server server, User *user)
 		return true;
 	}
 	//bannir le User du channel
+	server.kickUserFromChannel(&arg[1][1], server.getChannelUser(&arg[1][1], arg[2]));
 	//server.kickChannelUser(&arg[2][1], kick_user);
 	//ecris la phrase de kick par default
 	std::cout << "You're banned, go find somewhere else to be." << std::endl;
@@ -596,7 +616,7 @@ void cmd::whichCmd(std::string cmd, std::string str, Server server, User *user)
             break;
 
         case 10:
-             parseInvite(str, server);
+             parseInvite(str, server, user);
              break;
 
 
