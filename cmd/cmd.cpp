@@ -485,7 +485,6 @@ bool    cmd::parseInvite(std::string str, Server server, User *user)
 bool    cmd::parseKick(std::string str, Server server, User *user)
 {
     std::cout << "Kick cmd found" << std::endl;
-    std::cout << "str: " << str << std::endl;
     std::vector<std::string> arg = splitString(str, " ");
 
 	(void) user;
@@ -541,18 +540,44 @@ bool    cmd::parseKick(std::string str, Server server, User *user)
     return true;
 }
 
-/*
-bool    cmd::parsePrivmsg(std::string str)
+
+bool    cmd::parsePrivmsg(std::string str, Server server, User *user)
 {
+//	Parameters: <msgtarget> <text to be sent>
+	//exemple : PRIVMSG jreverdy :Are you a frog?
     std::cout << "Privmsg cmd found" << std::endl;
-    std::cout << "str: " << str << std::endl;
+	std::vector<std::string> arg = splitString(str, " ");
+	if (arg.size() < 3)
+	{
+		std::cerr << "ERR_NOSUCHNICK" << std::endl;
+		return false;
+	}
+	//arg[1] nickname
+	std::string nick_target = arg[1];
+	if (server.nickAlreadyExist(arg[2]))
+	{
+		std::cerr << "ERR_TOOMANYTARGETS" << std::endl;
+		return false;
+	}
+	if (arg[2][0] != ':')
+	{
+		std::cerr << "ERR_NOTEXTTOSEND" << std::endl;
+		return false;
+	}
+	if (!server.nickAlreadyExist(nick_target))
+	{
+		std::cerr << "ERR_NOSUCHNICK" << std::endl;
+		return false;
+	}
+	
+	
 }
 
-bool    cmd::parseNotice(std::string str)
-{
-    std::cout << "Notice cmd found" << std::endl;
-    std::cout << "str: " << str << std::endl;
-}*/
+//bool    cmd::parseNotice(std::string str, Server server, User *user)
+//{
+//    std::cout << "Notice cmd found" << std::endl;
+//    std::cout << "str: " << str << std::endl;
+//}
 
 void cmd::whichCmd(std::string cmd, std::string str, Server server, User *user)
 {
