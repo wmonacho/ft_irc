@@ -27,9 +27,9 @@ class Channel
 		std::string	_topic;
         std::string _password;
 		bool		_secret;
-        bool        _inviteOnly;
-        bool        _topicAdmin;
-    	int			_userLimit;
+              bool          _inviteOnly;
+              bool          _topicAdmin;
+              int           _userLimit;
 		std::map<const User*, ChannelAspects> _channel_user_list;
 	public :
 		Channel();
@@ -51,11 +51,12 @@ class Channel
 		std::string			getTopic( void ) const;
 		const User* 		getUser(const User *user);
 		std::string			getName( void ) const;
-        bool				getInviteOnly( void ) const;
-		bool                        getTopicAdmin( void ) const;
-		int                         getUserLimit( void ) const;
-        std::string                 getPassword(void) const;
-        const std::string			getUserUsername(User *user);
+              bool			       getInviteOnly( void ) const;
+              bool                        getTopicAdmin( void ) const;
+              int                         getUserLimit( void ) const;
+              std::string                 getPassword(void) const;
+
+              const std::string			getUserUsername(User *user);
 		const std::string			getUserRealname(User *user);
 		const std::string			getUserPassword(User *user);
 		const std::string			getUserNickname(User *user);

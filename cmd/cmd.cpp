@@ -185,6 +185,10 @@ bool    cmd::parseMode(std::string str, Server server, User *user)
                       //execute mode k
                       chan.setPassword(splitArg[3]);
                       break;
+                  case 108:
+                      chan.setUserLimit(atoi(splitArg[3].c_str()));
+                      break;
+                      //execute mode L
                   case 111:
                       //execute mode o
                       ChannelUserlist[u].setAdmin(true);
@@ -207,6 +211,10 @@ bool    cmd::parseMode(std::string str, Server server, User *user)
                   case 107:
                       //execute mode k
                       chan.setPassword("");
+                      break;
+                  case 108:
+                      //execute mode L
+                      chan.setUserLimit(-1);
                       break;
                   case 111:
                       //execute mode o
@@ -297,27 +305,43 @@ bool    cmd::parsePart(std::string str, Server server, User *user)
 bool    cmd::parseTopic(std::string str, Server server, User *user)
 {
     std::vector<std::string> arg = splitString(str, " ");
-    if (arg.size() < 2)
+    if (arg.size() < 3)
     {
         std::cerr << "ERR_NEEDMOREPARAMS" << std::endl;
         return false;
     }
     //verifier si le channel existe
-	if (arg[1][0] == '#' || !server.channelAlreadyExist(&arg[1][1]))
-		return false;
+    if (arg[1][0] == '#' || !server.channelAlreadyExist(&arg[1][1]))
+        return false;
     //verifier si le client est dans le channel
-	if (!server.userInChannel(&arg[1][1], user))
-		return false;
-    if (arg.size() == 2)
+    if (!server.userInChannel(arg[1], user))
+        return false;
+    if (arg.size() == 3)
     {
-        //verifier que le topic existe
-		// if (!server.topicAlreadyExist(&arg[1][1]))
-		// 	return false;
-        //ensuite verifier si l'user est operateur :
-		// if (server.getUserAdmin(&arg[1][1], user))
-        	//- si oui : set le topic
-        //- si non : numeric replies + erreur
-        std::cout << "a completer willy" << std::endl;
+        Channel chan = server.getChannel(arg[1]);
+        if (chan.getTopicAdmin())
+        {
+            if (!chan.getUserAdmin(user))
+            {
+                std::cerr << "User has to be admin to edit topic" << std::endl;
+                return false;
+            }
+            else
+            {
+                chan.setTopic(arg[3]);
+                return true;
+            }
+        }
+        if (arg[2] == "")
+        {
+            chan.setTopic("");
+            return true;
+        }
+        else
+        {
+            chan.setTopic(arg[2]);
+            return true;
+        }
     }
     return true;
 }
@@ -425,7 +449,6 @@ bool    cmd::parseInvite(std::string str, Server server, User *user)
         std::cerr << "ERR_NOSUCHNICK" << std::endl;
         return false;
     }
-
     //seulement les users du channel peuvent inviter des gens
     //verifier que l'user soit bien dans le channel
 	if (!server.userInChannel(chan, user))

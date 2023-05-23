@@ -18,6 +18,7 @@ Channel::Channel( void )
 	this->_topic = "";
        this->_password = "";
        this ->_inviteOnly = false;
+       this->_userLimit = -1;
 }
 
 Channel::Channel( std::string name)
@@ -65,6 +66,11 @@ bool    Channel::getInviteOnly() const
     return (this->_inviteOnly);
 }
 
+bool    Channel::getTopicAdmin() const
+{
+    return (this->_topicAdmin);
+}
+
 void    Channel::setInviteOnly(bool i)
 {
     this->_inviteOnly = i;
@@ -73,6 +79,11 @@ void    Channel::setInviteOnly(bool i)
 void    Channel::setTopicAdmin(bool i)
 {
     this->_topicAdmin = i;
+}
+
+void Channel::setUserLimit(int nb)
+{
+    this->_userLimit = nb;
 }
 
 void    Channel::setPassword(std::string pass)
