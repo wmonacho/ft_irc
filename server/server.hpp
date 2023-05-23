@@ -54,33 +54,34 @@ class Server {
         void   	                                setUserList(User new_user);
         void   	                                setPassword(std::string new_password);
         void   	                                setNewChannelInMap(const Channel& channel);
-		void					                setUserUsername(User user, std::string new_username);
-		void					                setUserNickname(User user, std::string new_nickname);
-		void					                setUserPassword(User user, std::string new_password);
-		void					                setUserRealname(User user, std::string new_realname);
+        void				                  setUserUsername(User user, std::string new_username);
+        void				                  setUserNickname(User user, std::string new_nickname);
+        void		            	                  setUserPassword(User user, std::string new_password);
+        void				                  setUserRealname(User user, std::string new_realname);
         
         // Getters functions
-        int                                     getPort(void);
-        int                                     getSocketfd(void);
-        int                                     getNewSocket(void);
-		std::string		                        getChannelTopic(std::string	channel_name);
-        std::string 	                        getPassword(void);
-		const std::string		                getChannelUserUsername(std::string channel_name, User *user);
-		const std::string		                getChannelUserRealname(std::string channel_name, User *user);
-		const std::string		                getChannelUserPassword(std::string channel_name, User *user);
-		const std::string		                getChannelUserNickname(std::string channel_name, User *user);      
-		bool	                                getChannelUserAdmin(std::string channel_name, User *user);
-        ssize_t		                            getValRead(void);
-        socklen_t                               getServLen(void);
-        socklen_t*                              getClientLen(void);
-		sockaddr_in*	                        getServAddr(void);
+        int                              getPort(void);
+        int                              getSocketfd(void);
+        int                              getNewSocket(void);
+        std::string	                    getChannelTopic(std::string	channel_name);
+        std::string 	                    getPassword(void);
+        const std::string                getChannelUserUsername(std::string channel_name, User *user);
+        const std::string                getChannelUserRealname(std::string channel_name, User *user);
+        const std::string                getChannelUserPassword(std::string channel_name, User *user);
+        const std::string                getChannelUserNickname(std::string channel_name, User *user);
+        bool	                           getChannelUserAdmin(std::string channel_name, User *user);
+        ssize_t                          getValRead(void);
+        socklen_t                        getServLen(void);
+        socklen_t*                       getClientLen(void);
+        sockaddr_in*	                        getServAddr(void);
         sockaddr_in*	                        getClientAddr(void);
-		User   		                            getUser(std::string user_nickname);
+        User   		                            getUser(std::string user_nickname);
+        User                                    getUserWithName(std::string user_name);
         Channel                                 getChannel(std::string channel_name);
         const User* 	                        getConstUser(std::string user_nickname);
         const User*                             getChannelUser(std::string channel_name, std::string user_name);
-		const User*	                            getChannelUser(std::string channel_name, const User *user);
-		std::vector<User>                       getUserList(void);
+        const User*	                            getChannelUser(std::string channel_name, const User *user);
+        std::vector<User>                       getUserList(void);
         std::map<std::string, Channel>          getMap(void);
         std::map<const User*, ChannelAspects>   getChannelUserList(std::string channel_name);
 
@@ -94,13 +95,13 @@ class Server {
 
         // Utility functions
         void                                    startServer();
-		void	                                kickUserFromChannel(std::string channel_name, User user);
+        void	                                kickUserFromChannel(std::string channel_name, User user);
         void	                                createRandomUsername( User user );
-		bool   	                                passwordAlreadyRegistred( void );
+        bool   	                                passwordAlreadyRegistred( void );
         bool   	                                nickAlreadyExist( std::string new_nick );
-		bool 	                                channelAlreadyExist(std::string channel_name);
+        bool 	                                channelAlreadyExist(std::string channel_name);
         bool   	                                usernameAlreadyExist( std::string new_username );
-		bool	                                userInChannel(std::string channel_name, const User *user);
+        bool	                                userInChannel(std::string channel_name, const User *user);
 
 };
 

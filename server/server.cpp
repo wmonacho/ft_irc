@@ -187,6 +187,18 @@ User	Server::getUser(std::string user_nickname)
 	return (user);
 }
 
+User	Server::getUserWithName(std::string user_name)
+{
+    for (std::vector<User>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
+    {
+        if (it->getUsername() == user_name)
+            return (*it);
+    }
+    //throw une exception si possible a la place de return cette merde
+    User user;
+    return (user);
+}
+
 const User*  Server::getConstUser(std::string user_nickname)
 {
 	for (std::vector<User>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
