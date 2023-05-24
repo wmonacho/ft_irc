@@ -2,6 +2,7 @@
 # define SERVER_HPP
 
 #include "../channel/Channel.hpp"
+#include "../cmd/cmd.hpp"
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -91,9 +92,9 @@ class Server {
         int                                     verifyClientAndServerResponse(struct pollfd fds);
         int                                     acceptNewConnection(struct pollfd *fds, int nfds);
         int                                     retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bool closeConnection);
-        std::string                             createServerResponseForConnection(std::string buffer);
+        std::string                             createServerResponseForConnection(std::string buffer, int socket);
         std::string                             getClientInformationsOnConnection(struct pollfd fds);
-        void                                    createNewUserAtConnection(std::string nickname, std::string username);
+        void                                    createNewUserAtConnection(std::string nickname, std::string username, int socket);
 
         // Utility functions
         void                                    startServer();
