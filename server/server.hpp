@@ -76,8 +76,8 @@ class Server {
         socklen_t*                       		getClientLen(void);
         sockaddr_in*	                        getServAddr(void);
         sockaddr_in*	                        getClientAddr(void);
-        User 		                            getUser(std::string user_nickname);
-        User	                                getUserWithName(std::string user_name);
+        User* 		                            getUser(std::string user_nickname);
+        User*	                                getUserWithName(std::string user_name);
 		User*									getUserBySocket(int socket);
 		Channel*                                getChannel(std::string channel_name);
         const User* 	                        getConstUser(std::string user_nickname);

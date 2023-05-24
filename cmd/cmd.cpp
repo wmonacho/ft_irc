@@ -630,7 +630,11 @@ void cmd::whichCmd(std::string str, Server server, User *user)
             break;
 
         case 5:
-            parseJoin(str, server, user);
+            if (parseJoin(str, server, user) == false)
+			{
+				std::cerr << "Usage: JOIN <channel>" << std::endl;
+                return ;
+			}
             break;
 
         case 6:

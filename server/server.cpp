@@ -182,28 +182,24 @@ bool	Server::getChannelUserAdmin(std::string channel_name, User *user)
 	return false;
 }
 
-User	Server::getUser(std::string user_nickname)
+User*	Server::getUser(std::string user_nickname)
 {
 	for (std::vector<User>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
 	{
 		if (it->getNickname() == user_nickname)
-			return (*it);
+			return (&(*it));
 	}
-	//throw une exception si possible a la place de return cette merde
-	User user;
-	return (user);
+	return (NULL);
 }
 
-User	Server::getUserWithName(std::string user_name)
+User*	Server::getUserWithName(std::string user_name)
 {
     for (std::vector<User>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
     {
         if (it->getUsername() == user_name)
-            return (*it);
+            return (&(*it));
     }
-    //throw une exception si possible a la place de return cette merde
-    User user;
-    return (user);
+    return (NULL);
 }
 User*	Server::getUserBySocket(int socket)
 {
