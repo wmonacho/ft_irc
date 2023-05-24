@@ -19,7 +19,6 @@ void    Server::startServer() {
 
     // This is the main loop which implements poll() : we detect if the socket is connecting or connected and act in consequence
     do {
-        std::cout << "NFDS : " << nfds << std::endl;
         pollReturn = poll(fds, nfds, (1 * 60 * 1000)); // 1 min timeout
         if (pollReturn < 0) {
             std::cerr << "Error: poll() failed" << std::endl;
@@ -32,10 +31,9 @@ void    Server::startServer() {
         // We set the currentSize to the number of sockets in our pollfd array
         currentSize = nfds;
         for (socketID = 0; socketID < currentSize; socketID++) {
-            std::cout << "SOCKETID ==> " << socketID << std::endl;
             // revents should be POLLIN 
-            // if (fds[i].revents != POLLIN) {
-            //     std::cerr << "Error: revents: " << fds[i].revents << std::endl;
+            // if (fds[socketID].revents != POLLIN) {
+            //     std::cerr << "Error: revents: " << fds[socketID].revents << std::endl;
             //     endOfServer = true;
             //     break ;
             // }
@@ -77,7 +75,6 @@ int Server::acceptNewConnection(struct pollfd *fds, int nfds) {
     int newSocket;
     int errorStatus = -1;
 
-    std::cerr << "== New socket connection ==" << std::endl;
     do {
         newSocket = accept(this->_socketfd, NULL, NULL);
         if (newSocket < 0) {
@@ -118,7 +115,6 @@ int Server::verifyClientAndServerResponse(struct pollfd fds) {
 
     // Finally we send back the server response to confirm the connection of the user
     send(fds.fd, server_response_for_connection.c_str(), server_response_for_connection.size(), 0);
-    std::cout << "= End of parse --> connection done =" << std::endl;
     return (0);
 }
 
@@ -165,9 +161,9 @@ std::string Server::createServerResponseForConnection(std::string buffer) {
     std::string nickName = buffer.substr(nickPos);
     size_t limiter = nickName.find("\r\n");
     nickName = nickName.substr(0, limiter);
-    std::cout << nickName << std::endl;
+    // std::cout << nickName << std::endl;
     std::string userName = buffer.substr(userPos, nickName.size());
-    std::cout << userName << std::endl;
+    // std::cout << userName << std::endl;
 
     createNewUserAtConnection(nickName, userName);
 
@@ -186,29 +182,30 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
     int     recvReturn;
 
     closeConnection = false;
-        std::cout << "receive data from socket[" << socketID << "]" << std::endl;
-        memset(buffer, 0, sizeof(buffer));
-        recvReturn = recv(fds[socketID].fd, buffer, sizeof(buffer), MSG_DONTWAIT);
-        if (recvReturn < 0) {
-            if (errno != EWOULDBLOCK) {
-                std::cerr << "Error: recv() failed" << std::endl;
-                closeConnection = true;
-            }
-            return (closeConnection);
-        }
-        if (recvReturn == 0) {
-            std::cerr << "Connection closed" << std::endl;
+    memset(buffer, 0, sizeof(buffer));
+    recvReturn = recv(fds[socketID].fd, buffer, sizeof(buffer), MSG_DONTWAIT);
+    if (recvReturn < 0) {
+        if (errno != EWOULDBLOCK) {
+            std::cerr << "Error: recv() failed" << std::endl;
             closeConnection = true;
-            return (closeConnection);
         }
-        std::cout << "** =============== **" << std::endl;
-        // Affichage sur le serveur
-        std::cout << "Buffer from socket " << socketID << " : " << buffer << std::endl;
+        return (closeConnection);
+    }
+    if (recvReturn == 0) {
+        std::cerr << "Connection closed" << std::endl;
+        closeConnection = true;
+        return (closeConnection);
+    }
 
-        // HANDLE CLIENT MESSAGE HERE
+    // Display for testing purpose
+    std::cout << "** =============== **" << std::endl;
+    // Affichage sur le serveur
+    std::cout << "Buffer from socket " << socketID << " : " << buffer << std::endl;
 
-        // We send the message back to the client (TESTING PURPOSE)
-        send(fds[socketID].fd, buffer, recvReturn, 0);
+    // HANDLE CLIENT MESSAGE HERE
+    
+    // We send the message back to the client (TESTING PURPOSE)
+    send(fds[socketID].fd, buffer, recvReturn, 0);
 
     return (closeConnection);
 }
