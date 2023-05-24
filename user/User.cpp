@@ -31,6 +31,7 @@ User	&User::operator=( User const & rhs)
 	this->_username = rhs._username;
 	this->_realname = rhs._realname;
 	this->_password = rhs._password;
+	this->_socket	= rhs._socket;
 	return (*this);
 }
 
