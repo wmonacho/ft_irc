@@ -24,6 +24,7 @@ class User
 		std::string	_username;
 		std::string	_password;
 		std::string	_realname;
+		int			_socket;
 	public :
 		User( void );
 		~User( void );
@@ -33,6 +34,7 @@ class User
 		void		setPassword( std::string new_string );
 		void		setUsername( std::string new_string );
 		void		setNickname( std::string new_string );
+		void		setSocket( int fd );
 		void		setAdmin( int admin);
 		
 		bool	operator==(const User* other) const;
@@ -43,6 +45,7 @@ class User
 		std::string			getPassword( void ) const;
 		std::string			getUsername( void ) const;
 		std::string			getNickname( void ) const;
+		int					getSocket( void ) const;
 };
 
 

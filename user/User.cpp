@@ -59,6 +59,11 @@ std::string	User::getRealname( void ) const
 	return (this->_realname);
 }
 
+int	User::getSocket( void ) const
+{
+	return (this->_socket);
+}
+
 void	User::setNickname( std::string new_string )
 {
 	this->_nickname = new_string;
@@ -77,6 +82,11 @@ void	User::setPassword( std::string new_string )
 void	User::setRealname( std::string new_string )
 {
 	this->_realname = new_string;
+}
+
+void	User::setSocket( int fd )
+{
+	this->_socket = fd;
 }
 
 bool User::operator==(const User* other) const
