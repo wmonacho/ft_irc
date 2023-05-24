@@ -36,7 +36,7 @@ public:
     bool    parseKick(std::string str, Server server, User *user);
     bool    parseInvite(std::string str, Server server, User *user);
     bool    parsePrivmsg(std::string str, Server server);
-    //bool    parseNotice(std::string str);
+    bool    parseNotice(std::string str);
     std::vector<std::string> splitString(std::string str, const char *delim);
 };
 

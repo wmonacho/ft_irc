@@ -16,7 +16,6 @@ cmd::cmd()
     _cmd[10] = "INVITE";
     _cmd[11] = "KICK";
     _cmd[12] = "PRIVMSG";
-    _cmd[13] = "NOTICE";
 }
 
 cmd::cmd(const cmd &rhs)
@@ -39,7 +38,6 @@ cmd &cmd::operator=(const cmd &rhs)
     _cmd[10] = rhs._cmd[10];
     _cmd[11] = rhs._cmd[11];
     _cmd[12] = rhs._cmd[12];
-    _cmd[13] = rhs._cmd[13];
     return (*this);
 }
 
@@ -573,12 +571,6 @@ bool    cmd::parsePrivmsg(std::string str, Server server)
        return true;
 }
 
-//bool    cmd::parseNotice(std::string str, Server server, User *user)
-//{
-//    std::cout << "Notice cmd found" << std::endl;
-//    std::cout << "str: " << str << std::endl;
-//}
-
 void cmd::whichCmd(std::string str, Server server, User *user)
 {
     std::vector<std::string> arg = splitString(str, " ");
@@ -634,9 +626,9 @@ void cmd::whichCmd(std::string str, Server server, User *user)
             }
             break;
 
-        /*case 5:
+        case 5:
             parseJoin(str, server, user);
-            break;*/
+            break;
 
         case 6:
 
@@ -668,20 +660,12 @@ void cmd::whichCmd(std::string str, Server server, User *user)
              parseInvite(str, server, user);
              break;
 
-
-        /*case 11:
-            parseKick(str);
-
         case 11:
             parseKick(str, server, user);
             break;
 
         case 12:
-            parsePrivmsg(str);
+            parsePrivmsg(str, server);
             break;
-
-        case 13:
-            parseNotice(str);
-            break;*/
     }
 }
