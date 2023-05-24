@@ -262,10 +262,11 @@ bool    cmd::parseJoin(std::string str, Server server, User *user)
 		}
 	}
     /*sinon creer un nouveau Channel y ajouter le User avec les droits admin et utiliser setNewChannelInMap ensuite*/
-     Channel new_channel(channel_name);
-     ChannelAspects	new_aspects(1);
-     new_channel.setUserList(user, new_aspects); // entre le user dans la list du channel
-     server.setNewChannelInMap(new_channel); // entre le channel dans la list des channels du serveur
+    Channel new_channel(channel_name);
+ 	ChannelAspects	new_aspects(1);
+    server.setNewChannelInMap(new_channel); // entre le channel dans la list des channels du serveur
+	server.addChannelUser(channel_name, user, new_aspects);
+    //new_channel.setUserList(user, new_aspects); // entre le user dans la list du channel
  	return true;
 }
 
@@ -568,7 +569,7 @@ bool    cmd::parsePrivmsg(std::string str, Server server)
 		std::cerr << "ERR_NOSUCHNICK" << std::endl;
 		return false;
 	}
-       return true;
+	return true;
 }
 
 void cmd::whichCmd(std::string str, Server server, User *user)
