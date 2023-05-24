@@ -401,3 +401,8 @@ bool	Server::channelIsInviteOnly(std::string channel_name)
 {
 	return this->getMap().find(channel_name)->second.getInviteOnly();
 }
+
+void	Server::addChannelUser(std::string channel_name, const User *user, ChannelAspects channel_aspects)
+{
+	this->getMap().find(channel_name)->second.setUserList(user, channel_aspects);
+}

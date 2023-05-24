@@ -479,6 +479,8 @@ bool    cmd::parseInvite(std::string str, Server server, User *user)
 		}
 	}
 	//execution de la cmd: envoyer le nouveau User dans le channel
+	ChannelAspects channel_aspects(false);
+	server.addChannelUser(chan, server.getConstUser(nick), channel_aspects);
     return true;
 }
 
@@ -534,7 +536,6 @@ bool    cmd::parseKick(std::string str, Server server, User *user)
 	}
 	//bannir le User du channel
 	server.kickUserFromChannel(&arg[1][1], server.getChannelUser(&arg[1][1], arg[2]));
-	//server.kickChannelUser(&arg[2][1], kick_user);
 	//ecris la phrase de kick par default
 	std::cout << "You're banned, go find somewhere else to be." << std::endl;
     return true;
@@ -570,6 +571,7 @@ bool    cmd::parsePrivmsg(std::string str, Server server, User *user)
 		return false;
 	}
 	
+	//jsp
 	
 }
 
