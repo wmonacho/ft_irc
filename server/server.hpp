@@ -54,7 +54,6 @@ class Server {
         void   	                                setValRead(ssize_t value);
         void   	                                setUserList(User new_user);
         void   	                                setPassword(std::string new_password);
-        void   	                                setNewChannelInMap(const Channel& channel);
         void				                 	setUserUsername(User user, std::string new_username);
         void				    	            setUserNickname(User user, std::string new_nickname);
         void		            	          	setUserPassword(User user, std::string new_password);
@@ -77,14 +76,15 @@ class Server {
         socklen_t*                       		getClientLen(void);
         sockaddr_in*	                        getServAddr(void);
         sockaddr_in*	                        getClientAddr(void);
-        User   		                            getUser(std::string user_nickname);
-        User                                    getUserWithName(std::string user_name);
-        Channel                                 getChannel(std::string channel_name);
+        User 		                            getUser(std::string user_nickname);
+        User	                                getUserWithName(std::string user_name);
+		User*									getUserBySocket(int socket);
+		Channel*                                getChannel(std::string channel_name);
         const User* 	                        getConstUser(std::string user_nickname);
         const User*                             getChannelUser(std::string channel_name, std::string user_name);
         const User*	                            getChannelUser(std::string channel_name, const User *user);
         std::vector<User>                       getUserList(void);
-        std::map<std::string, Channel>          getMap(void);
+        std::map<std::string, Channel>			getMap(void);
         std::map<const User*, ChannelAspects>   getChannelUserList(std::string channel_name);
 		std::map<std::string, Channel>::iterator	getItMap(void);
 
@@ -109,6 +109,7 @@ class Server {
 		bool									channelIsInviteOnly(std::string channel_name);
 		void	                                kickUserFromChannel(std::string channel_name, const User *user);
 		void									addChannelUser(std::string channel_name, const User *user, ChannelAspects channel_aspects);
+        void   	                                createNewChannel(std::string channel_name);
 
 };
 

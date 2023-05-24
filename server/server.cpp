@@ -143,39 +143,41 @@ std::map<std::string, Channel>::iterator  Server::getItMap(void) {
     return this->_channels.begin();
 }
 
-Channel              Server::getChannel(std::string channel_name)
+Channel*              Server::getChannel(std::string channel_name)
 {
-    return (this->getMap().find(channel_name)->second);
+	if (this->_channels.find(channel_name) == this->_channels.end())
+		return (NULL);
+    return (&this->_channels.find(channel_name)->second);
 }
 
 const std::string	Server::getChannelUserUsername(std::string channel_name, User *user)
 {
-	return (this->getMap().find(channel_name)->second.getUserUsername(user));
+	return (this->_channels.find(channel_name)->second.getUserUsername(user));
 }
 
 const std::string	Server::getChannelUserNickname(std::string channel_name, User *user)
 {
-	return (this->getMap().find(channel_name)->second.getUserNickname(user));
+	return (this->_channels.find(channel_name)->second.getUserNickname(user));
 }
 
 const std::string	Server::getChannelUserPassword(std::string channel_name, User *user)
 {
-	return (this->getMap().find(channel_name)->second.getUserPassword(user));
+	return (this->_channels.find(channel_name)->second.getUserPassword(user));
 }
 
 const std::string	Server::getChannelUserRealname(std::string channel_name, User *user)
 {
-	return this->getMap().find(channel_name)->second.getUserRealname(user);
+	return this->_channels.find(channel_name)->second.getUserRealname(user);
 }
 
 std::string	Server::getChannelTopic(std::string	channel_name)
 {
-	return (this->getMap().find(channel_name)->second.getTopic());
+	return (this->_channels.find(channel_name)->second.getTopic());
 }
 
 bool	Server::getChannelUserAdmin(std::string channel_name, User *user)
 {
-	if (this->getMap().find(channel_name)->second.getUserAdmin(user))
+	if (this->_channels.find(channel_name)->second.getUserAdmin(user))
 		return true;
 	return false;
 }
@@ -203,7 +205,16 @@ User	Server::getUserWithName(std::string user_name)
     User user;
     return (user);
 }
+User*	Server::getUserBySocket(int socket)
+{
+	std::vector<User>::iterator user;
 
+	for (user = this->_user_list.begin(); user != this->_user_list.end(); user++) {
+	        if (user->getSocket() == socket)
+	            return (&(*user));
+	    }
+	return (NULL);
+}
 const User*  Server::getConstUser(std::string user_nickname)
 {
 	for (std::vector<User>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
@@ -220,20 +231,20 @@ const User*  Server::getConstUser(std::string user_nickname)
 std::map<const User*, ChannelAspects>	Server::getChannelUserList(std::string channel_name)
 {
 	//throw une exception si possible en checkant s'il existe
-	return (this->getMap().find(channel_name)->second.getUserList());
+	return (this->_channels.find(channel_name)->second.getUserList());
 }
 
 //il faudra checker si le user existe avant d'utiliser cette focntion
 const User* Server::getChannelUser(std::string channel_name, const User *user)
 {
 	//throw une exception si possible a la place de return cet merde
-	return (this->getMap().find(channel_name)->second.getUser(user));
+	return (this->_channels.find(channel_name)->second.getUser(user));
 }
 
 const User* Server::getChannelUser(std::string channel_name, std::string user_name)
 {
 	//throw une exception si possible a la place de return cet merde
-	return (this->getMap().find(channel_name)->second.getUser(this->getConstUser(user_name)));
+	return (this->_channels.find(channel_name)->second.getUser(this->getConstUser(user_name)));
 }
 
 /* *************************************** */
@@ -279,11 +290,6 @@ void    Server::setPassword(std::string new_password)
 void    Server::setUserList(User new_user)
 {
     this->_user_list.push_back(new_user);
-}
-
-void    Server::setNewChannelInMap(const Channel& channel) {
-
-    this->_channels[channel.getName()] = channel;
 }
 
 void	Server::setUserUsername(User user, std::string new_username)
@@ -360,28 +366,28 @@ void	Server::createRandomUsername( User user )
 
 bool	Server::userInChannel(std::string channel_name, const User *user)
 {
-	if (this->getMap().find(channel_name) == this->getMap().end())
+	if (this->_channels.find(channel_name) == this->_channels.end())
 		return (false);
-	return (this->getMap().find(channel_name)->second.userInChannel(user));
+	return (this->_channels.find(channel_name)->second.userInChannel(user));
 }
 
 bool	Server::channelAlreadyExist(std::string channel_name)
 {
-	if (this->getMap().find(channel_name) == this->getMap().end())
+	if (this->_channels.find(channel_name) == this->_channels.end())
 		return false;
 	return true;
 }
 
 bool	Server::channelHaveLimit(std::string channel_name)
 {
-	if (this->getChannel(channel_name).getUserLimit() < 0)
+	if (this->getChannel(channel_name)->getUserLimit() < 0)
 		return false;
 	return true;
 }
 
 bool	Server::channelEnoughSpace(std::string channel_name)
 {
-	if (this->getChannelUserList(channel_name).size() >= static_cast<size_t>(this->getChannel(channel_name).getUserLimit()))
+	if (this->getChannelUserList(channel_name).size() >= static_cast<size_t>(this->getChannel(channel_name)->getUserLimit()))
 		return false;
 	return true;
 }
@@ -394,15 +400,26 @@ bool	Server::channelEnoughSpace(std::string channel_name)
 // }
 void	Server::kickUserFromChannel(std::string channel_name, const User *user)
 {
-	this->getMap().find(channel_name)->second.kickUserFromChannel(user);
+	this->_channels.find(channel_name)->second.kickUserFromChannel(user);
 }
 
 bool	Server::channelIsInviteOnly(std::string channel_name)
 {
-	return this->getMap().find(channel_name)->second.getInviteOnly();
+	return this->_channels.find(channel_name)->second.getInviteOnly();
 }
 
 void	Server::addChannelUser(std::string channel_name, const User *user, ChannelAspects channel_aspects)
 {
-	this->getMap().find(channel_name)->second.setUserList(user, channel_aspects);
+	this->getChannel(channel_name)->setUserList(user, channel_aspects);
+}
+
+void    Server::createNewChannel(std::string channel_name)
+{
+	this->_channels.insert(std::make_pair(channel_name, Channel(channel_name)));
+	if (this->_channels.find(channel_name) == this->_channels.end())
+		std::cout << "Error: no channel found" << std::endl;
+	else
+		std::cout << "Succes: channel found" << std::endl;
+	std::cout << "channel_addr === " << &(this->_channels.find(channel_name)->second) << std::endl;
+	std::cout << "channel_name === " << this->_channels.find(channel_name)->second.getName() << std::endl;
 }

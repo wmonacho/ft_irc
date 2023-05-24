@@ -181,7 +181,7 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
 
     char    buffer[512];
     int     recvReturn;
-    std::vector<User>::iterator user;
+	User	*user;
 
     closeConnection = false;
     memset(buffer, 0, sizeof(buffer));
@@ -205,13 +205,10 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
     std::cout << "Buffer from socket " << socketID << " : " << buffer << std::endl;
 
     // Loop to identify which user sent a message to send it to the whichCmd()
-    for (user = _user_list.begin(); user != _user_list.end(); user++) {
-        if (user->getSocket() == fds[socketID].fd)
-            break ;
-    }
+	user = this->getUserBySocket(fds[socketID].fd);
     cmd command;
     // HANDLE CLIENT MESSAGE HERE
-    command.whichCmd(buffer, *this, &(*user));
+    command.whichCmd(buffer, *this, user);
     
     // We send the message back to the client (TESTING PURPOSE)
     send(fds[socketID].fd, buffer, recvReturn, 0);
