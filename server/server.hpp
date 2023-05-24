@@ -55,7 +55,7 @@ class Server {
         void   	                                setPassword(std::string new_password);
         void   	                                setNewChannelInMap(const Channel& channel);
         void				                 	setUserUsername(User user, std::string new_username);
-        void				                 	setUserNickname(User user, std::string new_nickname);
+        void				    	            setUserNickname(User user, std::string new_nickname);
         void		            	          	setUserPassword(User user, std::string new_password);
         void				                  	setUserRealname(User user, std::string new_realname);
         
@@ -107,6 +107,7 @@ class Server {
 		bool									channelEnoughSpace(std::string channel_name);
 		bool									channelIsInviteOnly(std::string channel_name);
 		void	                                kickUserFromChannel(std::string channel_name, const User *user);
+		void									addChannelUser(std::string channel_name, const User *user, ChannelAspects channel_aspects);
 
 };
 
