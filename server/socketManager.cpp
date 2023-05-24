@@ -111,7 +111,7 @@ int Server::verifyClientAndServerResponse(struct pollfd fds) {
 
     // This function parse the buffer to find the username and nickname of the user who connected to the server
     // and it creates a new user in the server's users_list
-    server_response_for_connection = createServerResponseForConnection(buffer);
+    server_response_for_connection = createServerResponseForConnection(buffer, fds.fd);
 
     // Finally we send back the server response to confirm the connection of the user
     send(fds.fd, server_response_for_connection.c_str(), server_response_for_connection.size(), 0);
@@ -133,13 +133,14 @@ std::string Server::getClientInformationsOnConnection(struct pollfd fds) {
     return (std::string(buffer, bytesRead));
 }
 
-void    Server::createNewUserAtConnection(std::string nickname, std::string username) {
+void    Server::createNewUserAtConnection(std::string nickname, std::string username, int socket) {
 
     // We create a new user and set his nickname and realname thanks to the message the client sent
     User new_user;
 
     new_user.setNickname(nickname);
     new_user.setRealname(username);
+    new_user.setSocket(socket);
 
     // Then we add the new user which connected to the server to the USER_LIST of the server
     this->setUserList(new_user);
@@ -147,7 +148,7 @@ void    Server::createNewUserAtConnection(std::string nickname, std::string user
     return ;
 }
 
-std::string Server::createServerResponseForConnection(std::string buffer) {
+std::string Server::createServerResponseForConnection(std::string buffer, int socket) {
 
     size_t nickPos = buffer.find("NICK");
     size_t userPos = buffer.find("USER");
@@ -165,7 +166,7 @@ std::string Server::createServerResponseForConnection(std::string buffer) {
     std::string userName = buffer.substr(userPos, nickName.size());
     // std::cout << userName << std::endl;
 
-    createNewUserAtConnection(nickName, userName);
+    createNewUserAtConnection(nickName, userName, socket);
 
     std::string server_response = ":localhost 001 " + userName + " :Welcome to the Internet Relay Network " + nickName + "!" + userName + "@localhost\r\n";
 
@@ -180,6 +181,7 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
 
     char    buffer[512];
     int     recvReturn;
+    std::vector<User>::iterator user;
 
     closeConnection = false;
     memset(buffer, 0, sizeof(buffer));
@@ -202,7 +204,14 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
     // Affichage sur le serveur
     std::cout << "Buffer from socket " << socketID << " : " << buffer << std::endl;
 
+    // Loop to identify which user sent a message to send it to the whichCmd()
+    for (user = _user_list.begin(); user != _user_list.end(); user++) {
+        if (user->getSocket() == fds[socketID].fd)
+            break ;
+    }
+    cmd command;
     // HANDLE CLIENT MESSAGE HERE
+    command.whichCmd(buffer, *this, &(*user));
     
     // We send the message back to the client (TESTING PURPOSE)
     send(fds[socketID].fd, buffer, recvReturn, 0);

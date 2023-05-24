@@ -238,6 +238,8 @@ bool    cmd::parseQuit(std::string str)
 
 bool    cmd::parseJoin(std::string str, Server server, User *user)
 {
+     std::cout << "Join cmd found" << std::endl;
+     std::cout << "str: " << str << std::endl;
  	std::vector<std::string> splitArg = splitString(str, " ");
  	if (splitArg.size() != 2)
  		return false;
@@ -264,8 +266,6 @@ bool    cmd::parseJoin(std::string str, Server server, User *user)
      ChannelAspects	new_aspects(1);
      new_channel.setUserList(user, new_aspects); // entre le user dans la list du channel
      server.setNewChannelInMap(new_channel); // entre le channel dans la list des channels du serveur
-     std::cout << "Join cmd found" << std::endl;
-     std::cout << "str: " << str << std::endl;
  	return true;
 }
 
