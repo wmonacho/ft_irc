@@ -263,7 +263,7 @@ bool    cmd::parseJoin(std::string str, Server server, User *user)
 	}
     /*sinon creer un nouveau Channel y ajouter le User avec les droits admin et utiliser setNewChannelInMap ensuite*/
      Channel new_channel(channel_name);
- 	ChannelAspects	new_aspects(1);
+     ChannelAspects	new_aspects(1);
      new_channel.setUserList(user, new_aspects); // entre le user dans la list du channel
      server.setNewChannelInMap(new_channel); // entre le channel dans la list des channels du serveur
      std::cout << "Join cmd found" << std::endl;
@@ -542,7 +542,7 @@ bool    cmd::parseKick(std::string str, Server server, User *user)
 }
 
 
-bool    cmd::parsePrivmsg(std::string str, Server server, User *user)
+bool    cmd::parsePrivmsg(std::string str, Server server)
 {
 //	Parameters: <msgtarget> <text to be sent>
 	//exemple : PRIVMSG jreverdy :Are you a frog?
@@ -570,9 +570,7 @@ bool    cmd::parsePrivmsg(std::string str, Server server, User *user)
 		std::cerr << "ERR_NOSUCHNICK" << std::endl;
 		return false;
 	}
-	
-	//jsp
-	
+       return true;
 }
 
 //bool    cmd::parseNotice(std::string str, Server server, User *user)
@@ -581,12 +579,13 @@ bool    cmd::parsePrivmsg(std::string str, Server server, User *user)
 //    std::cout << "str: " << str << std::endl;
 //}
 
-void cmd::whichCmd(std::string cmd, std::string str, Server server, User *user)
+void cmd::whichCmd(std::string str, Server server, User *user)
 {
+    std::vector<std::string> arg = splitString(str, " ");
     int j = -1;
     for (int i = 0; i < 14; i++)
     {
-        if (cmd == _cmd[i])
+        if (arg[0] == _cmd[i])
         {
             j = i;
             break;

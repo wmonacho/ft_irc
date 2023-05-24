@@ -22,7 +22,7 @@ public:
     cmd &operator=(const cmd &rhs);
     ~cmd();
 
-    void    whichCmd(std::string cmd, std::string str, Server server, User *user);
+    void    whichCmd(std::string str, Server server, User *user);
     bool    parsePass(std::string str, Server server);
     bool    parseNick(std::string str, Server server, User *user);
     bool    parseUser(std::string str, Server server);
@@ -35,9 +35,7 @@ public:
     bool    parseJoin(std::string str, Server server, User *user);
     bool    parseKick(std::string str, Server server, User *user);
     bool    parseInvite(std::string str, Server server, User *user);
-    bool    parsePrivmsg(std::string str, Server server, User *user);
-   	bool    parseKick(std::string str, Server server, User *user);
-    bool    parseList(std::string str, Server server);
+    bool    parsePrivmsg(std::string str, Server server);
     //bool    parseNotice(std::string str);
     std::vector<std::string> splitString(std::string str, const char *delim);
 };
