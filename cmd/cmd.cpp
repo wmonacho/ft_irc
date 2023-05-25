@@ -161,14 +161,14 @@ bool    cmd::parseMode(std::string str, Server server, User *user)
            return (false);
 	}
 
-       Channel chan = server.getChannel(splitArg[1]);
+       Channel *chan = server.getChannel(splitArg[1]);
        const User* u = server.getChannelUser(splitArg[1], splitArg[3]);
-       std::map<const User*, ChannelAspects> ChannelUserlist = chan.getUserList();
+       std::map<const User*, ChannelAspects> ChannelUserlist = chan->getUserList();
     //execute les modes +
     //il restera a modifier les fonctions affectees par les modes
 	for (unsigned int i = 1; splitArg[2][0] == '+' && i < splitArg[2].size(); i++)
 	{
-		Channel channel;
+		Channel channel("test");
 
 		const User* u = server.getChannelUser(splitArg[1], splitArg[3]);
 		std::map<const User*, ChannelAspects> channel_list = channel.getUserList();
@@ -177,14 +177,14 @@ bool    cmd::parseMode(std::string str, Server server, User *user)
 		{
                   case 105:
                       //execute mode i
-                      chan.setInviteOnly(true);
+                      chan->setInviteOnly(true);
                       break;
                   case 107:
                       //execute mode k
-                      chan.setPassword(splitArg[3]);
+                      chan->setPassword(splitArg[3]);
                       break;
                   case 108:
-                      chan.setUserLimit(atoi(splitArg[3].c_str()));
+                      chan->setUserLimit(atoi(splitArg[3].c_str()));
                       break;
                       //execute mode L
                   case 111:
@@ -193,7 +193,7 @@ bool    cmd::parseMode(std::string str, Server server, User *user)
                       break;
                   case 116:
                       //execute mode t
-                      chan.setTopicAdmin(true);
+                      chan->setTopicAdmin(true);
                       break;
 		}
 	}
@@ -204,22 +204,22 @@ bool    cmd::parseMode(std::string str, Server server, User *user)
 		{
                   case 105:
                       //execute mode i
-                      chan.setInviteOnly(false);
+                      chan->setInviteOnly(false);
                       break;
                   case 107:
                       //execute mode k
-                      chan.setPassword("");
+                      chan->setPassword("");
                       break;
                   case 108:
                       //execute mode L
-                      chan.setUserLimit(-1);
+                      chan->setUserLimit(-1);
                       break;
                   case 111:
                       //execute mode o
                       ChannelUserlist[u].setAdmin(false);
                       break;
                   case 116:
-                      chan.setTopicAdmin(false);
+                      chan->setTopicAdmin(false);
                       break;
 		}
 	}
@@ -244,28 +244,31 @@ bool    cmd::parseJoin(std::string str, Server server, User *user)
  	if (splitArg.size() != 2)
  		return false;
  	//check si pas de # devant le channel (jwe crois que l'on peut mettre & aussi a verifier)
+	std::cout << splitArg[1] << std::endl;
  	if (splitArg[1][0] != '#')
  	{
- 		std::cerr << " " << std::endl;
+ 		std::cerr << "ERR_BADCHANNELKEY" << std::endl;
  		return false;
  	}
- 	std::string channel_name = &splitArg[1][1];
-	std::map<std::string, Channel> map = server.getMap();
- 	for (std::map<std::string, Channel>::iterator it = map.begin(); it != map.end(); it++)
+ 	std::string channel_name= &splitArg[1][1];
+	Channel* channel = server.getChannel(channel_name);
+
+    if (channel)
 	{
-         if (channel_name == it->second.getName())
-		 {
-     /*rejoindre le User dans le Channel deja existant*/
- 			ChannelAspects	new_aspects(0);
-			it->second.setUserList(user, new_aspects);
-			return true;
-		}
+ 		ChannelAspects	new_aspects(0);
+		channel->setUserList(user, new_aspects);
+		std::cout << "channel === " << channel->getName() << std::endl;
+		return true;
 	}
-    /*sinon creer un nouveau Channel y ajouter le User avec les droits admin et utiliser setNewChannelInMap ensuite*/
-     Channel new_channel(channel_name);
-     ChannelAspects	new_aspects(1);
-     new_channel.setUserList(user, new_aspects); // entre le user dans la list du channel
-     server.setNewChannelInMap(new_channel); // entre le channel dans la list des channels du serveur
+    /*snon creer un nouveau Channel y ajouter le User avec les droits admin et utiliser setNewChannelInMap ensuite*/
+ 	ChannelAspects	new_aspects(1);
+    server.createNewChannel(channel_name);
+	if (!server.getChannel(channel_name))
+		return false;
+	// entre le channel dans la list des channels du serveur
+	std::cout << "channel_addr === " << (server.getChannel(channel_name)) << std::endl;
+	std::cout << "channel_name === " << server.getChannel(channel_name)->getName() << std::endl;
+	server.addChannelUser(channel_name, user, new_aspects); // entre le user dans la list du channel
  	return true;
 }
 
@@ -316,28 +319,28 @@ bool    cmd::parseTopic(std::string str, Server server, User *user)
         return false;
     if (arg.size() == 3)
     {
-        Channel chan = server.getChannel(arg[1]);
-        if (chan.getTopicAdmin())
+        Channel *chan = server.getChannel(arg[1]);
+        if (chan->getTopicAdmin())
         {
-            if (!chan.getUserAdmin(user))
+            if (!chan->getUserAdmin(user))
             {
                 std::cerr << "User has to be admin to edit topic" << std::endl;
                 return false;
             }
             else
             {
-                chan.setTopic(arg[3]);
+                chan->setTopic(arg[3]);
                 return true;
             }
         }
         if (arg[2] == "")
         {
-            chan.setTopic("");
+            chan->setTopic("");
             return true;
         }
         else
         {
-            chan.setTopic(arg[2]);
+            chan->setTopic(arg[2]);
             return true;
         }
     }
@@ -568,7 +571,7 @@ bool    cmd::parsePrivmsg(std::string str, Server server)
 		std::cerr << "ERR_NOSUCHNICK" << std::endl;
 		return false;
 	}
-       return true;
+	return true;
 }
 
 void cmd::whichCmd(std::string str, Server server, User *user)
@@ -627,7 +630,11 @@ void cmd::whichCmd(std::string str, Server server, User *user)
             break;
 
         case 5:
-            parseJoin(str, server, user);
+            if (parseJoin(str, server, user) == false)
+			{
+				std::cerr << "Usage: JOIN <channel>" << std::endl;
+                return ;
+			}
             break;
 
         case 6:

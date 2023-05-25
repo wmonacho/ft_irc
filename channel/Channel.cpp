@@ -6,35 +6,30 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:31:22 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/23 16:08:38 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/05/24 20:20:45 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "Channel.hpp"
 
-Channel::Channel( void )
-{
-	this->_name = "";
-	this->_topic = "";
-       this->_password = "";
-       this ->_inviteOnly = false;
-       this->_userLimit = -1;
-}
-
 Channel::Channel( std::string name)
 {
 	this->_name = name;
+	this->_topic = "";
+    this->_password = "";
+    this ->_inviteOnly = false;
+    this->_userLimit = -1;
 }
 
 Channel::Channel( Channel const & obj)
 {
-	*this = obj;
-}
-
-Channel	&Channel::operator=( Channel const & rhs)
-{
-	(void)rhs;
-	return (*this);
+	this->_name = obj._name;
+	this->_topic = obj._topic;
+    this->_password = obj._password;
+	this->_secret = obj._secret;
+    this->_inviteOnly = obj._inviteOnly;
+    this->_topicAdmin = obj._topicAdmin;
+    this->_userLimit = obj._userLimit;
 }
 
 Channel::~Channel( void )
@@ -69,26 +64,6 @@ bool    Channel::getInviteOnly() const
 bool    Channel::getTopicAdmin() const
 {
     return (this->_topicAdmin);
-}
-
-void    Channel::setInviteOnly(bool i)
-{
-    this->_inviteOnly = i;
-}
-
-void    Channel::setTopicAdmin(bool i)
-{
-    this->_topicAdmin = i;
-}
-
-void Channel::setUserLimit(int nb)
-{
-    this->_userLimit = nb;
-}
-
-void    Channel::setPassword(std::string pass)
-{
-    this->_password = pass;
 }
 
 std::map<const User*, ChannelAspects>	Channel::getUserList( void ) const
@@ -139,6 +114,26 @@ void	Channel::setName( std::string new_string )
 void	Channel::setTopic( std::string new_string )
 {
 	this->_topic = new_string;
+}
+
+void    Channel::setInviteOnly(bool i)
+{
+    this->_inviteOnly = i;
+}
+
+void    Channel::setTopicAdmin(bool i)
+{
+    this->_topicAdmin = i;
+}
+
+void Channel::setUserLimit(int nb)
+{
+    this->_userLimit = nb;
+}
+
+void    Channel::setPassword(std::string pass)
+{
+    this->_password = pass;
 }
 
 void	Channel::setUserList(const User * new_user, ChannelAspects channel_aspects)

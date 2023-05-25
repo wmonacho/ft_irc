@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 13:57:00 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/23 16:52:03 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/05/24 20:20:48 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -27,15 +27,13 @@ class Channel
 		std::string	_topic;
         std::string _password;
 		bool		_secret;
-              bool          _inviteOnly;
-              bool          _topicAdmin;
-              int           _userLimit;
+        bool        _inviteOnly;
+        bool        _topicAdmin;
+        int         _userLimit;
 		std::map<const User*, ChannelAspects> _channel_user_list;
 	public :
-		Channel();
 		Channel( std::string name);
         Channel(const Channel& obj);
-        Channel& operator=(const Channel& obj);
         ~Channel();
 		
 		void						setUserList(const User * new_user, ChannelAspects channel_aspects);
