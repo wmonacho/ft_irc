@@ -163,38 +163,33 @@ bool    cmd::parseMode(std::string str, Server server, User *user)
 
        Channel *chan = server.getChannel(splitArg[1]);
        const User* u = server.getChannelUser(splitArg[1], splitArg[3]);
-       std::map<const User*, ChannelAspects> ChannelUserlist = chan->getUserList();
     //execute les modes +
     //il restera a modifier les fonctions affectees par les modes
 	for (unsigned int i = 1; splitArg[2][0] == '+' && i < splitArg[2].size(); i++)
 	{
-		Channel channel("test");
-
 		const User* u = server.getChannelUser(splitArg[1], splitArg[3]);
-		std::map<const User*, ChannelAspects> channel_list = channel.getUserList();
-		channel_list[u].setAdmin(true);
 		switch(splitArg[2][i] + 48)
 		{
                   case 105:
-                      //execute mode i
-                      chan->setInviteOnly(true);
-                      break;
+                    	//execute mode i
+                    	chan->setInviteOnly(true);
+                    	break;
                   case 107:
-                      //execute mode k
-                      chan->setPassword(splitArg[3]);
-                      break;
+                    	//execute mode k
+                    	chan->setPassword(splitArg[3]);
+                    	break;
                   case 108:
-                      chan->setUserLimit(atoi(splitArg[3].c_str()));
-                      break;
-                      //execute mode L
+                    	chan->setUserLimit(atoi(splitArg[3].c_str()));
+                    	break;
+                      	//execute mode L
                   case 111:
-                      //execute mode o
-                      ChannelUserlist[u].setAdmin(true);
-                      break;
+                      	//execute mode o
+						chan->changeUserAdmin(u, true);
+                      	break;
                   case 116:
-                      //execute mode t
-                      chan->setTopicAdmin(true);
-                      break;
+                      	//execute mode t
+                      	chan->setTopicAdmin(true);
+                      	break;
 		}
 	}
 	//execute les modes -
@@ -216,7 +211,7 @@ bool    cmd::parseMode(std::string str, Server server, User *user)
                       break;
                   case 111:
                       //execute mode o
-                      ChannelUserlist[u].setAdmin(false);
+                      chan->changeUserAdmin(u, false);
                       break;
                   case 116:
                       chan->setTopicAdmin(false);
@@ -265,9 +260,6 @@ bool    cmd::parseJoin(std::string str, Server server, User *user)
     server.createNewChannel(channel_name);
 	if (!server.getChannel(channel_name))
 		return false;
-	// entre le channel dans la list des channels du serveur
-	std::cout << "channel_addr === " << (server.getChannel(channel_name)) << std::endl;
-	std::cout << "channel_name === " << server.getChannel(channel_name)->getName() << std::endl;
 	server.addChannelUser(channel_name, user, new_aspects); // entre le user dans la list du channel
  	return true;
 }
