@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
+/*   By: will <will@student.42lyon.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:31:22 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/24 20:20:45 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/05/25 11:19:20 by will             ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -159,4 +159,9 @@ bool	Channel::userInChannel(const User *user)
 void	Channel::kickUserFromChannel(const User *user)
 {
 	this->_channel_user_list.erase(this->getUserList().find(user)->first);
+}
+
+void	Channel::changeUserAdmin(const User* user, bool i)
+{
+	this->_channel_user_list[user].setAdmin(i);
 }
