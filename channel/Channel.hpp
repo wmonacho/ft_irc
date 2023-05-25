@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
+/*   By: will <will@student.42lyon.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 13:57:00 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/24 20:20:48 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/05/25 11:18:32 by will             ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -63,6 +63,7 @@ class Channel
 		bool	channelIsSecret( void );
 		bool	userInChannel(const User *user);
 		void	kickUserFromChannel(const User *user);
+		void	changeUserAdmin(const User* user, bool i);
 
 };
 

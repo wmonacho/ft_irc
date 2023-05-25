@@ -133,7 +133,7 @@ std::vector<User>  Server::getUserList(void)
     return (this->_user_list);
 }
     
-std::map<std::string, Channel>  Server::getMap(void) {
+const std::map<std::string, Channel>&  Server::getMap(void) {
 
     return this->_channels;
 }
