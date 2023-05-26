@@ -6,7 +6,7 @@
 /*   By: will <will@student.42lyon.fr>              +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:31:22 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/25 11:19:20 by will             ###   ########lyon.fr   */
+/*   Updated: 2023/05/26 10:18:53 by will             ###   ########lyon.fr   */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -138,7 +138,11 @@ void    Channel::setPassword(std::string pass)
 
 void	Channel::setUserList(const User * new_user, ChannelAspects channel_aspects)
 {
-	this->_channel_user_list[new_user] = channel_aspects;
+	this->_channel_user_list.insert(std::make_pair(new_user, channel_aspects));
+	if (this->_channel_user_list.find(new_user) == this->_channel_user_list.end())
+		std::cout << "Error: no user found" << std::endl;
+	else
+		std::cout << "Succes: user found" << std::endl;
 }
 
 // CHANNEL FUNCTIONS
