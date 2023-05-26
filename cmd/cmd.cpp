@@ -261,7 +261,9 @@ bool    cmd::parseJoin(std::string str, Server server, User *user)
 	if (!server.getChannel(channel_name))
 		return false;
 	server.addChannelUser(channel_name, user, new_aspects); // entre le user dans la list du channel
- 	return true;
+	if (channel->getUserList().find(user) == channel->getUserList().end())
+ 		std::cout << "new_user: " << channel->getUserList().find(user)->first->getNickname() << std::endl;
+	return true;
 }
 
 bool    cmd::parsePart(std::string str, Server server, User *user)
