@@ -125,7 +125,7 @@ std::string Server::getClientInformationsOnConnection(struct pollfd fds) {
     int     totalBytesRead = 0;
     char    buffer[50];
 	
-    memset(buffer, 0, 50 * sizeof(char));
+    memset(buffer, 0, (50 * sizeof(char)));
 
     // We read the socket to get the client information that we will use to create the new user (whose connected)
     do {
@@ -134,6 +134,7 @@ std::string Server::getClientInformationsOnConnection(struct pollfd fds) {
             std::cerr << "Error: recv() failed for connection registration" << std::endl;
         }
         totalBytesRead += bytesRead;
+        std::cout << "TEST CONNECTION" << std::endl;
     } while (totalBytesRead < 50);
     buffer[bytesRead] = '\0';
     std::cout << "READ = " << bytesRead << " / BUFFER :\n" << buffer;
@@ -216,7 +217,7 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
 	user = this->getUserBySocket(fds[socketID].fd);
     cmd command;
     // HANDLE CLIENT MESSAGE HERE
-    command.whichCmd(buffer, *this, user);
+    command.whichCmd(buffer, this, user);
     
     // We send the message back to the client (TESTING PURPOSE)
     // send(fds[socketID].fd, buffer, recvReturn, 0);

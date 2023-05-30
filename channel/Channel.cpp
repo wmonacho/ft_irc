@@ -12,7 +12,17 @@
 
 #include "Channel.hpp"
 
-Channel::Channel( std::string name)
+Channel::Channel() 
+{
+	std::cout << "DEFAULT CONSTRUCTOR MDR" << std::endl;
+	this->_name = "";
+	this->_topic = "";
+    this->_password = "";
+    this ->_inviteOnly = false;
+    this->_userLimit = -1;	
+}
+
+Channel::Channel( std::string name )
 {
 	this->_name = name;
 	this->_topic = "";
@@ -30,6 +40,7 @@ Channel::Channel( Channel const & obj)
     this->_inviteOnly = obj._inviteOnly;
     this->_topicAdmin = obj._topicAdmin;
     this->_userLimit = obj._userLimit;
+	*this = obj;
 }
 
 Channel::~Channel( void )
@@ -136,7 +147,7 @@ void    Channel::setPassword(std::string pass)
     this->_password = pass;
 }
 
-void	Channel::setUserList(const User * new_user, ChannelAspects channel_aspects)
+void	Channel::setUserList(const User  *new_user, ChannelAspects channel_aspects)
 {
 	this->_channel_user_list.insert(std::make_pair(new_user, channel_aspects));
 	return ;

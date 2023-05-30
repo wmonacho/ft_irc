@@ -14,7 +14,7 @@ Server::Server(int port, std::string password) {
     _clientLen = sizeof(_clientAddr);
     _port = port;
     _password = password;
-    int on = 1;
+    int on = -1;
 
     _socketfd = socket(AF_INET, SOCK_STREAM, 0);
     if (_socketfd < 0) {
@@ -146,7 +146,7 @@ std::map<std::string, Channel>::iterator  Server::getItMap(void) {
 Channel*              Server::getChannel(std::string channel_name)
 {
 	if (this->_channels.find(channel_name) == this->_channels.end())
-		return (NULL);
+        return (NULL);
     return (&this->_channels.find(channel_name)->second);
 }
 
@@ -417,7 +417,6 @@ void    Server::createNewChannel(std::string channel_name)
 		std::cout << "Error: no channel found" << std::endl;
 	else
 		std::cout << "Succes: channel found" << std::endl;
-    std::cout << "issou" << std::endl;
 	std::cout << "channel_addr === " << &(this->_channels.find(channel_name)->second) << std::endl;
 	std::cout << "channel_name === " << this->_channels.find(channel_name)->second.getName() << std::endl;
 }
