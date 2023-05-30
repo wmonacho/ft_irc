@@ -233,8 +233,8 @@ bool    cmd::parseQuit(std::string str)
 
 bool    cmd::parseJoin(std::string str, Server server, User *user)
 {
-     std::cout << "Join cmd found" << std::endl;
-     std::cout << "str: " << str << std::endl;
+    std::cout << "Join cmd found" << std::endl;
+    std::cout << "str: " << str << std::endl;
  	std::vector<std::string> splitArg = splitString(str, " ");
  	if (splitArg.size() != 2)
  		return false;
@@ -247,12 +247,16 @@ bool    cmd::parseJoin(std::string str, Server server, User *user)
  	}
  	std::string channel_name= &splitArg[1][1];
 	Channel* channel = server.getChannel(channel_name);
+    std::string server_response = createServerMessage(user, "", splitArg);
 
     if (channel)
 	{
  		ChannelAspects	new_aspects(0);
 		channel->setUserList(user, new_aspects);
+        std::cout << "teslooooool" << std::endl;
 		std::cout << "channel === " << channel->getName() << std::endl;
+        // We send a message to all the users connected to the channel
+        sendResponseToAllUsersInChannel(server_response, server.getChannel(channel_name));
 		return true;
 	}
     /*snon creer un nouveau Channel y ajouter le User avec les droits admin et utiliser setNewChannelInMap ensuite*/
@@ -260,7 +264,12 @@ bool    cmd::parseJoin(std::string str, Server server, User *user)
     server.createNewChannel(channel_name);
 	if (!server.getChannel(channel_name))
 		return false;
-	server.addChannelUser(channel_name, user, new_aspects); // entre le user dans la list du channel
+	server.addUserToChannel(channel_name, user, new_aspects);
+
+    // After the channel creation (if it didn't exist)
+    sendResponseToAllUsersInChannel(server_response, channel);
+    std::cout << "LOL" << std::endl;
+
  	return true;
 }
 
@@ -473,7 +482,7 @@ bool    cmd::parseInvite(std::string str, Server server, User *user)
 	}
 	//execution de la cmd: envoyer le nouveau User dans le channel
 	ChannelAspects channel_aspects(false);
-	server.addChannelUser(chan, server.getConstUser(nick), channel_aspects);
+	server.addUserToChannel(chan, server.getConstUser(nick), channel_aspects);
     return true;
 }
 
@@ -667,4 +676,36 @@ void cmd::whichCmd(std::string str, Server server, User *user)
             parsePrivmsg(str, server);
             break;
     }
+}
+
+std::string    cmd::createServerMessage(User *user, std::string numReply, std::vector<std::string> splitArg)
+{
+    std::string tmp;
+
+    if (numReply.empty())
+        tmp = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + splitArg[0] + " " + splitArg[1] + "\r\n";
+    else
+        tmp = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + numReply + " " + splitArg[0] + " " + splitArg[1] + "\r\n";
+    std::cout << "SERVER RESPONSE  " << tmp << std::endl;
+    return (tmp);
+}
+
+void    cmd::sendResponseToAllUsersInChannel(std::string message, Channel *channel)
+{
+    unsigned long i = 0;
+    std::map<const User*, ChannelAspects>::iterator user;
+
+    // std::cout << channel->getUserList().size() << std::endl;
+    std::cout << "TEST MDR" << std::endl;
+    while (i < channel->getUserList().size())
+    {
+        if (i == 0)
+            user = channel->getUserList().begin();
+        if (i > 0)
+            user++;
+        std::cout << "Join message sent to user number " << i << std::endl;
+        send(user->first->getSocket(), message.c_str(), message.size(), 0);
+        i++;
+    }
+    return ;
 }

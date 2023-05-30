@@ -1,4 +1,5 @@
 #include "server.hpp"
+#include <cerrno>
 
 void    Server::startServer() {
 
@@ -8,7 +9,7 @@ void    Server::startServer() {
     int             currentSize = 0;
     bool            closeConnection = false;
     bool            endOfServer = false;
-    struct pollfd   fds[42];
+    struct pollfd   fds[MAX_SOCKETS];
     
     // Initialize the array of pollfd structures
     memset(fds, 0, sizeof(fds));
@@ -120,16 +121,23 @@ int Server::verifyClientAndServerResponse(struct pollfd fds) {
 
 std::string Server::getClientInformationsOnConnection(struct pollfd fds) {
         
-    int     bytesRead;
-    char    buffer[512];
+    int     bytesRead = 0;
+    int     totalBytesRead = 0;
+    char    buffer[50];
 	
-    memset(buffer, 0, 511);
+    memset(buffer, 0, 50 * sizeof(char));
 
-    //We read the socket to get the client information that we will use to create the new user (whose connected)
-	bytesRead = recv(fds.fd, buffer, 511, 0);
-    if (bytesRead <= 0) {
-        std::cerr << "Error: recv() failed for connection registration: empty socket" << std::endl;
-    }
+    // We read the socket to get the client information that we will use to create the new user (whose connected)
+    do {
+        bytesRead = recv(fds.fd, buffer, 50, 0);
+        if (bytesRead <= 0) {
+            std::cerr << "Error: recv() failed for connection registration" << std::endl;
+        }
+        totalBytesRead += bytesRead;
+    } while (totalBytesRead < 50);
+    buffer[bytesRead] = '\0';
+    std::cout << "READ = " << bytesRead << " / BUFFER :\n" << buffer;
+    std::cout << "==========================" << std::endl;
     return (std::string(buffer, bytesRead));
 }
 
@@ -139,7 +147,7 @@ void    Server::createNewUserAtConnection(std::string nickname, std::string user
     User new_user;
 
     new_user.setNickname(nickname);
-    new_user.setRealname(username);
+    new_user.setUsername(username);
     new_user.setSocket(socket);
 
     // Then we add the new user which connected to the server to the USER_LIST of the server
@@ -211,7 +219,7 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
     command.whichCmd(buffer, *this, user);
     
     // We send the message back to the client (TESTING PURPOSE)
-    send(fds[socketID].fd, buffer, recvReturn, 0);
+    // send(fds[socketID].fd, buffer, recvReturn, 0);
 
     return (closeConnection);
 }
