@@ -139,10 +139,7 @@ void    Channel::setPassword(std::string pass)
 void	Channel::setUserList(const User * new_user, ChannelAspects channel_aspects)
 {
 	this->_channel_user_list.insert(std::make_pair(new_user, channel_aspects));
-	if (this->_channel_user_list.find(new_user) == this->_channel_user_list.end())
-		std::cout << "Error: no user found" << std::endl;
-	else
-		std::cout << "Succes: user found" << std::endl;
+	return ;
 }
 
 // CHANNEL FUNCTIONS

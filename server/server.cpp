@@ -14,7 +14,7 @@ Server::Server(int port, std::string password) {
     _clientLen = sizeof(_clientAddr);
     _port = port;
     _password = password;
-    int on = -1;
+    int on = 1;
 
     _socketfd = socket(AF_INET, SOCK_STREAM, 0);
     if (_socketfd < 0) {
@@ -404,9 +404,10 @@ bool	Server::channelIsInviteOnly(std::string channel_name)
 	return this->_channels.find(channel_name)->second.getInviteOnly();
 }
 
-void	Server::addChannelUser(std::string channel_name, const User *user, ChannelAspects channel_aspects)
+void	Server::addUserToChannel(std::string channel_name, const User *user, ChannelAspects channel_aspects)
 {
 	this->getChannel(channel_name)->setUserList(user, channel_aspects);
+    std::cout << "User successfully added to user list of the channel : " << channel_name << std::endl;
 }
 
 void    Server::createNewChannel(std::string channel_name)
@@ -416,6 +417,7 @@ void    Server::createNewChannel(std::string channel_name)
 		std::cout << "Error: no channel found" << std::endl;
 	else
 		std::cout << "Succes: channel found" << std::endl;
+    std::cout << "issou" << std::endl;
 	std::cout << "channel_addr === " << &(this->_channels.find(channel_name)->second) << std::endl;
 	std::cout << "channel_name === " << this->_channels.find(channel_name)->second.getName() << std::endl;
 }
