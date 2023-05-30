@@ -32,6 +32,7 @@ class Channel
         int         _userLimit;
 		std::map<const User*, ChannelAspects> _channel_user_list;
 	public :
+		Channel();
 		Channel( std::string name);
         Channel(const Channel& obj);
         ~Channel();

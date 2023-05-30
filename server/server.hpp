@@ -48,6 +48,7 @@ class Server {
         Server& operator=(const Server& obj);
         ~Server();
 
+        bool    check;
         // Setters functions
         void   	                                setPort(int port);
         void   	                                setSocketfd(int fd);

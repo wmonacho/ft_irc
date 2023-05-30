@@ -63,16 +63,16 @@ std::vector<std::string> cmd::splitString(std::string str, const char *delim)
     return (out);
 }
 
-bool    cmd::parsePass(std::string str, Server server)
+bool    cmd::parsePass(std::string str, Server *server)
 {
     std::vector<std::string> splitArg = splitString(str, " ");
-    if (splitArg.size() != 2 || server.passwordAlreadyRegistred())
+    if (splitArg.size() != 2 || server->passwordAlreadyRegistred())
         return (false);
-    server.setPassword(splitArg[1]);
+    server->setPassword(splitArg[1]);
     return (true);
 }
 
-bool    cmd::parseNick(std::string str, Server server, User *user) //recup le User originaire de la commande
+bool    cmd::parseNick(std::string str, Server *server, User *user) //recup le User originaire de la commande
 {
     std::vector<std::string> splitArg = splitString(str, " ");
     if (splitArg.size() != 2)
@@ -91,13 +91,13 @@ bool    cmd::parseNick(std::string str, Server server, User *user) //recup le Us
         i++;
     }
     //verifier que le nick est valide
-    if (server.nickAlreadyExist(splitArg[1]))
+    if (server->nickAlreadyExist(splitArg[1]))
         return (false);
     user->setNickname(splitArg[1]);
     return (true);
 }
 
-bool    cmd::parseUser(std::string str, Server server)
+bool    cmd::parseUser(std::string str, Server *server)
 {
     //verifier si le user existe
     std::vector<std::string> splitArg = splitString(str, " ");
@@ -113,21 +113,21 @@ bool    cmd::parseUser(std::string str, Server server)
         //setuser
         User    new_user;
 
-        server.createRandomUsername(new_user);
+        server->createRandomUsername(new_user);
         std::string real_name;
         for (unsigned int i = 4; i < splitArg.size(); i++)
         {
             real_name += splitArg[i];
         }
         new_user.setRealname(real_name);
-        server.setUserList(new_user);
+        server->setUserList(new_user);
         std::cout << "hello from parseUser, it's working bitch" << std::endl;
     }
     return (true);
 }
 
 
-bool    cmd::parseMode(std::string str, Server server, User *user)
+bool    cmd::parseMode(std::string str, Server *server, User *user)
 {
     //mode i, t, k, o
     std::vector<std::string> splitArg = splitString(str, " ");
@@ -139,13 +139,13 @@ bool    cmd::parseMode(std::string str, Server server, User *user)
         return (false);
     }
     //check si # devant la cible et si le channel existe
-	if (splitArg[1][0] != '#' || server.getMap().find(&splitArg[1][1]) == server.getMap().end())
+	if (splitArg[1][0] != '#' || server->getMap().find(&splitArg[1][1]) == server->getMap().end())
 	{
            std::cerr << "MODE: can't find this channel " << std::endl;
            return (false);
 	}
 	//check si le User est bien dans la userlist du channel
-	if (!server.userInChannel(&splitArg[1][1], user))
+	if (!server->userInChannel(&splitArg[1][1], user))
            return false;
     //check si + ou - devant le mode
 	if ((splitArg[2][0] != '-' && splitArg[2][0] != '+') || splitArg[2].size() != 2)
@@ -161,13 +161,13 @@ bool    cmd::parseMode(std::string str, Server server, User *user)
            return (false);
 	}
 
-       Channel *chan = server.getChannel(splitArg[1]);
-       const User* u = server.getChannelUser(splitArg[1], splitArg[3]);
+       Channel *chan = server->getChannel(splitArg[1]);
+       const User* u = server->getChannelUser(splitArg[1], splitArg[3]);
     //execute les modes +
     //il restera a modifier les fonctions affectees par les modes
 	for (unsigned int i = 1; splitArg[2][0] == '+' && i < splitArg[2].size(); i++)
 	{
-		const User* u = server.getChannelUser(splitArg[1], splitArg[3]);
+		const User* u = server->getChannelUser(splitArg[1], splitArg[3]);
 		switch(splitArg[2][i] + 48)
 		{
                   case 105:
@@ -231,7 +231,7 @@ bool    cmd::parseQuit(std::string str)
     return true;
 }
 
-bool    cmd::parseJoin(std::string str, Server server, User *user)
+bool    cmd::parseJoin(std::string str, Server *server, User *user)
 {
     std::cout << "Join cmd found" << std::endl;
     std::cout << "str: " << str << std::endl;
@@ -246,34 +246,36 @@ bool    cmd::parseJoin(std::string str, Server server, User *user)
  		return false;
  	}
  	std::string channel_name= &splitArg[1][1];
-	Channel* channel = server.getChannel(channel_name);
     std::string server_response = createServerMessage(user, "", splitArg);
 
-    if (channel)
+    std::cout << "Check if server exists" << std::endl;
+    if (server->channelAlreadyExist(channel_name))
 	{
+	    Channel* channel = server->getChannel(channel_name);
+        std::cout << "JOIN EXISTSING CHANNEL --> " << channel->getName() << std::endl;
  		ChannelAspects	new_aspects(0);
 		channel->setUserList(user, new_aspects);
-        std::cout << "teslooooool" << std::endl;
 		std::cout << "channel === " << channel->getName() << std::endl;
         // We send a message to all the users connected to the channel
-        sendResponseToAllUsersInChannel(server_response, server.getChannel(channel_name));
+        sendResponseToAllUsersInChannel(server_response, server->getChannel(channel_name));
 		return true;
 	}
+    std::cout << "Channel no exists" << std::endl;
     /*snon creer un nouveau Channel y ajouter le User avec les droits admin et utiliser setNewChannelInMap ensuite*/
  	ChannelAspects	new_aspects(1);
-    server.createNewChannel(channel_name);
-	if (!server.getChannel(channel_name))
+    server->createNewChannel(channel_name);
+	if (!server->getChannel(channel_name))
 		return false;
-	server.addUserToChannel(channel_name, user, new_aspects);
+	server->addUserToChannel(channel_name, user, new_aspects);
 
     // After the channel creation (if it didn't exist)
-    sendResponseToAllUsersInChannel(server_response, channel);
+    sendResponseToAllUsersInChannel(server_response, server->getChannel(channel_name));
     std::cout << "LOL" << std::endl;
 
  	return true;
 }
 
-bool    cmd::parsePart(std::string str, Server server, User *user)
+bool    cmd::parsePart(std::string str, Server *server, User *user)
 {
     std::vector<std::string> splitArg = splitString(str, " ");
     if (splitArg.size() < 2)
@@ -288,10 +290,10 @@ bool    cmd::parsePart(std::string str, Server server, User *user)
     {
 
         //verifier si le channel existe
-		if (!server.channelAlreadyExist(*it))
+		if (!server->channelAlreadyExist(*it))
 			return false;
         //verifier si l'user est bien dans le channel
-		if (!server.userInChannel(*it, user))
+		if (!server->userInChannel(*it, user))
 			return false;
 		//si l'user est bien dans le channel:
         //- ecrire un message annoncant le depart de l'user
@@ -304,7 +306,7 @@ bool    cmd::parsePart(std::string str, Server server, User *user)
     return true;
 }
 
-bool    cmd::parseTopic(std::string str, Server server, User *user)
+bool    cmd::parseTopic(std::string str, Server *server, User *user)
 {
     std::vector<std::string> arg = splitString(str, " ");
     if (arg.size() < 3)
@@ -313,14 +315,14 @@ bool    cmd::parseTopic(std::string str, Server server, User *user)
         return false;
     }
     //verifier si le channel existe
-    if (arg[1][0] == '#' || !server.channelAlreadyExist(&arg[1][1]))
+    if (arg[1][0] == '#' || !server->channelAlreadyExist(&arg[1][1]))
         return false;
     //verifier si le client est dans le channel
-    if (!server.userInChannel(arg[1], user))
+    if (!server->userInChannel(arg[1], user))
         return false;
     if (arg.size() == 3)
     {
-        Channel *chan = server.getChannel(arg[1]);
+        Channel *chan = server->getChannel(arg[1]);
         if (chan->getTopicAdmin())
         {
             if (!chan->getUserAdmin(user))
@@ -348,12 +350,12 @@ bool    cmd::parseTopic(std::string str, Server server, User *user)
     return true;
 }
 
-bool    cmd::parseNames(std::string str, Server server)
+bool    cmd::parseNames(std::string str, Server *server)
 {
     std::vector<std::string> arg = splitString(str, " ");
 
-    std::map<std::string, Channel> map = server.getMap();
-    std::vector<User> copy_list_user = server.getUserList();
+    std::map<std::string, Channel> map = server->getMap();
+    std::vector<User> copy_list_user = server->getUserList();
 
     if (arg.size() == 1)
     {
@@ -383,10 +385,10 @@ bool    cmd::parseNames(std::string str, Server server)
     return true;
 }
 
-bool    cmd::parseList(std::string str, Server server)
+bool    cmd::parseList(std::string str, Server *server)
 {
     std::vector<std::string> arg = splitString(str, " ");
-    std::map<std::string, Channel> map = server.getMap();
+    std::map<std::string, Channel> map = server->getMap();
     std::vector<std::string> chans;
 
     if (arg.size() == 1)
@@ -425,7 +427,7 @@ bool    cmd::parseList(std::string str, Server server)
     return true;
 }
 
-bool    cmd::parseInvite(std::string str, Server server, User *user)
+bool    cmd::parseInvite(std::string str, Server *server, User *user)
 {
     std::vector<std::string> arg = splitString(str, " ");
 
@@ -433,7 +435,7 @@ bool    cmd::parseInvite(std::string str, Server server, User *user)
         return false;
     std::string nick = arg[1];
     std::string chan = &arg[2][1];
-    std::map<std::string, Channel> map = server.getMap();
+    std::map<std::string, Channel> map = server->getMap();
     int chanFound = 0;
     for (std::map<std::string, Channel>::iterator it = map.begin(); it != map.end(); it++)
     {
@@ -446,35 +448,35 @@ bool    cmd::parseInvite(std::string str, Server server, User *user)
     //channel pas valide = pas d erreur
     if (chanFound == 0)
         return false;
-    if (server.nickAlreadyExist(nick) == false)
+    if (server->nickAlreadyExist(nick) == false)
     {
         std::cerr << "ERR_NOSUCHNICK" << std::endl;
         return false;
     }
     //seulement les users du channel peuvent inviter des gens
     //verifier que l'user soit bien dans le channel
-	if (!server.userInChannel(chan, user))
+	if (!server->userInChannel(chan, user))
 	{
 		std::cerr << "ERR_NOTONCHANNEL" << std::endl;
 		return false;
 	}
     //si le channel a le flag invite only set, seulement les channels operators peuvent inviter
-	if (!server.getChannelUserAdmin(chan, user) && server.channelIsInviteOnly(chan))
+	if (!server->getChannelUserAdmin(chan, user) && server->channelIsInviteOnly(chan))
 	{
 		std::cerr << "ERR_CHANOPRIVSNEEDED" << std::endl;
 		return false;
 	}
     //checker si l'user est deja sur le chan
-	if (server.userInChannel(chan, server.getChannelUser(chan, nick)))
+	if (server->userInChannel(chan, server->getChannelUser(chan, nick)))
 	{
 		std::cerr << "ERR_USERONCHANNEL" << std::endl;
 		return false;
 	}
 	//check si le channel a une limit
-	if (server.channelHaveLimit(chan))
+	if (server->channelHaveLimit(chan))
 	{
 		//check si la limit est inferieur ou egal aux users sur le channel
-		if (!server.channelEnoughSpace(chan))
+		if (!server->channelEnoughSpace(chan))
 		{
 			std::cerr << "ERR_BEYONDTHELIMIT" << std::endl;
 			return false;
@@ -482,11 +484,11 @@ bool    cmd::parseInvite(std::string str, Server server, User *user)
 	}
 	//execution de la cmd: envoyer le nouveau User dans le channel
 	ChannelAspects channel_aspects(false);
-	server.addUserToChannel(chan, server.getConstUser(nick), channel_aspects);
+	server->addUserToChannel(chan, server->getConstUser(nick), channel_aspects);
     return true;
 }
 
-bool    cmd::parseKick(std::string str, Server server, User *user)
+bool    cmd::parseKick(std::string str, Server *server, User *user)
 {
     std::cout << "Kick cmd found" << std::endl;
     std::vector<std::string> arg = splitString(str, " ");
@@ -505,13 +507,13 @@ bool    cmd::parseKick(std::string str, Server server, User *user)
         return false;
     }
     //check si le server existe
-    if (!server.channelAlreadyExist(&arg[1][1]))
+    if (!server->channelAlreadyExist(&arg[1][1]))
     {
         std::cerr << "Error: no such channel" << std::endl;
         return false;
     }
     //check si le User exist dans le channel
-    if (!server.userInChannel(&arg[1][1], server.getChannelUser(&arg[1][1], arg[2])))
+    if (!server->userInChannel(&arg[1][1], server->getChannelUser(&arg[1][1], arg[2])))
 	{
 		std::cerr << "Error: not on channel" << std::endl;
 		return false;
@@ -525,7 +527,7 @@ bool    cmd::parseKick(std::string str, Server server, User *user)
 			return false;
 		}
 		//bannir le User du channel
-		//server.kickChannelUser(&arg[2][1], kick_user);
+		//server->kickChannelUser(&arg[2][1], kick_user);
 		//ecris le commentaire de kick
 		unsigned int i = 3;
 		while (i < arg.size() - 1)
@@ -537,14 +539,14 @@ bool    cmd::parseKick(std::string str, Server server, User *user)
 		return true;
 	}
 	//bannir le User du channel
-	server.kickUserFromChannel(&arg[1][1], server.getChannelUser(&arg[1][1], arg[2]));
+	server->kickUserFromChannel(&arg[1][1], server->getChannelUser(&arg[1][1], arg[2]));
 	//ecris la phrase de kick par default
 	std::cout << "You're banned, go find somewhere else to be." << std::endl;
     return true;
 }
 
 
-bool    cmd::parsePrivmsg(std::string str, Server server)
+bool    cmd::parsePrivmsg(std::string str, Server *server)
 {
 //	Parameters: <msgtarget> <text to be sent>
 	//exemple : PRIVMSG jreverdy :Are you a frog?
@@ -557,7 +559,7 @@ bool    cmd::parsePrivmsg(std::string str, Server server)
 	}
 	//arg[1] nickname
 	std::string nick_target = arg[1];
-	if (server.nickAlreadyExist(arg[2]))
+	if (server->nickAlreadyExist(arg[2]))
 	{
 		std::cerr << "ERR_TOOMANYTARGETS" << std::endl;
 		return false;
@@ -567,7 +569,7 @@ bool    cmd::parsePrivmsg(std::string str, Server server)
 		std::cerr << "ERR_NOTEXTTOSEND" << std::endl;
 		return false;
 	}
-	if (!server.nickAlreadyExist(nick_target))
+	if (!server->nickAlreadyExist(nick_target))
 	{
 		std::cerr << "ERR_NOSUCHNICK" << std::endl;
 		return false;
@@ -575,7 +577,7 @@ bool    cmd::parsePrivmsg(std::string str, Server server)
 	return true;
 }
 
-void cmd::whichCmd(std::string str, Server server, User *user)
+void cmd::whichCmd(std::string str, Server *server, User *user)
 {
     std::vector<std::string> arg = splitString(str, " ");
     int j = -1;
@@ -692,20 +694,26 @@ std::string    cmd::createServerMessage(User *user, std::string numReply, std::v
 
 void    cmd::sendResponseToAllUsersInChannel(std::string message, Channel *channel)
 {
-    unsigned long i = 0;
+    // unsigned long i = 0;
     std::map<const User*, ChannelAspects>::iterator user;
 
-    // std::cout << channel->getUserList().size() << std::endl;
-    std::cout << "TEST MDR" << std::endl;
-    while (i < channel->getUserList().size())
-    {
-        if (i == 0)
-            user = channel->getUserList().begin();
-        if (i > 0)
-            user++;
-        std::cout << "Join message sent to user number " << i << std::endl;
+    // std::cout << channel->getUserList().end()--->first->getUsername() << std::endl;
+    // while (i < channel->getUserList().size())
+    // {
+    //     if (i == 0)
+    //         user = channel->getUserList().begin();
+    //     if (i > 0)
+    //         user++;
+    //     std::cout << "Join message sent to user number " << i << std::endl;
+    //     send(user->first->getSocket(), message.c_str(), message.size(), 0);
+    //     i++;
+    // }
+    for (user = channel->getUserList().begin(); user != channel->getUserList().end(); user++) {
+        std::cout << "FOR LOOP TO SEND MESSAGE" << std::endl;
+        if (!user->first)
+            break ;
         send(user->first->getSocket(), message.c_str(), message.size(), 0);
-        i++;
     }
+    std::cout << "OUT OF SEND LOOP" <<std::endl;
     return ;
 }
