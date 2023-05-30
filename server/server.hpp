@@ -18,6 +18,8 @@
 #include <map>
 #include <algorithm>
 
+#define MAX_SOCKETS 42
+
 class Channel;
 class User;
 class ChannelApects;
@@ -108,7 +110,7 @@ class Server {
 		bool									channelEnoughSpace(std::string channel_name);
 		bool									channelIsInviteOnly(std::string channel_name);
 		void	                                kickUserFromChannel(std::string channel_name, const User *user);
-		void									addChannelUser(std::string channel_name, const User *user, ChannelAspects channel_aspects);
+		void									addUserToChannel(std::string channel_name, const User *user, ChannelAspects channel_aspects);
         void   	                                createNewChannel(std::string channel_name);
 
 };
