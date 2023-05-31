@@ -7,7 +7,7 @@ FILES =		main.cpp							\
 			server/server.cpp					\
 			server/socketManager.cpp			\
 			channel/Channel.cpp					\
-			channel_aspects/ChannelAspects.cpp	\
+			user_aspects/UserAspects.cpp	\
 			user/User.cpp						\
 			cmd/cmd.cpp							\
 # ====================================================================
@@ -15,7 +15,7 @@ FILES =		main.cpp							\
 # HEADER =============================================================
 HEADER =	server/server.hpp					\
 			channel/Channel.hpp					\
-			channel_aspects/ChannelAspects.hpp	\
+			user_aspects/UserAspects.hpp	\
 			user/User.hpp						\
 			cmd/cmd.hpp							\
 
@@ -30,7 +30,7 @@ CC =		c++
 # ====================================================================
 
 # SUB_DIR_LST ========================================================
-SUB_DIR_LST =	server channel user cmd channel_aspects
+SUB_DIR_LST =	server channel user cmd user_aspects
 # ====================================================================
 
 # OBJS_DIR ===========================================================

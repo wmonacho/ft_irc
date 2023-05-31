@@ -224,7 +224,7 @@ const User*  Server::getConstUser(std::string user_nickname)
 }
 
 //il faudra checker si le channel existe avant d'utiliser cette focntion
-std::map<const User*, ChannelAspects>	Server::getChannelUserList(std::string channel_name)
+std::map<const User*, UserAspects>	Server::getChannelUserList(std::string channel_name)
 {
 	//throw une exception si possible en checkant s'il existe
 	return (this->_channels.find(channel_name)->second.getUserList());
@@ -404,14 +404,14 @@ bool	Server::channelIsInviteOnly(std::string channel_name)
 	return this->_channels.find(channel_name)->second.getInviteOnly();
 }
 
-void	Server::addUserToChannel(std::string channel_name, const User *user, ChannelAspects channel_aspects)
+void	Server::addUserToChannel(std::string channel_name, const User *user, UserAspects channel_aspects)
 {
 	this->getChannel(channel_name)->setUserList(user, channel_aspects);
 }
 
-void    Server::createNewChannel(std::string channel_name)
+void    Server::createNewChannel(std::string channel_name, Channel &channel)
 {
-	this->_channels.insert(std::make_pair(channel_name, Channel(channel_name)));
+	this->_channels.insert(std::make_pair(channel_name, channel));
 	if (this->_channels.find(channel_name) == this->_channels.end())
 		std::cout << "Error: error wasn't created" << std::endl;
 	else

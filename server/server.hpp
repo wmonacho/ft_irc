@@ -88,7 +88,7 @@ class Server {
         const User*	                            getChannelUser(std::string channel_name, const User *user);
         std::vector<User>                       getUserList(void);
         const std::map<std::string, Channel>&			getMap(void); //read only
-        std::map<const User*, ChannelAspects>   getChannelUserList(std::string channel_name);
+        std::map<const User*, UserAspects>   getChannelUserList(std::string channel_name);
 		std::map<std::string, Channel>::iterator	getItMap(void);
 
         // Socket connection and user registration for "socketManager.cpp"
@@ -111,9 +111,8 @@ class Server {
 		bool									channelEnoughSpace(std::string channel_name);
 		bool									channelIsInviteOnly(std::string channel_name);
 		void	                                kickUserFromChannel(std::string channel_name, const User *user);
-		void									addUserToChannel(std::string channel_name, const User *user, ChannelAspects channel_aspects);
-        void   	                                createNewChannel(std::string channel_name);
-
+		void									addUserToChannel(std::string channel_name, const User *user, UserAspects channel_aspects);
+    void   	                                	createNewChannel(std::string channel_name, Channel &channel);
 };
 
 #endif

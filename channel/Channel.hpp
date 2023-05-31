@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.hpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: will <will@student.42lyon.fr>              +#+  +:+       +#+        */
+/*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 13:57:00 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/25 11:18:32 by will             ###   ########lyon.fr   */
+/*   Updated: 2023/05/31 10:18:09 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 
 #include <vector>
 #include "../user/User.hpp"
-#include "../channel_aspects/ChannelAspects.hpp"
+#include "../user_aspects/UserAspects.hpp"
 
 class User;
 class ChannelApects;
@@ -30,14 +30,14 @@ class Channel
         bool        _inviteOnly;
         bool        _topicAdmin;
         int         _userLimit;
-		std::map<const User*, ChannelAspects> _channel_user_list;
+		std::map<const User*, UserAspects> _channel_user_list;
 	public :
 		Channel();
 		Channel( std::string name);
         Channel(const Channel& obj);
         ~Channel();
 		
-		void						setUserList(const User * new_user, ChannelAspects channel_aspects);
+		void						setUserList(const User * new_user, UserAspects channel_aspects);
 		void						setName( std::string new_string );
         void						setPassword(std::string pass);
 		void						setTopic( std::string new_string );
@@ -58,7 +58,7 @@ class Channel
 		const std::string			getUserRealname(User *user);
 		const std::string			getUserPassword(User *user);
 		const std::string			getUserNickname(User *user);
-		std::map<const User*, ChannelAspects>	getUserList( void ) const;
+		std::map<const User*, UserAspects>	getUserList( void ) const;
 		
 		
 		bool	channelIsSecret( void );
