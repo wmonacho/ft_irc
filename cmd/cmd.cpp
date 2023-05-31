@@ -233,13 +233,12 @@ bool    cmd::parseQuit(std::string str)
 
 bool    cmd::parseJoin(std::string str, Server *server, User *user)
 {
-    std::cout << "Join cmd found" << std::endl;
-    std::cout << "str: " << str << std::endl;
+    std::cout << user->getUsername() << " = " << user->getSocket() << std::endl;
+    // std::cout << "str: " << str << std::endl;
  	std::vector<std::string> splitArg = splitString(str, " ");
  	if (splitArg.size() != 2)
  		return false;
  	//check si pas de # devant le channel (jwe crois que l'on peut mettre & aussi a verifier)
-	std::cout << splitArg[1] << std::endl;
  	if (splitArg[1][0] != '#')
  	{
  		std::cerr << "ERR_BADCHANNELKEY" << std::endl;
@@ -248,29 +247,31 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
  	std::string channel_name= &splitArg[1][1];
     std::string server_response = createServerMessage(user, "", splitArg);
 
-    std::cout << "Check if server exists" << std::endl;
     if (server->channelAlreadyExist(channel_name))
 	{
+        std::cout << "Channel already exists" << std::endl;
 	    Channel* channel = server->getChannel(channel_name);
-        std::cout << "JOIN EXISTSING CHANNEL --> " << channel->getName() << std::endl;
+        std::cout << "Joining --> " << channel->getName() << std::endl;
  		UserAspects	new_aspects(0);
-		channel->setUserList(user, new_aspects);
-		std::cout << "channel === " << channel->getName() << std::endl;
+		// channel->setUserList(user, new_aspects);
+        server->addUserToChannel(channel_name, user, new_aspects);
         // We send a message to all the users connected to the channel
-        sendResponseToAllUsersInChannel(server_response, server->getChannel(channel_name));
+        sendResponseToAllUsersInChannel(server_response, channel);
 		return true;
 	}
     std::cout << "Channel no exists" << std::endl;
     /*snon creer un nouveau Channel y ajouter le User avec les droits admin et utiliser setNewChannelInMap ensuite*/
  	UserAspects	new_aspects(1);
-    server->createNewChannel(channel_name);
+    Channel *channel = new Channel(channel_name);
+    std::cout << "constructor test" << std::endl;
+    server->createNewChannel(channel_name, *channel);
+    std::cout << "destructor test" << std::endl;
 	if (!server->getChannel(channel_name))
 		return false;
 	server->addUserToChannel(channel_name, user, new_aspects);
 
     // After the channel creation (if it didn't exist)
     sendResponseToAllUsersInChannel(server_response, server->getChannel(channel_name));
-    std::cout << "LOL" << std::endl;
 
  	return true;
 }
@@ -688,33 +689,32 @@ std::string    cmd::createServerMessage(User *user, std::string numReply, std::v
         tmp = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + splitArg[0] + " " + splitArg[1] + "\r\n";
     else
         tmp = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + numReply + " " + splitArg[0] + " " + splitArg[1] + "\r\n";
-    std::cout << "SERVER RESPONSE  " << tmp << std::endl;
+    std::cout << "SERVER RESPONSE  " << tmp;
     return (tmp);
 }
 
 void    cmd::sendResponseToAllUsersInChannel(std::string message, Channel *channel)
 {
-    // unsigned long i = 0;
-    std::map<const User*, UserAspects>::iterator user;
+    // std::cout << "Size of UserMap : " << channel->getUserList().size() << std::endl;
+    // std::cout << "First user in map : " << &channel->getUserList().begin()->first<< std::endl;
+    // std::cout << "First user's socket in map : " << channel->getUserList().begin()->first->getSocket() << std::endl;
 
-    // std::cout << channel->getUserList().end()--->first->getUsername() << std::endl;
-    // while (i < channel->getUserList().size())
-    // {
-    //     if (i == 0)
-    //         user = channel->getUserList().begin();
-    //     if (i > 0)
-    //         user++;
-    //     std::cout << "Join message sent to user number " << i << std::endl;
-    //     send(user->first->getSocket(), message.c_str(), message.size(), 0);
-    //     i++;
-    // }
-    for (user = channel->getUserList().begin(); user != channel->getUserList().end(); user++) {
-		std::cout << "user addr" << &user->first << std::endl;
-        std::cout << "FOR LOOP TO SEND MESSAGE" << std::endl;
-        if (!user->first)
-            break ;
-        send(user->first->getSocket(), message.c_str(), message.size(), 0);
+    if (channel->getUserList().empty()) {
+        std::cerr << "MAP IS EMPTY" << std::endl;
+        return ;
     }
+
+    std::map<const User*, UserAspects> maptmp = channel->getUserList();
+    std::map<const User*, UserAspects>::iterator user = maptmp.begin();
+    std::map<const User*, UserAspects>::iterator userEnd = maptmp.end();
+
+    while (user != userEnd) {
+        std::string tmp = message;
+        send(user->first->getSocket(), tmp.c_str(), tmp.size(), 0);
+        std::cout << "JOIN msg sent to " << user->first->getUsername() << std::endl;
+        user++;
+    }
+
     std::cout << "OUT OF SEND LOOP" <<std::endl;
     return ;
 }
