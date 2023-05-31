@@ -14,7 +14,6 @@
 
 Channel::Channel() 
 {
-	std::cout << "DEFAULT CONSTRUCTOR MDR" << std::endl;
 	this->_name = "";
 	this->_topic = "";
     this->_password = "";

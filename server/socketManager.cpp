@@ -60,8 +60,10 @@ void    Server::startServer() {
 
     // If the server ended we should close all fd
     for (int i = 0; i < nfds; i++) {
-        if (fds[i].fd >= 0)
+        if (fds[i].fd >= 0) {
+            std::cerr << "Closing sockets " << i << std::endl;
             close(fds[i].fd);
+        }
     }
 
     return ;
@@ -83,7 +85,7 @@ int Server::acceptNewConnection(struct pollfd *fds, int nfds) {
                 std::cerr << "Error: accept() failed" << std::endl;
                 nfds = errorStatus;
             }
-            std::cout << "Socket is already connected" << std::endl;
+            std::cout << "Socket " << newSocket << " is already connected" << std::endl;
             break ;
         }
         fds[nfds].fd = newSocket;
@@ -134,10 +136,9 @@ std::string Server::getClientInformationsOnConnection(struct pollfd fds) {
             std::cerr << "Error: recv() failed for connection registration" << std::endl;
         }
         totalBytesRead += bytesRead;
-        std::cout << "TEST CONNECTION" << std::endl;
     } while (totalBytesRead < 50);
     buffer[bytesRead] = '\0';
-    std::cout << "READ = " << bytesRead << " / BUFFER :\n" << buffer;
+    std::cout << "READ = " << bytesRead << " / BUFFER connection :\n" << buffer;
     std::cout << "==========================" << std::endl;
     return (std::string(buffer, bytesRead));
 }
@@ -212,10 +213,12 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
     std::cout << "** =============== **" << std::endl;
     // Affichage sur le serveur
     std::cout << "Buffer from socket " << socketID << " : " << buffer << std::endl;
+    std::cout << "** =============== **" << std::endl;
 
     // Loop to identify which user sent a message to send it to the whichCmd()
-	user = this->getUserBySocket(fds[socketID].fd);
+
     cmd command;
+    user = this->getUserBySocket(fds[socketID].fd);
     // HANDLE CLIENT MESSAGE HERE
     command.whichCmd(buffer, this, user);
     

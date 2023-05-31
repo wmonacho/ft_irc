@@ -208,7 +208,7 @@ User*	Server::getUserBySocket(int socket)
 	for (user = this->_user_list.begin(); user != this->_user_list.end(); user++) {
 	        if (user->getSocket() == socket)
 	            return (&(*user));
-	    }
+	}
 	return (NULL);
 }
 const User*  Server::getConstUser(std::string user_nickname)
@@ -407,16 +407,13 @@ bool	Server::channelIsInviteOnly(std::string channel_name)
 void	Server::addUserToChannel(std::string channel_name, const User *user, ChannelAspects channel_aspects)
 {
 	this->getChannel(channel_name)->setUserList(user, channel_aspects);
-    std::cout << "User successfully added to user list of the channel : " << channel_name << std::endl;
 }
 
 void    Server::createNewChannel(std::string channel_name)
 {
 	this->_channels.insert(std::make_pair(channel_name, Channel(channel_name)));
 	if (this->_channels.find(channel_name) == this->_channels.end())
-		std::cout << "Error: no channel found" << std::endl;
+		std::cout << "Error: error wasn't created" << std::endl;
 	else
-		std::cout << "Succes: channel found" << std::endl;
-	std::cout << "channel_addr === " << &(this->_channels.find(channel_name)->second) << std::endl;
-	std::cout << "channel_name === " << this->_channels.find(channel_name)->second.getName() << std::endl;
+		std::cout << "Succes: channel has been successfully created" << std::endl;
 }
