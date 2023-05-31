@@ -28,6 +28,7 @@ Channel::Channel( std::string name )
     this->_password = "";
     this ->_inviteOnly = false;
     this->_userLimit = -1;
+	std::cout << "CHANNEL CONSTRUCTOR" << std::endl;
 }
 
 Channel::Channel( Channel const & obj)
@@ -44,7 +45,7 @@ Channel::Channel( Channel const & obj)
 
 Channel::~Channel( void )
 {
-
+	std::cout << "CHANNEL DESTRUCTOR" << std::endl;
 }
 
 std::string Channel::getTopic( void ) const

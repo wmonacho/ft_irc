@@ -112,7 +112,7 @@ class Server {
 		bool									channelIsInviteOnly(std::string channel_name);
 		void	                                kickUserFromChannel(std::string channel_name, const User *user);
 		void									addUserToChannel(std::string channel_name, const User *user, ChannelAspects channel_aspects);
-        void   	                                createNewChannel(std::string channel_name);
+        void   	                                createNewChannel(std::string channel_name, Channel &channel);
 
 };
 
