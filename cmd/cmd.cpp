@@ -253,7 +253,7 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
 	{
 	    Channel* channel = server->getChannel(channel_name);
         std::cout << "JOIN EXISTSING CHANNEL --> " << channel->getName() << std::endl;
- 		ChannelAspects	new_aspects(0);
+ 		UserAspects	new_aspects(0);
 		channel->setUserList(user, new_aspects);
 		std::cout << "channel === " << channel->getName() << std::endl;
         // We send a message to all the users connected to the channel
@@ -262,7 +262,7 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
 	}
     std::cout << "Channel no exists" << std::endl;
     /*snon creer un nouveau Channel y ajouter le User avec les droits admin et utiliser setNewChannelInMap ensuite*/
- 	ChannelAspects	new_aspects(1);
+ 	UserAspects	new_aspects(1);
     server->createNewChannel(channel_name);
 	if (!server->getChannel(channel_name))
 		return false;
@@ -363,8 +363,8 @@ bool    cmd::parseNames(std::string str, Server *server)
         {
             //checkez si channel secrete ou pas
             std::cout << "Channel: " << it->first << std::endl;
-            std::map<const User*, ChannelAspects> userlist = it->second.getUserList();
-            for (std::map<const User*, ChannelAspects>::iterator itUser = userlist.begin(); itUser != userlist.end(); itUser++)
+            std::map<const User*, UserAspects> userlist = it->second.getUserList();
+            for (std::map<const User*, UserAspects>::iterator itUser = userlist.begin(); itUser != userlist.end(); itUser++)
             {
                 std::cout << itUser->first->getUsername() << std::endl;
                 std::vector<User>::iterator iter = std::find(copy_list_user.begin(), copy_list_user.end(), itUser->first);
@@ -483,7 +483,7 @@ bool    cmd::parseInvite(std::string str, Server *server, User *user)
 		}
 	}
 	//execution de la cmd: envoyer le nouveau User dans le channel
-	ChannelAspects channel_aspects(false);
+	UserAspects channel_aspects(false);
 	server->addUserToChannel(chan, server->getConstUser(nick), channel_aspects);
     return true;
 }
@@ -695,7 +695,7 @@ std::string    cmd::createServerMessage(User *user, std::string numReply, std::v
 void    cmd::sendResponseToAllUsersInChannel(std::string message, Channel *channel)
 {
     // unsigned long i = 0;
-    std::map<const User*, ChannelAspects>::iterator user;
+    std::map<const User*, UserAspects>::iterator user;
 
     // std::cout << channel->getUserList().end()--->first->getUsername() << std::endl;
     // while (i < channel->getUserList().size())
@@ -709,6 +709,7 @@ void    cmd::sendResponseToAllUsersInChannel(std::string message, Channel *chann
     //     i++;
     // }
     for (user = channel->getUserList().begin(); user != channel->getUserList().end(); user++) {
+		std::cout << "user addr" << &user->first << std::endl;
         std::cout << "FOR LOOP TO SEND MESSAGE" << std::endl;
         if (!user->first)
             break ;

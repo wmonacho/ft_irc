@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   Channel.cpp                                        :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: will <will@student.42lyon.fr>              +#+  +:+       +#+        */
+/*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:31:22 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/26 10:18:53 by will             ###   ########lyon.fr   */
+/*   Updated: 2023/05/31 10:19:57 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -77,7 +77,7 @@ bool    Channel::getTopicAdmin() const
     return (this->_topicAdmin);
 }
 
-std::map<const User*, ChannelAspects>	Channel::getUserList( void ) const
+std::map<const User*, UserAspects>	Channel::getUserList( void ) const
 {
 	return (this->_channel_user_list);
 }
@@ -147,7 +147,7 @@ void    Channel::setPassword(std::string pass)
     this->_password = pass;
 }
 
-void	Channel::setUserList(const User  *new_user, ChannelAspects channel_aspects)
+void	Channel::setUserList(const User  *new_user, UserAspects channel_aspects)
 {
 	this->_channel_user_list.insert(std::make_pair(new_user, channel_aspects));
 	return ;
