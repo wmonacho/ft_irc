@@ -409,9 +409,9 @@ void	Server::addUserToChannel(std::string channel_name, const User *user, Channe
 	this->getChannel(channel_name)->setUserList(user, channel_aspects);
 }
 
-void    Server::createNewChannel(std::string channel_name)
+void    Server::createNewChannel(std::string channel_name, Channel &channel)
 {
-	this->_channels.insert(std::make_pair(channel_name, Channel(channel_name)));
+	this->_channels.insert(std::make_pair(channel_name, channel));
 	if (this->_channels.find(channel_name) == this->_channels.end())
 		std::cout << "Error: error wasn't created" << std::endl;
 	else
