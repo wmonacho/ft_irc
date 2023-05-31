@@ -252,7 +252,7 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
         std::cout << "Channel already exists" << std::endl;
 	    Channel* channel = server->getChannel(channel_name);
         std::cout << "Joining --> " << channel->getName() << std::endl;
- 		ChannelAspects	new_aspects(0);
+ 		UserAspects	new_aspects(0);
 		// channel->setUserList(user, new_aspects);
         server->addUserToChannel(channel_name, user, new_aspects);
         // We send a message to all the users connected to the channel
@@ -261,7 +261,7 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
 	}
     std::cout << "Channel no exists" << std::endl;
     /*snon creer un nouveau Channel y ajouter le User avec les droits admin et utiliser setNewChannelInMap ensuite*/
- 	ChannelAspects	new_aspects(1);
+ 	UserAspects	new_aspects(1);
     Channel *channel = new Channel(channel_name);
     std::cout << "constructor test" << std::endl;
     server->createNewChannel(channel_name, *channel);
@@ -364,8 +364,8 @@ bool    cmd::parseNames(std::string str, Server *server)
         {
             //checkez si channel secrete ou pas
             std::cout << "Channel: " << it->first << std::endl;
-            std::map<const User*, ChannelAspects> userlist = it->second.getUserList();
-            for (std::map<const User*, ChannelAspects>::iterator itUser = userlist.begin(); itUser != userlist.end(); itUser++)
+            std::map<const User*, UserAspects> userlist = it->second.getUserList();
+            for (std::map<const User*, UserAspects>::iterator itUser = userlist.begin(); itUser != userlist.end(); itUser++)
             {
                 std::cout << itUser->first->getUsername() << std::endl;
                 std::vector<User>::iterator iter = std::find(copy_list_user.begin(), copy_list_user.end(), itUser->first);
@@ -484,7 +484,7 @@ bool    cmd::parseInvite(std::string str, Server *server, User *user)
 		}
 	}
 	//execution de la cmd: envoyer le nouveau User dans le channel
-	ChannelAspects channel_aspects(false);
+	UserAspects channel_aspects(false);
 	server->addUserToChannel(chan, server->getConstUser(nick), channel_aspects);
     return true;
 }
@@ -704,9 +704,9 @@ void    cmd::sendResponseToAllUsersInChannel(std::string message, Channel *chann
         return ;
     }
 
-    std::map<const User*, ChannelAspects> maptmp = channel->getUserList();
-    std::map<const User*, ChannelAspects>::iterator user = maptmp.begin();
-    std::map<const User*, ChannelAspects>::iterator userEnd = maptmp.end();
+    std::map<const User*, UserAspects> maptmp = channel->getUserList();
+    std::map<const User*, UserAspects>::iterator user = maptmp.begin();
+    std::map<const User*, UserAspects>::iterator userEnd = maptmp.end();
 
     while (user != userEnd) {
         std::string tmp = message;
