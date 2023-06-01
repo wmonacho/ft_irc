@@ -25,7 +25,7 @@ int main(int ac, char **av)
 		server.setUserList(user);
 		std::string line;
 		int i = 0;
-		while (i < 5)
+		while (i < 1)
 		{
 			std::cout << "DEBUG" << std::endl;
 			std::getline(std::cin, line);
@@ -49,8 +49,17 @@ int main(int ac, char **av)
                 exit(1);
 			cmd.whichCmd(line, &server, &user2);
 			//envoie de JOIN #channel et de NICK didou puis de KICK willou
-			std::cout << user2.getNickname() << std::endl;
-			std::cout << server.getChannel("channel")->getUser(&user2)->getNickname() << std::endl;
+			std::cout << "user2_addr b :" << &user2 << std::endl;
+			std::cout << "user2_addr a :" << &(*server.getChannelUser("channel", &user2)) << std::endl;
+			std::cout << "user2 nickname b :" << user2.getNickname() << ":" << std::endl;
+			std::cout << "user2 nickname a :" << server.getChannelUser("channel", &user2)->getNickname() << ":" << std::endl;
+			std::cout << "====================================================" << std::endl;
+			std::cout << " " << std::endl;
+			std::cout << "====================================================" << std::endl;
+			std::cout << "user_addr b :" << &user << std::endl;
+			std::cout << "user_addr a :" << &(*server.getChannelUser("channel", &user)) << std::endl;
+			std::cout << "user nickname b :" << user.getNickname() <<  ":" << std::endl;
+			std::cout << "user nickname a :" << server.getChannelUser("channel", &user)->getNickname() << ":" << std::endl;
 		}
 		//server.startServer();
 		

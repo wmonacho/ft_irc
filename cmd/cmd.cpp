@@ -489,12 +489,11 @@ bool    cmd::parseInvite(std::string str, Server *server, User *user)
     return true;
 }
 
-bool    cmd::parseKick(std::string str, Server *server, User *user)
+bool    cmd::parseKick(std::string str, Server *server)
 {
     std::cout << "Kick cmd found" << std::endl;
     std::vector<std::string> arg = splitString(str, " ");
 
-	(void) user;
     //check si au moins 3 param : need more params
     if (arg.size() < 3)
     {
@@ -507,6 +506,11 @@ bool    cmd::parseKick(std::string str, Server *server, User *user)
         std::cerr << "Error: bad channel mask" << std::endl;
         return false;
     }
+	//check si plusieurs channel dans la cmd et si bad mask #
+	//for (int i = 1; i < arg.size(); i++)
+	//{
+	//if (arg[i][0] != '#' && arg[i][0]  != '&' && )
+	//}
     //check si le server existe
     if (!server->channelAlreadyExist(&arg[1][1]))
     {
@@ -528,6 +532,7 @@ bool    cmd::parseKick(std::string str, Server *server, User *user)
 			return false;
 		}
 		//bannir le User du channel
+		server->kickUserFromChannel(&arg[1][1], server->getChannelUser(&arg[1][1], arg[2]));
 		//server->kickChannelUser(&arg[2][1], kick_user);
 		//ecris le commentaire de kick
 		unsigned int i = 3;
@@ -560,27 +565,31 @@ bool    cmd::parsePrivmsg(std::string str, Server *server)
 	}
 	//arg[1] nickname
 	std::string nick_target = arg[1];
-	if (server->nickAlreadyExist(arg[2]))
-	{
-		std::cerr << "ERR_TOOMANYTARGETS" << std::endl;
-		return false;
-	}
-	if (arg[2][0] != ':')
-	{
-		std::cerr << "ERR_NOTEXTTOSEND" << std::endl;
-		return false;
-	}
-	if (!server->nickAlreadyExist(nick_target))
-	{
-		std::cerr << "ERR_NOSUCHNICK" << std::endl;
-		return false;
-	}
+	arg[1].erase(0, 1);
+	if (server->channelAlreadyExist(arg[1]))
+		std::cout << "find CHANNEL" << std::endl;
+	//if (server->nickAlreadyExist(arg[2]))
+	//{
+	//	std::cerr << "ERR_TOOMANYTARGETS" << std::endl;
+	//	return false;
+	//}
+	//if (arg[2][0] != ':')
+	//{
+	//	std::cerr << "ERR_NOTEXTTOSEND" << std::endl;
+	//	return false;
+	//}
+	//if (!server->nickAlreadyExist(nick_target))
+	//{
+	//	std::cerr << "ERR_NOSUCHNICK" << std::endl;
+	//	return false;
+	//}
 	return true;
 }
 
 void cmd::whichCmd(std::string str, Server *server, User *user)
 {
     std::vector<std::string> arg = splitString(str, " ");
+	std::cout << "user_direct_addr :" << &(*server->getUser(user->getNickname())) << std::endl;
     int j = -1;
     for (int i = 0; i < 14; i++)
     {
@@ -672,13 +681,14 @@ void cmd::whichCmd(std::string str, Server *server, User *user)
              break;
 
         case 11:
-            parseKick(str, server, user);
+            parseKick(str, server);
             break;
 
         case 12:
             parsePrivmsg(str, server);
             break;
     }
+	//std::cout << "user_addr :" << &(*server->getChannelUser("channel", "will")) << std::endl;
 }
 
 std::string    cmd::createServerMessage(User *user, std::string numReply, std::vector<std::string> splitArg)
