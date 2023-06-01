@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:31:22 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/31 10:19:57 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/06/01 14:13:06 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -28,7 +28,7 @@ Channel::Channel( std::string name )
     this->_password = "";
     this ->_inviteOnly = false;
     this->_userLimit = -1;
-	std::cout << "CHANNEL CONSTRUCTOR" << std::endl;
+	//std::cout << "CHANNEL CONSTRUCTOR" << std::endl;
 }
 
 Channel::Channel( Channel const & obj)
@@ -45,7 +45,7 @@ Channel::Channel( Channel const & obj)
 
 Channel::~Channel( void )
 {
-	std::cout << "CHANNEL DESTRUCTOR" << std::endl;
+	//std::cout << "CHANNEL DESTRUCTOR" << std::endl;
 }
 
 std::string Channel::getTopic( void ) const

@@ -605,7 +605,7 @@ void cmd::whichCmd(std::string str, Server *server, User *user)
             break;
 
         case 1:
-             if (parseNick(str, server, user) == false)
+            if (parseNick(str, server, user) == false)
             {
                 std::cerr << "Usage: NICK [nickname]" << std::endl;
                 return ;

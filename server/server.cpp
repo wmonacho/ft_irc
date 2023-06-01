@@ -315,8 +315,8 @@ void	Server::setUserRealname(User user, std::string new_realname)
 bool    Server::passwordAlreadyRegistred( void )
 {
     if (this->_password == "")
-        return (0);
-    return (1);
+        return (false);
+    return (true);
 }
 
 bool    Server::nickAlreadyExist( std::string new_nick )
@@ -324,19 +324,19 @@ bool    Server::nickAlreadyExist( std::string new_nick )
     for(unsigned int i = 0; i < this->_user_list.size(); i++)
     {
         if (this->_user_list[i].getNickname() == new_nick)
-            return (0);
+            return (true);
     }
-    return (1);
+    return (false);
 }
 
 bool    Server::usernameAlreadyExist( std::string new_username )
 {
     for(unsigned int i = 0; i < this->_user_list.size(); i++)
     {
-        if (this->_user_list[i].getNickname() == new_username)
-            return (0);
+        if (this->_user_list[i].getUsername() == new_username)
+            return (true);
     }
-    return (1);
+    return (false);
 }
 
 
