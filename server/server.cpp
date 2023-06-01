@@ -334,9 +334,9 @@ bool    Server::usernameAlreadyExist( std::string new_username )
     for(unsigned int i = 0; i < this->_user_list.size(); i++)
     {
         if (this->_user_list[i].getNickname() == new_username)
-            return (0);
+            return (true);
     }
-    return (1);
+    return (false);
 }
 
 
