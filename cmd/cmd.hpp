@@ -35,7 +35,7 @@ public:
     bool    parseJoin(std::string str, Server *server, User *user);
     bool    parseKick(std::string str, Server *server, User *user);
     bool    parseInvite(std::string str, Server *server, User *user);
-    bool    parsePrivmsg(std::string str, Server *server);
+    bool    parsePrivmsg(std::string str, Server *server, User *user);
     std::vector<std::string> splitString(std::string str, const char *delim);
     std::string    createServerMessage(User *user, std::string numReply, std::vector<std::string> splitArg);
     void            sendResponseToAllUsersInChannel(std::string message, Channel *channel);
