@@ -23,7 +23,7 @@ public:
     ~cmd();
 
     void    whichCmd(std::string str, Server *server, User *user);
-    bool    parsePass(std::string str, Server *server);
+    bool    parsePass(User *user, std::string str, Server *server);
     bool    parseNick(std::string str, Server *server, User *user);
     bool    parseUser(std::string str, Server *server);
     bool    parsePart(std::string str, Server *server, User *user);

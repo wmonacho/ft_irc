@@ -63,12 +63,14 @@ std::vector<std::string> cmd::splitString(std::string str, const char *delim)
     return (out);
 }
 
-bool    cmd::parsePass(std::string str, Server *server)
+bool    cmd::parsePass(User *user, std::string str, Server *server)
 {
     std::vector<std::string> splitArg = splitString(str, " ");
     if (splitArg.size() != 2 || server->passwordAlreadyRegistred())
         return (false);
     server->setPassword(splitArg[1]);
+    std::string serverResponse = createServerMessage(user, "", splitArg);
+    send(user->getSocket(), serverResponse.c_str(), serverResponse.size(), 0);
     return (true);
 }
 
@@ -78,7 +80,6 @@ bool    cmd::parseNick(std::string str, Server *server, User *user) //recup le U
     if (splitArg.size() != 2)
         return (false);
     int i = 0;
-
     while (splitArg[1][i])
     {
         if (splitArg[1][i] == '/' || splitArg[1][i] == '_' || splitArg[1][i] == '|'|| \
@@ -233,47 +234,38 @@ bool    cmd::parseQuit(std::string str)
 
 bool    cmd::parseJoin(std::string str, Server *server, User *user)
 {
-    std::cout << user->getUsername() << " = " << user->getSocket() << std::endl;
     // std::cout << "str: " << str << std::endl;
- 	std::vector<std::string> splitArg = splitString(str, " ");
- 	if (splitArg.size() != 2)
- 		return false;
- 	//check si pas de # devant le channel (jwe crois que l'on peut mettre & aussi a verifier)
- 	if (splitArg[1][0] != '#')
- 	{
- 		std::cerr << "ERR_BADCHANNELKEY" << std::endl;
- 		return false;
- 	}
- 	std::string channel_name= &splitArg[1][1];
+    std::vector<std::string> splitArg = splitString(str, " ");
+    if (splitArg.size() != 2)
+	 return false;
+    //check si pas de # devant le channel (jwe crois que l'on peut mettre & aussi a verifier)
+    if (splitArg[1][0] != '#')
+    {
+	 std::cerr << "ERR_BADCHANNELKEY" << std::endl;
+	 return false;
+    }
+    std::string channel_name= &splitArg[1][1];
     std::string server_response = createServerMessage(user, "", splitArg);
-
     if (server->channelAlreadyExist(channel_name))
-	{
-        std::cout << "Channel already exists" << std::endl;
-	    Channel* channel = server->getChannel(channel_name);
-        std::cout << "Joining --> " << channel->getName() << std::endl;
- 		UserAspects	new_aspects(0);
-		// channel->setUserList(user, new_aspects);
+    {
+	 Channel* channel = server->getChannel(channel_name);
+	 UserAspects	new_aspects(0);
+	 // channel->setUserList(user, new_aspects);
         server->addUserToChannel(channel_name, user, new_aspects);
         // We send a message to all the users connected to the channel
         sendResponseToAllUsersInChannel(server_response, channel);
-		return true;
-	}
-    std::cout << "Channel no exists" << std::endl;
+	 return true;
+    }
     /*snon creer un nouveau Channel y ajouter le User avec les droits admin et utiliser setNewChannelInMap ensuite*/
- 	UserAspects	new_aspects(1);
+    UserAspects	new_aspects(1);
     Channel *channel = new Channel(channel_name);
-    std::cout << "constructor test" << std::endl;
     server->createNewChannel(channel_name, *channel);
-    std::cout << "destructor test" << std::endl;
-	if (!server->getChannel(channel_name))
-		return false;
-	server->addUserToChannel(channel_name, user, new_aspects);
-
+    if (!server->getChannel(channel_name))
+	 return false;
+    server->addUserToChannel(channel_name, user, new_aspects);
     // After the channel creation (if it didn't exist)
     sendResponseToAllUsersInChannel(server_response, server->getChannel(channel_name));
-
- 	return true;
+    return true;
 }
 
 bool    cmd::parsePart(std::string str, Server *server, User *user)
@@ -285,24 +277,32 @@ bool    cmd::parsePart(std::string str, Server *server, User *user)
         std::cerr << "ERR_NEEDMOREPARAMS" << std::endl;
         return (false);
     }
-    std::vector<std::string> chan = splitString(str, ",");
+    std::vector<std::string> chan = splitString(splitArg[1], ",");
     std::vector<std::string>::iterator it = chan.begin();
     while (it != chan.end())
     {
-
-        //verifier si le channel existe
-		if (!server->channelAlreadyExist(*it))
-			return false;
+	 //verifier si le channel existe
+	 if (!server->channelAlreadyExist(*it))
+	     return false;
         //verifier si l'user est bien dans le channel
-		if (!server->userInChannel(*it, user))
-			return false;
-		//si l'user est bien dans le channel:
-        //- ecrire un message annoncant le depart de l'user
-		//si le message est dans la commande :
-		//sinon afficher
-		std::cout << "User lost baby" << std::endl;
-        //- delete l'user de la liste du chan
-        it++;
+	 if (!server->userInChannel(*it, user))
+	     return false;
+	 else
+	 {
+	     std::cout << "user -> " << user->getNickname() << "has left the channel ->" << *it;
+	     if (splitArg.size() >= 3)
+	     {
+		  std::cout << ": ";
+		  std::vector<std::string>::iterator it = splitArg.begin() + 2;
+		  while (it != splitArg.end())
+		  {
+		      std::cout << *it << " ";
+		      it++;
+		  }
+	     }
+	     server->kickUserFromChannel(*it, user);
+	 }
+	 it++;
     }
     return true;
 }
@@ -597,7 +597,7 @@ void cmd::whichCmd(std::string str, Server *server, User *user)
             return ;
 
         case 0:
-            if (parsePass(str, server) == false)
+            if (parsePass(user, str, server) == false)
             {
                 std::cerr << "Usage: PASS [password]" << std::endl;
                 return ;

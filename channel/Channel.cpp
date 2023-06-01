@@ -14,8 +14,8 @@
 
 Channel::Channel() 
 {
-	this->_name = "";
-	this->_topic = "";
+    this->_name = "";
+    this->_topic = "";
     this->_password = "";
     this ->_inviteOnly = false;
     this->_userLimit = -1;	
@@ -23,29 +23,29 @@ Channel::Channel()
 
 Channel::Channel( std::string name )
 {
-	this->_name = name;
-	this->_topic = "";
+    this->_name = name;
+    this->_topic = "";
     this->_password = "";
     this ->_inviteOnly = false;
     this->_userLimit = -1;
-	std::cout << "CHANNEL CONSTRUCTOR" << std::endl;
+    std::cout << "CHANNEL CONSTRUCTOR" << std::endl;
 }
 
 Channel::Channel( Channel const & obj)
 {
-	this->_name = obj._name;
-	this->_topic = obj._topic;
+    this->_name = obj._name;
+    this->_topic = obj._topic;
     this->_password = obj._password;
-	this->_secret = obj._secret;
+    this->_secret = obj._secret;
     this->_inviteOnly = obj._inviteOnly;
     this->_topicAdmin = obj._topicAdmin;
     this->_userLimit = obj._userLimit;
-	*this = obj;
+    *this = obj;
 }
 
 Channel::~Channel( void )
 {
-	std::cout << "CHANNEL DESTRUCTOR" << std::endl;
+    std::cout << "CHANNEL DESTRUCTOR" << std::endl;
 }
 
 std::string Channel::getTopic( void ) const
@@ -79,52 +79,52 @@ bool    Channel::getTopicAdmin() const
 
 std::map<const User*, UserAspects>	Channel::getUserList( void ) const
 {
-	return (this->_channel_user_list);
+    return (this->_channel_user_list);
 }
 
 const User* Channel::getUser(const User *user)
 {
-	if (this->getUserList().find(user) == this->getUserList().end())
-		return (this->getUserList().find(user)->first);
-	return this->getUserList().find(user)->first;
+    if (this->getUserList().find(user) == this->getUserList().end())
+	 return (this->getUserList().find(user)->first);
+    return this->getUserList().find(user)->first;
 }
 
 bool	Channel::getUserAdmin(User *user)
 {
-	if (this->getUserList().find(user)->second.getAdmin())
-		return true;
-	return false;
+    if (this->getUserList().find(user)->second.getAdmin())
+	 return true;
+    return false;
 }
 
 const std::string		Channel::getUserUsername(User *user)
 {
-	return (this->getUserList().find(user)->first->getUsername());
+    return (this->getUserList().find(user)->first->getUsername());
 }
 
 const std::string		Channel::getUserNickname(User *user)
 {
-	return (this->getUserList().find(user)->first->getNickname());
+    return (this->getUserList().find(user)->first->getNickname());
 }
 
 const std::string		Channel::getUserPassword(User *user)
 {
-	return (this->getUserList().find(user)->first->getPassword());
+    return (this->getUserList().find(user)->first->getPassword());
 }
 
 const std::string		Channel::getUserRealname(User *user)
 {
-	return (this->getUserList().find(user)->first->getRealname());
+    return (this->getUserList().find(user)->first->getRealname());
 }
 
 // SETTER
 void	Channel::setName( std::string new_string )
 {
-	this->_name = new_string;
+    this->_name = new_string;
 }
 
 void	Channel::setTopic( std::string new_string )
 {
-	this->_topic = new_string;
+    this->_topic = new_string;
 }
 
 void    Channel::setInviteOnly(bool i)
@@ -149,31 +149,31 @@ void    Channel::setPassword(std::string pass)
 
 void	Channel::setUserList(const User  *new_user, UserAspects channel_aspects)
 {
-	this->_channel_user_list.insert(std::make_pair(new_user, channel_aspects));
-	return ;
+    this->_channel_user_list.insert(std::make_pair(new_user, channel_aspects));
+    return ;
 }
 
 // CHANNEL FUNCTIONS
 bool	Channel::channelIsSecret( void )
 {
-	if (this->_secret)
-		return true;
-	return false;
+    if (this->_secret)
+	 return true;
+    return false;
 }
 
 bool	Channel::userInChannel(const User *user)
 {
-	if (this->getUserList().find(user) == this->getUserList().end())
-		return (false);
-	return true;
+    if (this->getUserList().find(user) == this->getUserList().end())
+	 return (false);
+    return true;
 }
 
 void	Channel::kickUserFromChannel(const User *user)
 {
-	this->_channel_user_list.erase(this->getUserList().find(user)->first);
+    this->_channel_user_list.erase(this->getUserList().find(user)->first);
 }
 
 void	Channel::changeUserAdmin(const User* user, bool i)
 {
-	this->_channel_user_list[user].setAdmin(i);
+    this->_channel_user_list[user].setAdmin(i);
 }
