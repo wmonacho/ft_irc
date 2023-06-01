@@ -25,12 +25,12 @@ class Channel
 	private :
 		std::string	_name;
 		std::string	_topic;
-        std::string _password;
+        	std::string _password;
 		bool		_secret;
-        bool        _inviteOnly;
-        bool        _topicAdmin;
-        int         _userLimit;
-		std::map<const User*, UserAspects> _channel_user_list;
+		bool        _inviteOnly;
+        	bool        _topicAdmin;
+		 int         _userLimit;
+		 std::map<const User*, UserAspects> _channel_user_list;
 	public :
 		Channel();
 		Channel( std::string name);
