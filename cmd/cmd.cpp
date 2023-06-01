@@ -579,6 +579,7 @@ bool    cmd::parsePrivmsg(std::string str, Server *server, User *user)
         std::cout << i << " " << arg[i] << std::endl;
     }
     User *dest = server->getUser(nick_target);
+    std::string message = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + arg[0] + " " + arg[1] + " " + arg[2] + "\r\n";
     send(dest->getSocket(), message.c_str(), message.size(), 0);
 	return true;
 }
