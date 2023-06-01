@@ -115,6 +115,9 @@ int Server::verifyClientAndServerResponse(struct pollfd fds) {
     // This function parse the buffer to find the username and nickname of the user who connected to the server
     // and it creates a new user in the server's users_list
     server_response_for_connection = createServerResponseForConnection(buffer, fds.fd);
+    if (server_response_for_connection.empty()) {
+        return (1);
+    }
 
     // Finally we send back the server response to confirm the connection of the user
     send(fds.fd, server_response_for_connection.c_str(), server_response_for_connection.size(), 0);
@@ -127,7 +130,7 @@ std::string Server::getClientInformationsOnConnection(struct pollfd fds) {
     int     totalBytesRead = 0;
     int     size = 100;
     char    buffer[size];
-	
+
     memset(buffer, 0, (size * sizeof(char)));
 
     do {
@@ -137,13 +140,17 @@ std::string Server::getClientInformationsOnConnection(struct pollfd fds) {
         }
         totalBytesRead += bytesRead;
     } while (totalBytesRead <= size);
+    std::cout << "TOTAL BR   ==> " << totalBytesRead << std::endl;
+    std::cout << "BYTES READ ==> " << bytesRead << std::endl;
     if (bytesRead > size) {
-        std::cout << "There is more data!" << std::endl;
+        std::cerr << "There is more data!" << std::endl;
     }
     memset(buffer, 0, (bytesRead * sizeof(char)));
     if (recv(fds.fd, buffer, bytesRead, 0) <= 0) {
         std::cerr << "Error: recv() failed for connection registration" << std::endl;
     }
+    std::cout << buffer;
+    std::cout << "**--------------------------**" << std::endl;
     return (std::string(buffer, bytesRead));
 }
 
@@ -164,9 +171,7 @@ void    Server::createNewUserAtConnection(std::string nickname, std::string user
 
 std::string Server::createServerResponseForConnection(std::string buffer, int socket) {
 
-
-    std::cout << buffer << std::endl;
-    // size_t passPos = buffer.find("PASS");
+    size_t passPos = buffer.find("PASS");
     size_t nickPos = buffer.find("NICK");
     size_t userPos = buffer.find("USER");
     if (nickPos == std::string::npos || userPos == std::string::npos) {
@@ -174,13 +179,13 @@ std::string Server::createServerResponseForConnection(std::string buffer, int so
         exit(1); //THROW EXCEPTION HERE
     }
     // We get past NICK and USER to only get the nickname and username
-    // passPos += 5;
+    passPos += 5;
     nickPos += 5;
     userPos += 5;
 
-    // std::string pwd = buffer.substr(passPos);
-    // size_t passLimiter = pwd.find("\r\n");
-    // pwd = pwd.substr(0, passLimiter);
+    std::string pwd = buffer.substr(passPos);
+    size_t passLimiter = pwd.find("\r\n");
+    pwd = pwd.substr(0, passLimiter);
 
     std::string nickName = buffer.substr(nickPos);
     size_t limiter = nickName.find("\r\n");
@@ -190,7 +195,11 @@ std::string Server::createServerResponseForConnection(std::string buffer, int so
     std::string userName = buffer.substr(userPos, nickName.size());
     // std::cout << userName << std::endl;
 
-    // std::cout << "PASSWORD ==> " << pwd << std::endl;
+    std::cout << "PASSWORD ==> " << pwd << std::endl;
+    if (pwd != this->_password) {
+        std::cerr << "Error: client sent wrong password" << std::endl;
+        return NULL;
+    }
 
     createNewUserAtConnection(nickName, userName, socket);
 
