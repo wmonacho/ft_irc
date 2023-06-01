@@ -249,7 +249,6 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
 
     if (server->channelAlreadyExist(channel_name))
 	{
-        std::cout << "Channel already exists" << std::endl;
 	    Channel* channel = server->getChannel(channel_name);
         std::cout << "Joining --> " << channel->getName() << std::endl;
  		UserAspects	new_aspects(0);
@@ -259,13 +258,10 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
         sendResponseToAllUsersInChannel(server_response, channel);
 		return true;
 	}
-    std::cout << "Channel no exists" << std::endl;
     /*snon creer un nouveau Channel y ajouter le User avec les droits admin et utiliser setNewChannelInMap ensuite*/
  	UserAspects	new_aspects(1);
     Channel *channel = new Channel(channel_name);
-    std::cout << "constructor test" << std::endl;
     server->createNewChannel(channel_name, *channel);
-    std::cout << "destructor test" << std::endl;
 	if (!server->getChannel(channel_name))
 		return false;
 	server->addUserToChannel(channel_name, user, new_aspects);
@@ -547,20 +543,18 @@ bool    cmd::parseKick(std::string str, Server *server, User *user)
 }
 
 
-bool    cmd::parsePrivmsg(std::string str, Server *server)
+bool    cmd::parsePrivmsg(std::string str, Server *server, User *user)
 {
     // Parameters: <msgtarget> <text to be sent>
 	// Exemple : PRIVMSG jreverdy :Are you a frog?
-    std::cout << "Privmsg cmd found" << std::endl;
 	std::vector<std::string> arg = splitString(str, " ");
 	if (arg.size() < 3)
 	{
 		std::cerr << "ERR_NOSUCHNICK" << std::endl;
 		return false;
 	}
-	//arg[1] nickname
 	std::string nick_target = arg[1];
-	if (server->nickAlreadyExist(arg[2]) == false)
+	if (server->nickAlreadyExist(arg[2]) == true)
 	{
 		std::cerr << "ERR_TOOMANYTARGETS" << std::endl;
 		return false;
@@ -575,6 +569,12 @@ bool    cmd::parsePrivmsg(std::string str, Server *server)
 		std::cerr << "ERR_NOSUCHNICK" << std::endl;
 		return false;
 	}
+    for(unsigned int i = 0; i < arg.size(); i++)
+    {
+        std::cout << i << " " << arg[i] << std::endl;
+    }
+    User *dest = server->getUser(nick_target);
+    send(dest->getSocket(), message.c_str(), message.size(), 0);
 	return true;
 }
 
@@ -676,7 +676,7 @@ void cmd::whichCmd(std::string str, Server *server, User *user)
             break;
 
         case 12:
-            parsePrivmsg(str, server);
+            parsePrivmsg(str, server, user);
             break;
     }
 }
