@@ -61,7 +61,7 @@ void    Server::startServer() {
     // If the server ended we should close all fd
     for (int i = 0; i < nfds; i++) {
         if (fds[i].fd >= 0) {
-            std::cerr << "Closing sockets " << i << std::endl;
+            std::cerr << "Closing socket " << i << std::endl;
             close(fds[i].fd);
         }
     }
@@ -131,23 +131,31 @@ std::string Server::getClientInformationsOnConnection(struct pollfd fds) {
     int     size = 100;
     char    buffer[size];
 
-    memset(buffer, 0, size);
+    memset(buffer, 0, sizeof(char) * size);
 
-    do {
+    // First to read all the available data so we can define the exact size of the buffer
+    while (totalBytesRead < size) {
+        bytesRead = 0;
         bytesRead = recv(fds.fd, buffer, size, MSG_PEEK);
         if (bytesRead <= 0) {
             std::cerr << "Error: recv() failed for connection registration" << std::endl;
         }
         totalBytesRead += bytesRead;
-    } while (totalBytesRead < size);
-    if (totalBytesRead > size) {
-        std::cerr << "There is more data to read!" << std::endl;
     }
-    memset(buffer, 0, (totalBytesRead - 1));
-    if (recv(fds.fd, buffer, (totalBytesRead - 1), 0) <= 0) {
+
+    // Now we can receive the available data
+    size = totalBytesRead;
+    std::cout << "totalBytesRead ==> " << size << std::endl;
+    char nBuffer[size];
+
+    memset(nBuffer, 0, sizeof(char) * size);
+
+    if (recv(fds.fd, nBuffer, size, 0) <= 0) {
         std::cerr << "Error: recv() failed for connection registration" << std::endl;
+        return NULL;
     }
-    return (std::string(buffer, (totalBytesRead - 1)));
+    nBuffer[size - 1] = '\0'; 
+    return (std::string(nBuffer, size - 1));
 }
 
 void    Server::createNewUserAtConnection(std::string nickname, std::string username, int socket) {
@@ -167,6 +175,7 @@ void    Server::createNewUserAtConnection(std::string nickname, std::string user
 
 std::string Server::createServerResponseForConnection(std::string buffer, int socket) {
 
+    std::cout << buffer << std::endl;
     size_t passPos = buffer.find("PASS");
     size_t nickPos = buffer.find("NICK");
     size_t userPos = buffer.find("USER");
@@ -191,7 +200,6 @@ std::string Server::createServerResponseForConnection(std::string buffer, int so
     std::string userName = buffer.substr(userPos, nickName.size());
     // std::cout << userName << std::endl;
 
-    std::cout << "PASSWORD ==> " << pwd << std::endl;
     if (pwd != this->_password) {
         std::cerr << "Error: client sent wrong password" << std::endl;
         return NULL;
@@ -236,15 +244,9 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
     std::cout << "Buffer from socket " << socketID << " : " << buffer << std::endl;
     std::cout << "** =============== **" << std::endl;
 
-    // Loop to identify which user sent a message to send it to the whichCmd()
-
     cmd command;
     user = this->getUserBySocket(fds[socketID].fd);
-    // HANDLE CLIENT MESSAGE HERE
     command.whichCmd(buffer, this, user);
-    
-    // We send the message back to the client (TESTING PURPOSE)
-    // send(fds[socketID].fd, buffer, recvReturn, 0);
 
     return (closeConnection);
 }

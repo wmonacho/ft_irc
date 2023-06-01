@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/04/24 15:54:01 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/31 10:40:37 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/06/02 17:06:34 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -37,7 +37,7 @@ User	&User::operator=( User const & rhs)
 
 User::~User( void )
 {
-	// std::cout << "USER DESTRUCTOR" << std::endl;
+	//std::cout << "USER DESTRUCTOR" << std::endl;
 }
 
 std::string	User::getNickname( void ) const
