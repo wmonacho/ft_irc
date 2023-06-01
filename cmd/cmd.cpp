@@ -549,8 +549,8 @@ bool    cmd::parseKick(std::string str, Server *server, User *user)
 
 bool    cmd::parsePrivmsg(std::string str, Server *server)
 {
-//	Parameters: <msgtarget> <text to be sent>
-	//exemple : PRIVMSG jreverdy :Are you a frog?
+    // Parameters: <msgtarget> <text to be sent>
+	// Exemple : PRIVMSG jreverdy :Are you a frog?
     std::cout << "Privmsg cmd found" << std::endl;
 	std::vector<std::string> arg = splitString(str, " ");
 	if (arg.size() < 3)
@@ -560,7 +560,7 @@ bool    cmd::parsePrivmsg(std::string str, Server *server)
 	}
 	//arg[1] nickname
 	std::string nick_target = arg[1];
-	if (server->nickAlreadyExist(arg[2]))
+	if (server->nickAlreadyExist(arg[2]) == false)
 	{
 		std::cerr << "ERR_TOOMANYTARGETS" << std::endl;
 		return false;
@@ -714,7 +714,5 @@ void    cmd::sendResponseToAllUsersInChannel(std::string message, Channel *chann
         std::cout << "JOIN msg sent to " << user->first->getUsername() << std::endl;
         user++;
     }
-
-    std::cout << "OUT OF SEND LOOP" <<std::endl;
     return ;
 }
