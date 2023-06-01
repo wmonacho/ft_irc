@@ -131,7 +131,7 @@ std::string Server::getClientInformationsOnConnection(struct pollfd fds) {
     int     size = 100;
     char    buffer[size];
 
-    memset(buffer, 0, (size * sizeof(char)));
+    memset(buffer, 0, size);
 
     do {
         bytesRead = recv(fds.fd, buffer, size, MSG_PEEK);
@@ -139,19 +139,15 @@ std::string Server::getClientInformationsOnConnection(struct pollfd fds) {
             std::cerr << "Error: recv() failed for connection registration" << std::endl;
         }
         totalBytesRead += bytesRead;
-    } while (totalBytesRead <= size);
-    std::cout << "TOTAL BR   ==> " << totalBytesRead << std::endl;
-    std::cout << "BYTES READ ==> " << bytesRead << std::endl;
-    if (bytesRead > size) {
-        std::cerr << "There is more data!" << std::endl;
+    } while (totalBytesRead < size);
+    if (totalBytesRead > size) {
+        std::cerr << "There is more data to read!" << std::endl;
     }
-    memset(buffer, 0, (bytesRead * sizeof(char)));
-    if (recv(fds.fd, buffer, bytesRead, 0) <= 0) {
+    memset(buffer, 0, (totalBytesRead - 1));
+    if (recv(fds.fd, buffer, (totalBytesRead - 1), 0) <= 0) {
         std::cerr << "Error: recv() failed for connection registration" << std::endl;
     }
-    std::cout << buffer;
-    std::cout << "**--------------------------**" << std::endl;
-    return (std::string(buffer, bytesRead));
+    return (std::string(buffer, (totalBytesRead - 1)));
 }
 
 void    Server::createNewUserAtConnection(std::string nickname, std::string username, int socket) {
