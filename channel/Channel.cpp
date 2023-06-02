@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:31:22 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/31 10:19:57 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/06/02 17:06:17 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,9 +80,9 @@ std::map<const User*, UserAspects>	Channel::getUserList( void ) const
 
 const User* Channel::getUser(const User *user)
 {
-    if (this->getUserList().find(user) == this->getUserList().end())
-	 return (this->getUserList().find(user)->first);
-    return this->getUserList().find(user)->first;
+	if (this->getUserList().find(user) == this->getUserList().end())
+		return (NULL);
+	return this->getUserList().find(user)->first;
 }
 
 bool	Channel::getUserAdmin(User *user)
@@ -143,10 +143,11 @@ void    Channel::setPassword(std::string pass)
     this->_password = pass;
 }
 
-void	Channel::setUserList(const User  *new_user, UserAspects channel_aspects)
+void	Channel::setUserList(const User  *new_user, UserAspects user_aspects)
 {
-    this->_channel_user_list.insert(std::make_pair(new_user, channel_aspects));
-    return ;
+	this->_channel_user_list.insert(std::make_pair<const User*, UserAspects>(new_user, user_aspects));
+	//this->_channel_user_list[new_user] = user_aspects;
+	return ;
 }
 
 // CHANNEL FUNCTIONS
@@ -166,7 +167,7 @@ bool	Channel::userInChannel(const User *user)
 
 void	Channel::kickUserFromChannel(const User *user)
 {
-    this->_channel_user_list.erase(this->getUserList().find(user)->first);
+    this->_channel_user_list.erase(user);
 }
 
 void	Channel::changeUserAdmin(const User* user, bool i)

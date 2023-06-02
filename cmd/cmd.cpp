@@ -137,6 +137,9 @@ bool    cmd::parseUser(std::string str, Server *server)
 void cmd::whichCmd(std::string str, Server *server, User *user)
 {
     std::vector<std::string> arg = splitString(str, " ");
+	size_t pos = str.find("\n");
+	if (pos != std::string::npos)
+		str[pos - 1] = '\0';
     int j = -1;
     for (int i = 0; i < 14; i++)
     {
@@ -161,7 +164,7 @@ void cmd::whichCmd(std::string str, Server *server, User *user)
             break;
 
         case 1:
-             if (parseNick(str, server, user) == false)	// ** USED ON CONNECTION **
+            if (parseNick(str, server, user) == false)
             {
                 std::cerr << "Usage: NICK [nickname]" << std::endl;
                 return ;
@@ -228,13 +231,14 @@ void cmd::whichCmd(std::string str, Server *server, User *user)
              break;
 
         case 11:
-            parseKick(str, server, user);
+            parseKick(str, server);
             break;
 
         case 12:
             parsePrivmsg(str, server, user);
             break;
     }
+	//std::cout << "user_addr :" << &(*server->getChannelUser("channel", "will")) << std::endl;
 }
 
 std::string    cmd::createServerMessage(User *user, std::string numReply, std::vector<std::string> splitArg)
