@@ -12,7 +12,6 @@ int main(int ac, char **av)
 // CAP LS 302
 // NICK ebrodeur
 // USER ebrodeur 0 * :realname
-
 	if (ac == 3)
 	{
 		Server server(atoi(av[1]), av[2]);
