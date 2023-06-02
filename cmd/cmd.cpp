@@ -680,6 +680,7 @@ void cmd::whichCmd(std::string str, Server *server, User *user)
             parsePrivmsg(str, server);
             break;
     }
+	std::cout << "CHANNEL_ADDR :" << &(*server->getChannel("channel")) << std::endl;
 	//std::cout << "user_addr :" << &(*server->getChannelUser("channel", "will")) << std::endl;
 }
 
