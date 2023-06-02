@@ -242,7 +242,7 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
  		std::cerr << "ERR_BADCHANNELKEY" << std::endl;
  		return false;
  	}
- 	std::string channel_name= &splitArg[1][1];
+ 	std::string channel_name = &splitArg[1][1];
     std::string server_response = createServerMessage(user, "", splitArg);
 
     if (server->channelAlreadyExist(channel_name))
@@ -263,8 +263,8 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
 		return false;
 	server->addUserToChannel(channel_name, server->getUser(user->getNickname()), new_aspects);
     // After the channel creation (if it didn't exist)
-	std::cout << "will_addr server :" << &(*server->getChannelUser(channel_name, user)) << std::endl;
-	std::cout << "will_addr channel :" << &(*channel->getUser(user)) << std::endl;
+	//std::cout << "user_addr server :" << &(*server->getChannelUser(channel_name, user)) << std::endl;
+	//std::cout << "user_addr channel :" << &(*channel->getUser(user)) << std::endl;
     sendResponseToAllUsersInChannel(server_response, server->getChannel(channel_name));
  	return true;
 }
@@ -582,6 +582,9 @@ bool    cmd::parsePrivmsg(std::string str, Server *server)
 void cmd::whichCmd(std::string str, Server *server, User *user)
 {
     std::vector<std::string> arg = splitString(str, " ");
+	size_t pos = str.find("\n");
+	if (pos != std::string::npos)
+		str[pos - 1] = '\0';
     int j = -1;
     for (int i = 0; i < 14; i++)
     {
