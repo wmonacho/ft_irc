@@ -7,9 +7,19 @@ FILES =		main.cpp							\
 			server/server.cpp					\
 			server/socketManager.cpp			\
 			channel/Channel.cpp					\
-			user_aspects/UserAspects.cpp	\
+			user_aspects/UserAspects.cpp		\
 			user/User.cpp						\
 			cmd/cmd.cpp							\
+			cmd/join.cpp						\
+			cmd/privmsg.cpp						\
+			cmd/mode.cpp						\
+			cmd/kick.cpp						\
+			cmd/list.cpp						\
+			cmd/invite.cpp						\
+			cmd/names.cpp						\
+			cmd/topic.cpp						\
+			cmd/part.cpp						\
+			cmd/quit.cpp
 # ====================================================================
 
 # HEADER =============================================================
