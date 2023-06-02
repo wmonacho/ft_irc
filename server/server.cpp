@@ -326,6 +326,7 @@ bool    Server::nickAlreadyExist( std::string new_nick )
 {
     for(unsigned int i = 0; i < this->_user_list.size(); i++)
     {
+        std::cout << this->_user_list[i].getNickname() << std::endl;
         if (this->_user_list[i].getNickname() == new_nick)
             return (true);
     }
