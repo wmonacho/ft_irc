@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:31:22 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/06/01 14:13:06 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/06/01 16:56:40 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -85,7 +85,7 @@ std::map<const User*, UserAspects>	Channel::getUserList( void ) const
 const User* Channel::getUser(const User *user)
 {
 	if (this->getUserList().find(user) == this->getUserList().end())
-		return (this->getUserList().find(user)->first);
+		return (NULL);
 	return this->getUserList().find(user)->first;
 }
 
@@ -170,7 +170,11 @@ bool	Channel::userInChannel(const User *user)
 
 void	Channel::kickUserFromChannel(const User *user)
 {
-	this->_channel_user_list.erase(this->getUserList().find(user)->first);
+	this->_channel_user_list.erase(user);
+	if (this->getUserList().find(user) == this->getUserList().end())
+		std::cout << "user completely erase" << std::endl;
+	else
+		std::cout << "user erase :" << &(*this->getUserList().find(user)->first) << std::endl;
 }
 
 void	Channel::changeUserAdmin(const User* user, bool i)
