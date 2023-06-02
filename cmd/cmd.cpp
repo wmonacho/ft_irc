@@ -489,12 +489,11 @@ bool    cmd::parseInvite(std::string str, Server *server, User *user)
     return true;
 }
 
-bool    cmd::parseKick(std::string str, Server *server, User *user)
+bool    cmd::parseKick(std::string str, Server *server)
 {
     std::cout << "Kick cmd found" << std::endl;
     std::vector<std::string> arg = splitString(str, " ");
 
-	(void) user;
     //check si au moins 3 param : need more params
     if (arg.size() < 3)
     {
