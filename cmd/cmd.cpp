@@ -63,12 +63,14 @@ std::vector<std::string> cmd::splitString(std::string str, const char *delim)
     return (out);
 }
 
-bool    cmd::parsePass(std::string str, Server *server)
+bool    cmd::parsePass(User *user, std::string str, Server *server)
 {
     std::vector<std::string> splitArg = splitString(str, " ");
     if (splitArg.size() != 2 || server->passwordAlreadyRegistred())
         return (false);
     server->setPassword(splitArg[1]);
+    std::string serverResponse = createServerMessage(user, "", splitArg);
+    send(user->getSocket(), serverResponse.c_str(), serverResponse.size(), 0);
     return (true);
 }
 
@@ -78,7 +80,6 @@ bool    cmd::parseNick(std::string str, Server *server, User *user) //recup le U
     if (splitArg.size() != 2)
         return (false);
     int i = 0;
-
     while (splitArg[1][i])
     {
         if (splitArg[1][i] == '/' || splitArg[1][i] == '_' || splitArg[1][i] == '|'|| \
@@ -244,7 +245,6 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
  	}
  	std::string channel_name = &splitArg[1][1];
     std::string server_response = createServerMessage(user, "", splitArg);
-
     if (server->channelAlreadyExist(channel_name))
 	{
 	    Channel* channel = server->getChannel(channel_name);
@@ -278,24 +278,32 @@ bool    cmd::parsePart(std::string str, Server *server, User *user)
         std::cerr << "ERR_NEEDMOREPARAMS" << std::endl;
         return (false);
     }
-    std::vector<std::string> chan = splitString(str, ",");
+    std::vector<std::string> chan = splitString(splitArg[1], ",");
     std::vector<std::string>::iterator it = chan.begin();
     while (it != chan.end())
     {
-
-        //verifier si le channel existe
-		if (!server->channelAlreadyExist(*it))
-			return false;
+	 //verifier si le channel existe
+	 if (!server->channelAlreadyExist(*it))
+	     return false;
         //verifier si l'user est bien dans le channel
-		if (!server->userInChannel(*it, user))
-			return false;
-		//si l'user est bien dans le channel:
-        //- ecrire un message annoncant le depart de l'user
-		//si le message est dans la commande :
-		//sinon afficher
-		std::cout << "User lost baby" << std::endl;
-        //- delete l'user de la liste du chan
-        it++;
+	 if (!server->userInChannel(*it, user))
+	     return false;
+	 else
+	 {
+	     std::cout << "user -> " << user->getNickname() << "has left the channel ->" << *it;
+	     if (splitArg.size() >= 3)
+	     {
+		  std::cout << ": ";
+		  std::vector<std::string>::iterator it = splitArg.begin() + 2;
+		  while (it != splitArg.end())
+		  {
+		      std::cout << *it << " ";
+		      it++;
+		  }
+	     }
+	     server->kickUserFromChannel(*it, user);
+	 }
+	 it++;
     }
     return true;
 }
@@ -545,23 +553,18 @@ bool    cmd::parseKick(std::string str, Server *server)
 }
 
 
-bool    cmd::parsePrivmsg(std::string str, Server *server)
+bool    cmd::parsePrivmsg(std::string str, Server *server, User *user)
 {
-//	Parameters: <msgtarget> <text to be sent>
-	//exemple : PRIVMSG jreverdy :Are you a frog?
-    std::cout << "Privmsg cmd found" << std::endl;
+    // Parameters: <msgtarget> <text to be sent>
+	// Exemple : PRIVMSG jreverdy :Are you a frog?
 	std::vector<std::string> arg = splitString(str, " ");
-	if (arg.size() < 3)
-	{
-		std::cerr << "ERR_NOSUCHNICK" << std::endl;
-		return false;
-	}
-	//arg[1] nickname
+	//if (arg.size() < 3)
+	//{
+	//	std::cerr << "ERR_NOSUCHNICK" << std::endl;
+	//	return false;
+	//}
 	std::string nick_target = arg[1];
-	arg[1].erase(0, 1);
-	if (server->channelAlreadyExist(arg[1]))
-		std::cout << "find CHANNEL" << std::endl;
-	//if (server->nickAlreadyExist(arg[2]))
+	//if (server->nickAlreadyExist(arg[2]) == true)
 	//{
 	//	std::cerr << "ERR_TOOMANYTARGETS" << std::endl;
 	//	return false;
@@ -576,6 +579,13 @@ bool    cmd::parsePrivmsg(std::string str, Server *server)
 	//	std::cerr << "ERR_NOSUCHNICK" << std::endl;
 	//	return false;
 	//}
+    //for(unsigned int i = 0; i < arg.size(); i++)
+    //{
+    //    std::cout << i << " " << arg[i] << std::endl;
+    //}
+    User *dest = server->getUser(nick_target);
+    std::string message = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + arg[0] + " " + arg[1] + " " + arg[2] + "\r\n";
+    send(dest->getSocket(), message.c_str(), message.size(), 0);
 	return true;
 }
 
@@ -601,7 +611,7 @@ void cmd::whichCmd(std::string str, Server *server, User *user)
             return ;
 
         case 0:
-            if (parsePass(str, server) == false)
+            if (parsePass(user, str, server) == false)
             {
                 std::cerr << "Usage: PASS [password]" << std::endl;
                 return ;
@@ -680,7 +690,7 @@ void cmd::whichCmd(std::string str, Server *server, User *user)
             break;
 
         case 12:
-            parsePrivmsg(str, server);
+            parsePrivmsg(str, server, user);
             break;
     }
 	//std::cout << "user_addr :" << &(*server->getChannelUser("channel", "will")) << std::endl;
@@ -719,7 +729,5 @@ void    cmd::sendResponseToAllUsersInChannel(std::string message, Channel *chann
         std::cout << "JOIN msg sent to " << user->first->getUsername() << std::endl;
         user++;
     }
-
-    std::cout << "OUT OF SEND LOOP" <<std::endl;
     return ;
 }

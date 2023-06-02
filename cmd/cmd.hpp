@@ -23,7 +23,7 @@ public:
     ~cmd();
 
     void    whichCmd(std::string str, Server *server, User *user);
-    bool    parsePass(std::string str, Server *server);
+    bool    parsePass(User *user, std::string str, Server *server);
     bool    parseNick(std::string str, Server *server, User *user);
     bool    parseUser(std::string str, Server *server);
     bool    parsePart(std::string str, Server *server, User *user);
@@ -35,7 +35,7 @@ public:
     bool    parseJoin(std::string str, Server *server, User *user);
     bool    parseKick(std::string str, Server *server);
     bool    parseInvite(std::string str, Server *server, User *user);
-    bool    parsePrivmsg(std::string str, Server *server);
+    bool    parsePrivmsg(std::string str, Server *server, User *user);
     std::vector<std::string> splitString(std::string str, const char *delim);
     std::string    createServerMessage(User *user, std::string numReply, std::vector<std::string> splitArg);
     void            sendResponseToAllUsersInChannel(std::string message, Channel *channel);

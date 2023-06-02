@@ -81,15 +81,14 @@ class Server {
         sockaddr_in*	                        getClientAddr(void);
         User* 		                            getUser(std::string user_nickname);
         User*	                                getUserWithName(std::string user_name);
-		User*									getUserBySocket(int socket);
-		Channel*                                getChannel(std::string channel_name);
+	 User*									getUserBySocket(int socket);
+	 Channel*                                getChannel(std::string channel_name);
         const User* 	                        getConstUser(std::string user_nickname);
         const User*                             getChannelUser(std::string channel_name, std::string user_name);
         const User*	                            getChannelUser(std::string channel_name, const User *user);
         std::vector<User>							getUserList(void);
         const std::map<std::string, Channel>&			getMap(void); //read only
-        std::map<const User*, UserAspects>   	getChannelUserList(std::string channel_name);
-		std::map<std::string, Channel>::iterator	getItMap(void);
+        std::map<const User*, UserAspects>   getChannelUserList(std::string channel_name);		 std::map<std::string, Channel>::iterator	getItMap(void);
 
         // Socket connection and user registration for "socketManager.cpp"
         int                                     verifyClientAndServerResponse(struct pollfd fds);
@@ -106,13 +105,13 @@ class Server {
         bool   	                                nickAlreadyExist( std::string new_nick );
         bool 	                                channelAlreadyExist(std::string channel_name);
         bool   	                                usernameAlreadyExist( std::string new_username );
-		bool	                                userInChannel(std::string channel_name, const User *user);
-		bool									channelHaveLimit(std::string channel_name);
-		bool									channelEnoughSpace(std::string channel_name);
-		bool									channelIsInviteOnly(std::string channel_name);
-		void	                                kickUserFromChannel(std::string channel_name, const User *user);
-		void									addUserToChannel(std::string channel_name, const User *user, UserAspects channel_aspects);
-    void   	                                	createNewChannel(std::string channel_name, Channel &channel);
+	 bool	                                userInChannel(std::string channel_name, const User *user);
+	 bool									channelHaveLimit(std::string channel_name);
+	 bool									channelEnoughSpace(std::string channel_name);
+	 bool									channelIsInviteOnly(std::string channel_name);
+	 void	                                kickUserFromChannel(std::string channel_name, const User *user);
+	 void									addUserToChannel(std::string channel_name, const User *user, UserAspects channel_aspects);
+	 void   	                                	createNewChannel(std::string channel_name, Channel &channel);
 };
 
 #endif
