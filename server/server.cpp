@@ -4,12 +4,15 @@
 /* *********** CANONICAL CLASS *********** */
 /* *************************************** */
 
-Server::Server() {}
+Server::Server() {
+	this->_user_list.reserve(MAX_SOCKETS);
+}
 
 // This Server constructor sets up a listening socket
 Server::Server(int port, std::string password) {
 
     // We create and initiate a new server, a listening socket is created and he's listening for connection
+	this->_user_list.reserve(MAX_SOCKETS);
     _servLen = sizeof(_servAddr);
     _clientLen = sizeof(_clientAddr);
     _port = port;
@@ -32,7 +35,7 @@ Server::Server(int port, std::string password) {
     if (ioctl(_socketfd, FIONBIO, (char *)&on) < 0) {
         std::cerr << "Error: ioctl() failed" << std::endl;
         exit(1);
-    } 
+    }
 
     setServAddr(_port);
 
@@ -404,16 +407,12 @@ bool	Server::channelIsInviteOnly(std::string channel_name)
 	return this->_channels.find(channel_name)->second.getInviteOnly();
 }
 
-void	Server::addUserToChannel(std::string channel_name, const User *user, UserAspects channel_aspects)
+void	Server::addUserToChannel(std::string channel_name, const User *user, UserAspects user_aspects)
 {
-	this->getChannel(channel_name)->setUserList(user, channel_aspects);
+	this->getChannel(channel_name)->setUserList(user, user_aspects);
 }
 
 void    Server::createNewChannel(std::string channel_name, Channel &channel)
 {
 	this->_channels.insert(std::make_pair(channel_name, channel));
-	if (this->_channels.find(channel_name) == this->_channels.end())
-		std::cout << "Error: error wasn't created" << std::endl;
-	else
-		std::cout << "Succes: channel has been successfully created" << std::endl;
 }

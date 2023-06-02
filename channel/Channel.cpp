@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:31:22 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/06/01 16:56:40 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/06/02 14:59:10 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -147,9 +147,10 @@ void    Channel::setPassword(std::string pass)
     this->_password = pass;
 }
 
-void	Channel::setUserList(const User  *new_user, UserAspects channel_aspects)
+void	Channel::setUserList(const User  *new_user, UserAspects user_aspects)
 {
-	this->_channel_user_list.insert(std::make_pair(new_user, channel_aspects));
+	this->_channel_user_list.insert(std::make_pair<const User*, UserAspects>(new_user, user_aspects));
+	//this->_channel_user_list[new_user] = user_aspects;
 	return ;
 }
 

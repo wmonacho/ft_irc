@@ -233,8 +233,6 @@ bool    cmd::parseQuit(std::string str)
 
 bool    cmd::parseJoin(std::string str, Server *server, User *user)
 {
-    std::cout << user->getUsername() << " = " << user->getSocket() << std::endl;
-    // std::cout << "str: " << str << std::endl;
  	std::vector<std::string> splitArg = splitString(str, " ");
  	if (splitArg.size() != 2)
  		return false;
@@ -249,30 +247,25 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
 
     if (server->channelAlreadyExist(channel_name))
 	{
-        std::cout << "Channel already exists" << std::endl;
 	    Channel* channel = server->getChannel(channel_name);
-        std::cout << "Joining --> " << channel->getName() << std::endl;
  		UserAspects	new_aspects(0);
 		// channel->setUserList(user, new_aspects);
-        server->addUserToChannel(channel_name, user, new_aspects);
+        server->addUserToChannel(channel_name, server->getUser(user->getNickname()), new_aspects);
         // We send a message to all the users connected to the channel
         sendResponseToAllUsersInChannel(server_response, channel);
 		return true;
 	}
-    std::cout << "Channel no exists" << std::endl;
-    /*snon creer un nouveau Channel y ajouter le User avec les droits admin et utiliser setNewChannelInMap ensuite*/
+    /*sinon creer un nouveau Channel y ajouter le User avec les droits admin et utiliser setNewChannelInMap ensuite*/
  	UserAspects	new_aspects(1);
     Channel *channel = new Channel(channel_name);
-    std::cout << "constructor test" << std::endl;
     server->createNewChannel(channel_name, *channel);
-    std::cout << "destructor test" << std::endl;
 	if (!server->getChannel(channel_name))
 		return false;
-	server->addUserToChannel(channel_name, user, new_aspects);
-
+	server->addUserToChannel(channel_name, server->getUser(user->getNickname()), new_aspects);
     // After the channel creation (if it didn't exist)
+	std::cout << "will_addr server :" << &(*server->getChannelUser(channel_name, user)) << std::endl;
+	std::cout << "will_addr channel :" << &(*channel->getUser(user)) << std::endl;
     sendResponseToAllUsersInChannel(server_response, server->getChannel(channel_name));
-
  	return true;
 }
 
@@ -589,7 +582,6 @@ bool    cmd::parsePrivmsg(std::string str, Server *server)
 void cmd::whichCmd(std::string str, Server *server, User *user)
 {
     std::vector<std::string> arg = splitString(str, " ");
-	std::cout << "user_direct_addr :" << &(*server->getUser(user->getNickname())) << std::endl;
     int j = -1;
     for (int i = 0; i < 14; i++)
     {

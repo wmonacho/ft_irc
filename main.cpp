@@ -18,7 +18,6 @@ int main(int ac, char **av)
 		cmd	cmd;
 		Server server;
 		User	user;
-		std::cout << "Entrez une ligne : ";
 		user.setNickname("will");
 		user.setUsername("will_");
 		user.setRealname("will mona");
@@ -27,39 +26,48 @@ int main(int ac, char **av)
 		int i = 0;
 		while (i < 1)
 		{
-			std::cout << "DEBUG" << std::endl;
 			std::getline(std::cin, line);
 			if (std::cin.eof())
                 exit(1);
-			cmd.whichCmd(line, &server, &user);
-			std::cout << user.getNickname() << std::endl;
+			cmd.whichCmd(line, &server, server.getUser("will"));
+			Channel *channel = server.getChannel("channel");
+			std::cout << "channel_addr :" << &(*channel) << std::endl;
+			if (server.channelAlreadyExist("channel"))
+				std::cout << "channel exist" << std::endl;
+			std::cout << "====================================================" << std::endl;
+			std::cout << "will_addr server :" << &(*server.getUser("will")) << std::endl;
+			std::cout << "will_addr channel :" << &(*channel->getUser(&user)) << std::endl;
+			std::cout << "will nickname server :" << server.getUser("will")->getNickname() <<  ":" << std::endl;
+			//std::cout << "will nickname channel :" << server.getChannelUser("channel", &user)->getNickname() << ":" << std::endl;
+			std::cout << "====================================================" << std::endl;
+			std::cout << " " << std::endl;
 			i++;
 		}
 		User	user2;
-		std::cout << "Entrez une ligne : ";
 		user2.setNickname("doudr");
 		user2.setUsername("doudr_");
 		user2.setRealname("doudr mona");
 		server.setUserList(user2);
 		while (true)
 		{
-			std::cout << "DEBUG2" << std::endl;
 			std::getline(std::cin, line);
 			if (std::cin.eof())
                 exit(1);
-			cmd.whichCmd(line, &server, &user2);
-			//envoie de JOIN #channel et de NICK didou puis de KICK willou
-			std::cout << "user2_addr b :" << &user2 << std::endl;
-			std::cout << "user2_addr a :" << &(*server.getChannelUser("channel", &user2)) << std::endl;
-			std::cout << "user2 nickname b :" << user2.getNickname() << ":" << std::endl;
-			std::cout << "user2 nickname a :" << server.getChannelUser("channel", &user2)->getNickname() << ":" << std::endl;
+			cmd.whichCmd(line, &server, server.getUser("doudr"));
+			//envoie de JOIN #channel puis KICK will
+			std::cout << "====================================================" << std::endl;
+			std::cout << "will_addr server :" << &(*server.getUser("will")) << std::endl;
+			std::cout << "will_addr channel :" << &(*server.getChannelUser("channel", &user)) << std::endl;
+			std::cout << "will nickname server :" << server.getUser("will")->getNickname() <<  ":" << std::endl;
+			//std::cout << "will nickname channel :" << server.getChannelUser("channel", &user)->getNickname() << ":" << std::endl;
 			std::cout << "====================================================" << std::endl;
 			std::cout << " " << std::endl;
 			std::cout << "====================================================" << std::endl;
-			std::cout << "user_addr b :" << &user << std::endl;
-			std::cout << "user_addr a :" << &(*server.getChannelUser("channel", &user)) << std::endl;
-			std::cout << "user nickname b :" << user.getNickname() <<  ":" << std::endl;
-			std::cout << "user nickname a :" << server.getChannelUser("channel", &user)->getNickname() << ":" << std::endl;
+			std::cout << "doudr_addr server :" << &(*server.getUser("doudr")) << std::endl;
+			std::cout << "doudr_addr channel :" << &(*server.getChannelUser("channel", &user2)) << std::endl;
+			std::cout << "doudr nickname server :" << server.getUser("doudr")->getNickname() << ":" << std::endl;
+			//std::cout << "doudr nickname channel :" << server.getChannelUser("channel", &user2)->getNickname() << ":" << std::endl;
+			std::cout << "====================================================" << std::endl;
 		}
 		//server.startServer();
 		
