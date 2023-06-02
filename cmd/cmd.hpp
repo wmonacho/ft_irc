@@ -28,7 +28,7 @@ public:
     bool    parseUser(std::string str, Server *server);
     bool    parsePart(std::string str, Server *server, User *user);
     bool    parseTopic(std::string str, Server *server, User *user);
-    bool    parseQuit(std::string str);
+    bool    parseQuit(std::string str, User *user);
     bool    parseMode(std::string str, Server *server, User *user);
     bool    parseNames(std::string str, Server *server);
     bool    parseList(std::string str, Server *server);
@@ -39,6 +39,7 @@ public:
     std::vector<std::string> splitString(std::string str, const char *delim);
     std::string    createServerMessage(User *user, std::string numReply, std::vector<std::string> splitArg);
     void            sendResponseToAllUsersInChannel(std::string message, Channel *channel);
+    void            sendChannelTopicToUser(Channel *channel, User *user);
 };
 
 #endif
