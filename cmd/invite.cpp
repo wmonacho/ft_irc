@@ -8,9 +8,9 @@ bool    cmd::parseInvite(std::string str, Server *server, User *user)
         return false;
     std::string nick = arg[1];
     std::string chan = &arg[2][1];
-    std::map<std::string, Channel> map = server->getMap();
+    std::map<std::string, Channel*> map = server->getMap();
     int chanFound = 0;
-    for (std::map<std::string, Channel>::iterator it = map.begin(); it != map.end(); it++)
+    for (std::map<std::string, Channel*>::iterator it = map.begin(); it != map.end(); it++)
     {
         if (it->first == chan)
         {
