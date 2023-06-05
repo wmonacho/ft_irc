@@ -251,6 +251,8 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
  		UserAspects	new_aspects(0);
 		// channel->setUserList(user, new_aspects);
         server->addUserToChannel(channel_name, server->getUser(user->getNickname()), new_aspects);
+		//std::cout << "user2 :" << &(*server->getChannelUser(channel_name, user)) << std::endl;
+		//std::cout << "user1 :" << &(*server->getChannelUser(channel_name, server->getUser("will"))) << std::endl;
         // We send a message to all the users connected to the channel
         sendResponseToAllUsersInChannel(server_response, channel);
 		return true;
@@ -258,13 +260,14 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
     /*sinon creer un nouveau Channel y ajouter le User avec les droits admin et utiliser setNewChannelInMap ensuite*/
  	UserAspects	new_aspects(1);
     Channel *channel = new Channel(channel_name);
-    server->createNewChannel(channel_name, *channel);
+    server->createNewChannel(channel_name, channel);
 	if (!server->getChannel(channel_name))
 		return false;
 	server->addUserToChannel(channel_name, server->getUser(user->getNickname()), new_aspects);
     // After the channel creation (if it didn't exist)
 	//std::cout << "user_addr server :" << &(*server->getChannelUser(channel_name, user)) << std::endl;
 	//std::cout << "user_addr channel :" << &(*channel->getUser(user)) << std::endl;
+	//std::cout << "user :" << &(*server->getChannelUser(channel_name, user)) << std::endl;
     sendResponseToAllUsersInChannel(server_response, server->getChannel(channel_name));
  	return true;
 }
@@ -356,16 +359,16 @@ bool    cmd::parseNames(std::string str, Server *server)
 {
     std::vector<std::string> arg = splitString(str, " ");
 
-    std::map<std::string, Channel> map = server->getMap();
+    std::map<std::string, Channel*> map = server->getMap();
     std::vector<User> copy_list_user = server->getUserList();
 
     if (arg.size() == 1)
     {
-        for (std::map<std::string, Channel>::iterator it = map.begin(); it != map.end(); it++)
+        for (std::map<std::string, Channel*>::iterator it = map.begin(); it != map.end(); it++)
         {
             //checkez si channel secrete ou pas
             std::cout << "Channel: " << it->first << std::endl;
-            std::map<const User*, UserAspects> userlist = it->second.getUserList();
+            std::map<const User*, UserAspects> userlist = it->second->getUserList();
             for (std::map<const User*, UserAspects>::iterator itUser = userlist.begin(); itUser != userlist.end(); itUser++)
             {
                 std::cout << itUser->first->getUsername() << std::endl;
@@ -390,15 +393,15 @@ bool    cmd::parseNames(std::string str, Server *server)
 bool    cmd::parseList(std::string str, Server *server)
 {
     std::vector<std::string> arg = splitString(str, " ");
-    std::map<std::string, Channel> map = server->getMap();
+    std::map<std::string, Channel*> map = server->getMap();
     std::vector<std::string> chans;
 
     if (arg.size() == 1)
     {
-        for (std::map<std::string, Channel>::iterator it = map.begin(); it != map.end(); it++)
+        for (std::map<std::string, Channel*>::iterator it = map.begin(); it != map.end(); it++)
         {
-            std::cout << "Channel: " << it->second.getName() << std::endl;
-            std::cout << " - topic: " << it->second.getTopic() << std::endl;
+            std::cout << "Channel: " << it->second->getName() << std::endl;
+            std::cout << " - topic: " << it->second->getTopic() << std::endl;
             std::cout << std::endl;
         }
         return true;
@@ -407,14 +410,14 @@ bool    cmd::parseList(std::string str, Server *server)
     chans = splitString(arg[1], ",");
     for (std::vector<std::string>::iterator it = arg.begin(); it != arg.end(); it++)
     {
-        std::map<std::string, Channel>::iterator itMap = map.begin();
+        std::map<std::string, Channel*>::iterator itMap = map.begin();
         int isValid = 0;
         while (itMap != map.end())
         {
-            if (itMap->second.getName() == *it)
+            if (itMap->second->getName() == *it)
             {
-                std::cout << "Channel: " << itMap->second.getName() << std::endl;
-                std::cout << " - topic: " << itMap->second.getTopic() << std::endl;
+                std::cout << "Channel: " << itMap->second->getName() << std::endl;
+                std::cout << " - topic: " << itMap->second->getTopic() << std::endl;
                 isValid = 1;
             }
             else
@@ -422,7 +425,7 @@ bool    cmd::parseList(std::string str, Server *server)
         }
         if (isValid == 0)
         {
-            std::cerr << "Channel: " << itMap->second.getName() << "doesn't exist."  << std::endl;
+            std::cerr << "Channel: " << itMap->second->getName() << "doesn't exist."  << std::endl;
             return false;
         }
     }
@@ -437,9 +440,9 @@ bool    cmd::parseInvite(std::string str, Server *server, User *user)
         return false;
     std::string nick = arg[1];
     std::string chan = &arg[2][1];
-    std::map<std::string, Channel> map = server->getMap();
+    std::map<std::string, Channel*> map = server->getMap();
     int chanFound = 0;
-    for (std::map<std::string, Channel>::iterator it = map.begin(); it != map.end(); it++)
+    for (std::map<std::string, Channel*>::iterator it = map.begin(); it != map.end(); it++)
     {
         if (it->first == chan)
         {
