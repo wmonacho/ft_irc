@@ -29,7 +29,7 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
     /*snon creer un nouveau Channel y ajouter le User avec les droits admin et utiliser setNewChannelInMap ensuite*/
     UserAspects	new_aspects(1);
     Channel *channel = new Channel(channel_name);
-    server->createNewChannel(channel_name, *channel);
+    server->createNewChannel(channel_name, channel);
     if (!server->getChannel(channel_name))
 	 return false;
     server->addUserToChannel(channel_name, user, new_aspects);

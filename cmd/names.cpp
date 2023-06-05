@@ -4,16 +4,16 @@ bool    cmd::parseNames(std::string str, Server *server)
 {
     std::vector<std::string> arg = splitString(str, " ");
 
-    std::map<std::string, Channel> map = server->getMap();
+    std::map<std::string, Channel*> map = server->getMap();
     std::vector<User> copy_list_user = server->getUserList();
 
     if (arg.size() == 1)
     {
-        for (std::map<std::string, Channel>::iterator it = map.begin(); it != map.end(); it++)
+        for (std::map<std::string, Channel*>::iterator it = map.begin(); it != map.end(); it++)
         {
             //checkez si channel secrete ou pas
             std::cout << "Channel: " << it->first << std::endl;
-            std::map<const User*, UserAspects> userlist = it->second.getUserList();
+            std::map<const User*, UserAspects> userlist = it->second->getUserList();
             for (std::map<const User*, UserAspects>::iterator itUser = userlist.begin(); itUser != userlist.end(); itUser++)
             {
                 std::cout << itUser->first->getUsername() << std::endl;

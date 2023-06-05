@@ -33,7 +33,7 @@ public:
     bool    parseNames(std::string str, Server *server);
     bool    parseList(std::string str, Server *server);
     bool    parseJoin(std::string str, Server *server, User *user);
-    bool    parseKick(std::string str, Server *server);
+    bool    parseKick(std::string str, Server *server, User *user);
     bool    parseInvite(std::string str, Server *server, User *user);
     bool    parsePrivmsg(std::string str, Server *server, User *user);
     std::vector<std::string> splitString(std::string str, const char *delim);

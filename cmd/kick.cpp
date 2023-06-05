@@ -40,6 +40,7 @@ bool    cmd::parseKick(std::string str, Server *server, User *user)
 	// 		return false;
 	// 	}
 	// 	//bannir le User du channel
+	//	server->kickUserFromChannel(&arg[1][1], server->getChannelUser(&arg[1][1], arg[2]));
 	// 	//server->kickChannelUser(&arg[2][1], kick_user);
 	// 	//ecris le commentaire de kick
 	// 	unsigned int i = 3;
