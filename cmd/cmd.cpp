@@ -92,8 +92,15 @@ bool    cmd::parseNick(std::string str, Server *server, User *user) //recup le U
         i++;
     }
     //verifier que le nick est valide
-    if (server->nickAlreadyExist(splitArg[1]))
+    if (server->nickAlreadyExist(splitArg[1])) {
         return (false);
+	}
+	std::string nick_message = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + splitArg[0] + " " + splitArg[1] + "\r\n";
+	send(user->getSocket(), nick_message.c_str(), nick_message.size(), 0);
+	if (splitArg[1].find("\n") != std::string::npos) {
+		size_t pos = splitArg[1].find("\n");
+		splitArg[1].erase(pos, std::string::npos);
+	}
     user->setNickname(splitArg[1]);
     return (true);
 }
@@ -127,7 +134,7 @@ bool    cmd::parseUser(std::string str, Server *server)
     return (true);
 }
 
-
+//=-------------------------------
 bool    cmd::parseMode(std::string str, Server *server, User *user)
 {
     //mode i, t, k, o
@@ -614,7 +621,7 @@ void cmd::whichCmd(std::string str, Server *server, User *user)
             return ;
 
         case 0:
-            if (parsePass(user, str, server) == false)
+            if (parsePass(user, str, server) == false) // ** USED ON CONNECTION **
             {
                 std::cerr << "Usage: PASS [password]" << std::endl;
                 return ;
@@ -630,7 +637,7 @@ void cmd::whichCmd(std::string str, Server *server, User *user)
             break;
 
         case 2:
-            if (parseUser(str, server) == false)
+            if (parseUser(str, server) == false) // ** USED ON CONNECTION **
             {
                 std::cerr << "Usage: USER <user> <mode> <unused> <realname>";
                 return ;
@@ -643,7 +650,7 @@ void cmd::whichCmd(std::string str, Server *server, User *user)
 
         case 4:
 
-            if (parseQuit(str) == false)
+            if (parseQuit(str, user) == false)
             {
                 std::cerr << "Usage: QUIT [ <Quit Message> ]" << std::endl;
                 return ;
@@ -696,7 +703,6 @@ void cmd::whichCmd(std::string str, Server *server, User *user)
             parsePrivmsg(str, server, user);
             break;
     }
-	std::cout << "CHANNEL_ADDR :" << &(*server->getChannel("channel")) << std::endl;
 	//std::cout << "user_addr :" << &(*server->getChannelUser("channel", "will")) << std::endl;
 }
 
@@ -714,10 +720,6 @@ std::string    cmd::createServerMessage(User *user, std::string numReply, std::v
 
 void    cmd::sendResponseToAllUsersInChannel(std::string message, Channel *channel)
 {
-    // std::cout << "Size of UserMap : " << channel->getUserList().size() << std::endl;
-    // std::cout << "First user in map : " << &channel->getUserList().begin()->first<< std::endl;
-    // std::cout << "First user's socket in map : " << channel->getUserList().begin()->first->getSocket() << std::endl;
-
     if (channel->getUserList().empty()) {
         std::cerr << "MAP IS EMPTY" << std::endl;
         return ;

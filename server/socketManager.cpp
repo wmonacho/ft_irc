@@ -134,6 +134,7 @@ std::string Server::getClientInformationsOnConnection(struct pollfd fds) {
     memset(buffer, 0, size);
 
     do {
+        bytesRead = 0;
         bytesRead = recv(fds.fd, buffer, size, MSG_PEEK);
         if (bytesRead <= 0) {
             std::cerr << "Error: recv() failed for connection registration" << std::endl;
