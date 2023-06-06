@@ -23,21 +23,29 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
         server->addUserToChannel(channel_name, user, new_aspects);
         sendMessageToAllUsersInChannel(server_response, channel);
         // topic s'il existe
+        if (!channel->getTopic().empty()) {
+            std::string topic = std::string(":localhost ") + "332" + " " + user->getUsername() + " #" + channel->getName() + " :" + channel->getTopic() + "\r\n";
+            send(user->getSocket(), topic.c_str(), topic.size(), 0);
+        }
         // liste des users
         if (channel->getUserList().size() > 1) {
-            std::string user_list = std::string(":localhost ") + "353" + " " + user->getUsername() + " == #" + channel->getName() + ":";
+            std::string user_list = std::string(":localhost ") + "353" + " " + user->getUsername() + " == #" + channel->getName() + " :";
             std::map<const User*, UserAspects> userMap = channel->getUserList();
             std::map<const User*, UserAspects>::iterator userNode = userMap.begin();
             std::map<const User*, UserAspects>::iterator lastUserNode = userMap.end();
 
             while (userNode != lastUserNode) {
                 user_list.append(userNode->first->getUsername());
-                user_list.append(" ");
+                if (userNode != userMap.end()--)
+                    user_list.append(" ");
                 userNode++;
             }
             user_list.append("\r\n");
+
             std::cout << "USER_LIST --> " << user_list;
             send(user->getSocket(), user_list.c_str(), user_list.size(), 0);
+            std::string end_of_list = std::string(":localhost ") + "366" + " " + user->getUsername() + " #" + channel->getName() + ":End of NAMES list\r\n";
+            send(user->getSocket(), end_of_list.c_str(), end_of_list.size(), 0);
         }
 		return true;
 	}
@@ -54,10 +62,7 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
     return true;
 }
 
-void    cmd::sendChannelTopicToUser(Channel *channel, User *user) {
+//:localhost 353 user == #channel :user1 user2...
+//:localhost 366 user #channel :End of NAMES list
 
-    std::string topic_message = std::string(":localhost") + " " + "332" + " " + user->getUsername() + " " + channel->getName() + " " + channel->getTopic() + "\r\n";
-    std::cout << "TOPIC RETURN => " << topic_message << std::endl;
-    send(user->getSocket(), topic_message.c_str(), topic_message.size(), 0);
-    return ;
-}
+// Users on :ebrodeur: issou
