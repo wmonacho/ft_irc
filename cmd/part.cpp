@@ -7,8 +7,9 @@ bool    cmd::parsePart(std::string str, Server *server, User *user)
     std::vector<std::string> splitArg = splitString(str, " ");
     if (splitArg.size() < 2)
     {
-        //numeric reply
-        std::cerr << "ERR_NEEDMOREPARAMS" << std::endl;
+		// 461 ERR_NEEDMOREPARAMS
+		std::string error = generateErrorMessage("461", splitArg[0]);
+		send(user->getSocket(), error.c_str(), error.size(), 0);
         return (false);
     }
 
@@ -19,11 +20,13 @@ bool    cmd::parsePart(std::string str, Server *server, User *user)
 	while (it != channels.end())
     {
 		// //verifier si le channel existe
+		// 403 ERR_NOSUCHCHANNEL
 		// if (!server->channelAlreadyExist(*it)) {
 		// 	std::cerr << "FIRST FALSE" << std::endl;
 		//     return false;
 		// }
     	// //verifier si l'user est bien dans le channel
+		// 442 ERR_NOTONCHANNEL
 		// if (!server->userInChannel(*it, user)) {
 		// 	std::cerr << "FIRST FALSE" << std::endl;
 		//     return false;
