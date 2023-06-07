@@ -148,38 +148,50 @@ std::map<std::string, Channel*>::iterator  Server::getItMap(void) {
 
 Channel*			Server::getChannel(std::string channel_name)
 {
-	if (this->_channels.find(channel_name) == this->_channels.end())
+	if (this->_channels.count(channel_name) == 0)
         return (NULL);
     return (this->_channels.find(channel_name)->second);
 }
 
 const std::string	Server::getChannelUserUsername(std::string channel_name, User *user)
 {
+	if (this->_channels.count(channel_name) == 0)
+		return ("");
 	return (this->_channels.find(channel_name)->second->getUserUsername(user));
 }
 
 const std::string	Server::getChannelUserNickname(std::string channel_name, User *user)
 {
+	if (this->_channels.count(channel_name) == 0)
+		return ("");
 	return (this->_channels.find(channel_name)->second->getUserNickname(user));
 }
 
 const std::string	Server::getChannelUserPassword(std::string channel_name, User *user)
 {
+	if (this->_channels.count(channel_name) == 0)
+		return ("");
 	return (this->_channels.find(channel_name)->second->getUserPassword(user));
 }
 
 const std::string	Server::getChannelUserRealname(std::string channel_name, User *user)
 {
+	if (this->_channels.count(channel_name) == 0)
+		return ("");
 	return this->_channels.find(channel_name)->second->getUserRealname(user);
 }
 
 std::string	Server::getChannelTopic(std::string	channel_name)
 {
+	if (this->_channels.count(channel_name) == 0)
+		return ("");
 	return (this->_channels.find(channel_name)->second->getTopic());
 }
 
 bool	Server::getChannelUserAdmin(std::string channel_name, User *user)
 {
+	if (this->_channels.count(channel_name) == 0)
+		return (false);
 	if (this->_channels.find(channel_name)->second->getUserAdmin(user))
 		return true;
 	return false;
@@ -227,7 +239,7 @@ const User*  Server::getConstUser(std::string user_nickname)
 }
 
 //il faudra checker si le channel existe avant d'utiliser cette focntion
-std::map<const User*, UserAspects>	Server::getChannelUserList(std::string channel_name)
+const std::map<const User*, UserAspects>&	Server::getChannelUserList(std::string channel_name)
 {
 	//throw une exception si possible en checkant s'il existe
 	return (this->_channels.find(channel_name)->second->getUserList());

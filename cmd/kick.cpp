@@ -13,24 +13,24 @@ bool    cmd::parseKick(std::string str, Server *server, User *user)
         return false;
     }
     //check si # ou & devant le server
-    if (arg[2][0] != '#' && arg[2][0] != '&')
+    if (arg[1][0] != '#' && arg[1][0] != '&')
     {
-		std::cerr << arg[2] << std::endl;
+		std::cerr << arg[1] << std::endl;
         std::cerr << "Error: bad channel mask" << std::endl;
         return false;
     }
-    //check si le server existe
-    // if (!server->channelAlreadyExist(&arg[2][1]))
-    // {
-    //     std::cerr << "Error: no such channel" << std::endl;
-    //     return false;
-    // }
-    // //check si le User exist dans le channel
-    // if (!server->userInChannel(&arg[2][1], server->getChannelUser(&arg[2][1], arg[2])))
-	// {
-	// 	std::cerr << "Error: not on channel" << std::endl;
-	// 	return false;
-	// }
+    //check si le channel existe
+     if (!server->channelAlreadyExist(&arg[1][1]))
+     {
+         std::cerr << "Error: no such channel" << std::endl;
+         return false;
+     }
+     //check si le User exist dans le channel
+     if (!server->userInChannel(&arg[1][1], server->getChannelUser(&arg[1][1], arg[2])))
+	 {
+	 	std::cerr << "Error: not on channel" << std::endl;
+	 	return false;
+	 }
     //check si il y a un commentaire : si oui l'afficher
 	// if (arg.size() > 3)
 	// {
@@ -53,8 +53,8 @@ bool    cmd::parseKick(std::string str, Server *server, User *user)
 	// 	return true;
 	// }
 	//bannir le User du channel
-	arg[3].erase(0, 1);
-	server->kickUserFromChannel(&arg[2][1], server->getChannelUser(&arg[2][1], arg[3]));
+	//arg[3].erase(0, 1);
+	server->kickUserFromChannel(&arg[1][1], server->getChannelUser(&arg[1][1], arg[2]));
 	//ecris la phrase de kick par default
 	std::string kick_message = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + arg[0] + " " + arg[2] + " " + arg[3] + "\r\n";
 	std::cout << kick_message << std::endl;
