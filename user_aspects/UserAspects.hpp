@@ -16,7 +16,7 @@ public :
     UserAspects& operator=(const UserAspects& obj);
     ~UserAspects();
 
-    bool	getAdmin( void );
+    bool	getAdmin( void ) const;
     void	setAdmin( bool new_right );
 };
 

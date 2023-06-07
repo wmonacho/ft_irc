@@ -26,7 +26,7 @@ UserAspects::~UserAspects( void )
 
 }
 
-bool	UserAspects::getAdmin( void )
+bool	UserAspects::getAdmin( void ) const
 {
 	if(this->_admin)
 		return true;

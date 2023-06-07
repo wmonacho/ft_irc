@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 13:57:00 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/05/31 10:18:09 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/06/07 16:38:38 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -58,7 +58,7 @@ class Channel
 		const std::string			getUserRealname(User *user);
 		const std::string			getUserPassword(User *user);
 		const std::string			getUserNickname(User *user);
-		std::map<const User*, UserAspects>	getUserList( void ) const;
+		const std::map<const User*, UserAspects>&	getUserList( void ) const;
 		
 		
 		bool	channelIsSecret( void );
