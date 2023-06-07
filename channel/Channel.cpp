@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:31:22 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/06/05 15:45:03 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/06/07 16:43:18 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -73,20 +73,20 @@ bool    Channel::getTopicAdmin() const
     return (this->_topicAdmin);
 }
 
-std::map<const User*, UserAspects>	Channel::getUserList( void ) const
+const std::map<const User*, UserAspects>&	Channel::getUserList( void ) const
 {
     return (this->_channel_user_list);
 }
 
 const User* Channel::getUser(const User *user)
 {
-	if (this->getUserList().find(user) == this->getUserList().end())
-		return (NULL);
 	return this->getUserList().find(user)->first;
 }
 
 bool	Channel::getUserAdmin(User *user)
 {
+	if (this->_channel_user_list.count(user) == 0)
+		return (false);
     if (this->getUserList().find(user)->second.getAdmin())
 	 return true;
     return false;
@@ -94,21 +94,29 @@ bool	Channel::getUserAdmin(User *user)
 
 const std::string		Channel::getUserUsername(User *user)
 {
+	if (this->_channel_user_list.count(user) == 0)
+		return ("");
     return (this->getUserList().find(user)->first->getUsername());
 }
 
 const std::string		Channel::getUserNickname(User *user)
 {
+	if (this->_channel_user_list.count(user) == 0)
+		return ("");
     return (this->getUserList().find(user)->first->getNickname());
 }
 
 const std::string		Channel::getUserPassword(User *user)
 {
+	if (this->_channel_user_list.count(user) == 0)
+		return ("");
     return (this->getUserList().find(user)->first->getPassword());
 }
 
 const std::string		Channel::getUserRealname(User *user)
 {
+	if (this->_channel_user_list.count(user) == 0)
+		return ("");
     return (this->getUserList().find(user)->first->getRealname());
 }
 
@@ -160,14 +168,14 @@ bool	Channel::channelIsSecret( void )
 
 bool	Channel::userInChannel(const User *user)
 {
-    if (this->getUserList().find(user) == this->getUserList().end())
-	 return (false);
+	if (this->_channel_user_list.count(user) == 0)
+		return (false);
     return true;
 }
 
 void	Channel::kickUserFromChannel(const User *user)
 {
-    this->_channel_user_list.erase(user);
+	this->_channel_user_list.erase(user);
 }
 
 void	Channel::changeUserAdmin(const User* user, bool i)

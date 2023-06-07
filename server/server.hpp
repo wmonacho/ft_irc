@@ -88,7 +88,7 @@ class Server {
         const User*	                            getChannelUser(std::string channel_name, const User *user);
         std::vector<User>							getUserList(void);
         const std::map<std::string, Channel*>&			getMap(void); //read only
-        std::map<const User*, UserAspects>   getChannelUserList(std::string channel_name);
+        const std::map<const User*, UserAspects>&   getChannelUserList(std::string channel_name);
 		std::map<std::string, Channel*>::iterator	getItMap(void);
 
         // Socket connection and user registration for "socketManager.cpp"

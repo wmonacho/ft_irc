@@ -54,9 +54,7 @@ bool    cmd::parseKick(std::string str, Server *server, User *user)
 	// }
 	//bannir le User du channel
 	//arg[3].erase(0, 1);
-	std::cout << "user kicked addr :" << &(*server->getChannelUser(&arg[1][1], arg[2])) << std::endl;
 	server->kickUserFromChannel(&arg[1][1], server->getChannelUser(&arg[1][1], arg[2]));
-	std::cout << "user kicked addr :" << &(*server->getChannelUser(&arg[1][1], arg[2])) << std::endl;
 	//ecris la phrase de kick par default
 	std::string kick_message = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + arg[0] + " " + arg[2] + " " + arg[3] + "\r\n";
 	std::cout << kick_message << std::endl;
