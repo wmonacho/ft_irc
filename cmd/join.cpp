@@ -22,13 +22,15 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
  		UserAspects	new_aspects(0);
         server->addUserToChannel(channel_name, user, new_aspects);
         sendMessageToAllUsersInChannel(server_response, channel);
-        // topic s'il existe
+
+        // On envoie le topic s'il existe
         if (!channel->getTopic().empty()) {
             std::string topic = std::string(":localhost ") + "332" + " " + user->getUsername() + " #" + channel->getName() + " :" + channel->getTopic() + "\r\n";
             send(user->getSocket(), topic.c_str(), topic.size(), 0);
         }
+
         // liste des users
-        if (channel->getUserList().size() > 1) {
+        if (channel->getUserList().size() > 0) {
             std::string user_list = std::string(":localhost ") + "353" + " " + user->getUsername() + " == #" + channel->getName() + " :";
             std::map<const User*, UserAspects> userMap = channel->getUserList();
             std::map<const User*, UserAspects>::iterator userNode = userMap.begin();
@@ -66,3 +68,5 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
 //:localhost 366 user #channel :End of NAMES list
 
 // Users on :ebrodeur: issou
+// Test cote serveur, on envoie bien ca :
+    // :localhost 353 coucou == #lol :ebrodeur issou coucou

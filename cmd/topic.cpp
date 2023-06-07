@@ -16,9 +16,9 @@ bool    cmd::parseTopic(std::string str, Server *server, User *user)
         return false;
     }
 
-    // Cas 1 : on renvoie le topic
-    if (arg.size() == 2) {
-        std::string topic_message = ":localhost " + arg[0] + " " + channel->getTopic() + "\r\n";
+    // Cas 1 : on renvoie le topic s'il existe
+    if (arg.size() == 2 && (!channel->getTopic().empty())) {
+        std::string topic_message = std::string(":localhost ") + "332" + " " + user->getUsername() + " #" + channel->getName() + " :" + channel->getTopic() + "\r\n";
         std::cout << "TOPIC : " << topic_message << std::endl;
         send(user->getSocket(), topic_message.c_str(), topic_message.size(), 0);
         return true;
