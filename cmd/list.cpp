@@ -1,19 +1,21 @@
 #include "cmd.hpp"
 
-bool    cmd::parseList(std::string str, Server *server)
+bool    cmd::parseList(std::string str, Server *server, User *user)
 {
+    // Parsing user input
     std::vector<std::string> arg = splitString(str, " ");
     std::map<std::string, Channel*> map = server->getMap();
     std::vector<std::string> chans;
 
     if (arg.size() == 1)
     {
+        std::string channels_list;
         for (std::map<std::string, Channel*>::iterator it = map.begin(); it != map.end(); it++)
         {
-            std::cout << "Channel: " << it->second->getName() << std::endl;
-            std::cout << " - topic: " << it->second->getTopic() << std::endl;
-            std::cout << std::endl;
+            channels_list.append(it->second->getName());
+            channels_list.append(" ");
         }
+        std::string message = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + arg[0] + channels_list + "\r\n";
         return true;
     }
     arg.erase(arg.begin());

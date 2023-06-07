@@ -76,6 +76,8 @@ bool    cmd::parsePass(User *user, std::string str, Server *server)
 
 bool    cmd::parseNick(std::string str, Server *server, User *user) //recup le User originaire de la commande
 {
+
+    // Parsing de la string (input du user)
     std::vector<std::string> splitArg = splitString(str, " ");
     if (splitArg.size() != 2)
         return (false);
@@ -91,10 +93,13 @@ bool    cmd::parseNick(std::string str, Server *server, User *user) //recup le U
         }
         i++;
     }
-    //verifier que le nick est valide
+
+    // Verifier si le NICK n'est pas deja attribue
     if (server->nickAlreadyExist(splitArg[1])) {
         return (false);
 	}
+
+    // On envoie la numeric_reply pour confirmer le changement et on fait le changement sur le serveur  
 	std::string nick_message = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + splitArg[0] + " " + splitArg[1] + "\r\n";
 	send(user->getSocket(), nick_message.c_str(), nick_message.size(), 0);
 	if (splitArg[1].find("\n") != std::string::npos) {
@@ -225,7 +230,7 @@ void cmd::whichCmd(std::string str, Server *server, User *user)
             break;
 
         case 9:
-            parseList(str, server);
+            parseList(str, server, user);
             break;
 
         case 10:
@@ -255,7 +260,7 @@ std::string    cmd::createServerMessage(User *user, std::string numReply, std::v
     return (tmp);
 }
 
-void    cmd::sendResponseToAllUsersInChannel(std::string message, Channel *channel)
+void    cmd::sendMessageToAllUsersInChannel(std::string message, Channel *channel)
 {
     if (channel->getUserList().empty()) {
         std::cerr << "MAP IS EMPTY" << std::endl;
@@ -269,8 +274,34 @@ void    cmd::sendResponseToAllUsersInChannel(std::string message, Channel *chann
     while (user != userEnd) {
         std::string tmp = message;
         send(user->first->getSocket(), tmp.c_str(), tmp.size(), 0);
-        std::cout << "JOIN msg sent to " << user->first->getUsername() << std::endl;
         user++;
     }
+    return ;
+}
+
+void    cmd::sendMessageToOtherUsersInChannel(std::string message, Channel *channel, User *user) {
+
+    std::map<const User*, UserAspects> userMap = channel->getUserList();
+    std::map<const User*, UserAspects>::iterator userNode = userMap.begin();
+    std::map<const User*, UserAspects>::iterator lastUserNode = userMap.end();
+
+    while (userNode != lastUserNode) {
+        std::string tmp = message;
+        if (userNode->first != user)
+            send(userNode->first->getSocket(), tmp.c_str(), tmp.size(), 0);
+        userNode++;
+    }
+    return ;
+}
+
+void cmd::rebuildMessage(std::vector<std::string> &arg, int index) {
+
+    size_t i = index + 1;
+	while (i < arg.size()) {
+		arg[index].append(" ");
+		arg[index].append(arg[i]);
+		i++;
+	}
+	arg[index].append("\0");
     return ;
 }
