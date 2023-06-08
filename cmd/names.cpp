@@ -5,7 +5,7 @@ bool    cmd::parseNames(std::string str, Server *server)
     std::vector<std::string> arg = splitString(str, " ");
 
     std::map<std::string, Channel*> map = server->getMap();
-    std::vector<User> copy_list_user = server->getUserList();
+    std::vector<User> userListCopy = server->getUserList();
 
     if (arg.size() == 1)
     {
@@ -17,12 +17,12 @@ bool    cmd::parseNames(std::string str, Server *server)
             for (std::map<const User*, UserAspects>::iterator itUser = userlist.begin(); itUser != userlist.end(); itUser++)
             {
                 std::cout << itUser->first->getUsername() << std::endl;
-                std::vector<User>::iterator iter = std::find(copy_list_user.begin(), copy_list_user.end(), itUser->first);
-                if (iter != copy_list_user.end())
-                    copy_list_user.erase(iter);
+                std::vector<User>::iterator iter = std::find(userListCopy.begin(), userListCopy.end(), itUser->first);
+                if (iter != userListCopy.end())
+                    userListCopy.erase(iter);
             }
         }
-        for (std::vector<User>::iterator cpyIt = copy_list_user.begin(); cpyIt != copy_list_user.end(); cpyIt++)
+        for (std::vector<User>::iterator cpyIt = userListCopy.begin(); cpyIt != userListCopy.end(); cpyIt++)
             std::cout << (*cpyIt).getUsername() << std::endl;
     }
     else

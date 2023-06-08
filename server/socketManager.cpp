@@ -111,7 +111,7 @@ int Server::verifyClientAndServerResponse(struct pollfd fds) {
         std::cerr << "Error: couldn't retrieve client information on connection" << std::endl;
         return (1);
     }
-
+    std::cout << "connection test" << std::endl;
     // This function parse the buffer to find the username and nickname of the user who connected to the server
     // and it creates a new user in the server's users_list
     server_response_for_connection = createServerResponseForConnection(buffer, fds.fd);
@@ -143,12 +143,16 @@ std::string Server::getClientInformationsOnConnection(struct pollfd fds) {
     } while (totalBytesRead < size);
     if (totalBytesRead > size) {
         std::cerr << "There is more data to read!" << std::endl;
+        int diff = totalBytesRead - size;
+        totalBytesRead += diff;
     }
-    memset(buffer, 0, (totalBytesRead - 1));
-    if (recv(fds.fd, buffer, (totalBytesRead - 1), 0) <= 0) {
+    memset(buffer, 0, totalBytesRead);
+    if (recv(fds.fd, buffer, totalBytesRead, 0) <= 0) {
         std::cerr << "Error: recv() failed for connection registration" << std::endl;
+        return NULL;
     }
-    return (std::string(buffer, (totalBytesRead - 1)));
+    buffer[totalBytesRead - 1] = '\0';
+    return (std::string(buffer, totalBytesRead - 1));
 }
 
 void    Server::createNewUserAtConnection(std::string nickname, std::string username, int socket) {
@@ -168,6 +172,7 @@ void    Server::createNewUserAtConnection(std::string nickname, std::string user
 
 std::string Server::createServerResponseForConnection(std::string buffer, int socket) {
 
+    std::cout << buffer << std::endl;
     size_t passPos = buffer.find("PASS");
     size_t nickPos = buffer.find("NICK");
     size_t userPos = buffer.find("USER");
@@ -237,16 +242,9 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
     std::cout << "Buffer from socket " << socketID << " : " << buffer << std::endl;
     std::cout << "** =============== **" << std::endl;
 
-    // Loop to identify which user sent a message to send it to the whichCmd()
-
     cmd command;
     user = this->getUserBySocket(fds[socketID].fd);
-    // HANDLE CLIENT MESSAGE HERE
     command.whichCmd(buffer, this, user);
-	std::cout << "user name :" << (this->getChannelUser("channel", "Will"))->getNickname() << std::endl;
-    
-    // We send the message back to the client (TESTING PURPOSE)
-    // send(fds[socketID].fd, buffer, recvReturn, 0);
 
     return (closeConnection);
 }

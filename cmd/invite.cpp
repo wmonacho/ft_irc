@@ -63,7 +63,8 @@ bool    cmd::parseInvite(std::string str, Server *server, User *user)
 			return false;
 		}
 	}
-	//execution de la cmd: envoyer le nouveau User dans le channel
+
+	// Execution de la cmd: envoyer le nouveau User dans le channel
 	UserAspects channel_aspects(false);
 	server->addUserToChannel(channel, server->getConstUser(nick), channel_aspects);
 	channel.insert(0, "#");
