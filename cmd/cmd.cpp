@@ -260,8 +260,8 @@ std::string    cmd::createServerMessage(User *user, std::string numReply, std::v
 
 void    cmd::sendMessageToAllUsersInChannel(std::string message, Channel *channel)
 {
-    if (channel->getUserList().empty()) {
-        std::cerr << "MAP IS EMPTY" << std::endl;
+    if (!channel) {
+        std::cerr << "Error: channel does not exist" << std::endl;
         return ;
     }
 

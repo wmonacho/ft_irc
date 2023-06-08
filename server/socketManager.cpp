@@ -111,7 +111,7 @@ int Server::verifyClientAndServerResponse(struct pollfd fds) {
         std::cerr << "Error: couldn't retrieve client information on connection" << std::endl;
         return (1);
     }
-
+    std::cout << "connection test" << std::endl;
     // This function parse the buffer to find the username and nickname of the user who connected to the server
     // and it creates a new user in the server's users_list
     server_response_for_connection = createServerResponseForConnection(buffer, fds.fd);
@@ -143,11 +143,15 @@ std::string Server::getClientInformationsOnConnection(struct pollfd fds) {
     } while (totalBytesRead < size);
     if (totalBytesRead > size) {
         std::cerr << "There is more data to read!" << std::endl;
+        int diff = totalBytesRead - size;
+        totalBytesRead += diff;
     }
     memset(buffer, 0, (totalBytesRead - 1));
     if (recv(fds.fd, buffer, (totalBytesRead - 1), 0) <= 0) {
         std::cerr << "Error: recv() failed for connection registration" << std::endl;
+        return NULL;
     }
+    std::cout << "DATA RETREIVING GOOD" << std::endl;
     return (std::string(buffer, (totalBytesRead - 1)));
 }
 
