@@ -25,9 +25,10 @@ bool    cmd::parseTopic(std::string str, Server *server, User *user)
     }
     
     // Cas 2 : on set le nouveau topic
-    if (arg.size() == 3) {
+    if (arg.size() >= 3) {
+        rebuildMessage(arg, 2);
         std::string new_topic = arg[2];
-        new_topic.erase(0, 1);
+        new_topic.erase(0, 2);
         std::cout << "Setting up new topic --> " << new_topic << std::endl;
         channel->setTopic(new_topic);
         return true ;

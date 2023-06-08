@@ -237,16 +237,9 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
     std::cout << "Buffer from socket " << socketID << " : " << buffer << std::endl;
     std::cout << "** =============== **" << std::endl;
 
-    // Loop to identify which user sent a message to send it to the whichCmd()
-
     cmd command;
     user = this->getUserBySocket(fds[socketID].fd);
-    // HANDLE CLIENT MESSAGE HERE
     command.whichCmd(buffer, this, user);
-	std::cout << "user name :" << (this->getChannelUser("channel", "Will"))->getNickname() << std::endl;
-    
-    // We send the message back to the client (TESTING PURPOSE)
-    // send(fds[socketID].fd, buffer, recvReturn, 0);
 
     return (closeConnection);
 }
