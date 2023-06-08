@@ -37,6 +37,7 @@ public:
     bool    parseInvite(std::string str, Server *server, User *user);
     bool    parsePrivmsg(std::string str, Server *server, User *user);
     std::string		createServerMessage(User *user, std::string numReply, std::vector<std::string> splitArg);
+    std::string     generateErrorMessage(std::string numreply, std::string command);
     void			sendMessageToAllUsersInChannel(std::string message, Channel *channel);
     void			sendMessageToOtherUsersInChannel(std::string message, Channel *channel, User *user);
     void			sendChannelTopicToUser(Channel *channel, User *user);

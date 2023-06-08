@@ -200,7 +200,7 @@ void cmd::whichCmd(std::string str, Server *server, User *user)
         case 5:
             if (parseJoin(str, server, user) == false)
 			{
-				std::cerr << "Usage: JOIN <channel>" << std::endl;
+				// std::cerr << "Usage: JOIN <channel>" << std::endl;
                 return ;
 			}
             break;
@@ -302,4 +302,10 @@ void cmd::rebuildMessage(std::vector<std::string> &arg, int index) {
 	}
 	arg[index].append("\0");
     return ;
+}
+
+std::string cmd::generateErrorMessage(std::string numReply, std::string command) {
+
+    std::string error = std::string(":localhost ") + numReply + " " + command + "\r\n";
+    return error;
 }
