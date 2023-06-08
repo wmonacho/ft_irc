@@ -28,7 +28,7 @@ bool    cmd::parseKick(std::string str, Server *server, User *user)
 	// 	std::cerr << "Error: not on channel" << std::endl;
 	// 	return false;
 	// }
-
+	
     // Cas 1 : il y a un commentaire au KICK
 	if (arg.size() == 5)
 	{
