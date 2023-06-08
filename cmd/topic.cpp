@@ -3,10 +3,11 @@
 bool    cmd::parseTopic(std::string str, Server *server, User *user)
 {
     std::vector<std::string> arg = splitString(str, " ");
-    std::cout << "ARG size ==> " << arg.size() << std::endl;
     if (arg.size() < 2)
     {
-        std::cerr << "ERR_NEEDMOREPARAMS" << std::endl;
+        // 461  ERR_NEEDMOREPARAMS
+        std::string error = generateErrorMessage("461", arg[0]);
+        send(user->getSocket(), error.c_str(), error.size(), 0);
         return false;
     }
 
@@ -17,8 +18,13 @@ bool    cmd::parseTopic(std::string str, Server *server, User *user)
     }
 
     // Cas 1 : on renvoie le topic s'il existe
-    if (arg.size() == 2 && (!channel->getTopic().empty())) {
-        std::string topic_message = std::string(":localhost ") + "332" + " " + user->getUsername() + " #" + channel->getName() + " :" + channel->getTopic() + "\r\n";
+    if (arg.size() <= 2) {
+        std::string topic_message;
+        if (channel->getTopic().empty()) {
+            topic_message = std::string(":localhost ") + "331" + " " + user->getUsername() + " #" + channel->getName() + " : No topic is set" + "\r\n";
+        }
+        else
+            topic_message = std::string(":localhost ") + "332" + " " + user->getUsername() + " #" + channel->getName() + " :" + channel->getTopic() + "\r\n";
         std::cout << "TOPIC : " << topic_message << std::endl;
         send(user->getSocket(), topic_message.c_str(), topic_message.size(), 0);
         return true;

@@ -146,13 +146,13 @@ std::string Server::getClientInformationsOnConnection(struct pollfd fds) {
         int diff = totalBytesRead - size;
         totalBytesRead += diff;
     }
-    memset(buffer, 0, (totalBytesRead - 1));
-    if (recv(fds.fd, buffer, (totalBytesRead - 1), 0) <= 0) {
+    memset(buffer, 0, totalBytesRead);
+    if (recv(fds.fd, buffer, totalBytesRead, 0) <= 0) {
         std::cerr << "Error: recv() failed for connection registration" << std::endl;
         return NULL;
     }
-    std::cout << "DATA RETREIVING GOOD" << std::endl;
-    return (std::string(buffer, (totalBytesRead - 1)));
+    buffer[totalBytesRead - 1] = '\0';
+    return (std::string(buffer, totalBytesRead - 1));
 }
 
 void    Server::createNewUserAtConnection(std::string nickname, std::string username, int socket) {
@@ -172,6 +172,7 @@ void    Server::createNewUserAtConnection(std::string nickname, std::string user
 
 std::string Server::createServerResponseForConnection(std::string buffer, int socket) {
 
+    std::cout << buffer << std::endl;
     size_t passPos = buffer.find("PASS");
     size_t nickPos = buffer.find("NICK");
     size_t userPos = buffer.find("USER");

@@ -5,8 +5,6 @@ bool    cmd::parseKick(std::string str, Server *server, User *user)
 	(void)server;
 	// Parsing de l'input du user
     std::vector<std::string> arg = splitString(str, " ");
-	std::cout << "Size of ARG in KICK = " << arg.size() << std::endl;
-	std::cout << "ARG[2] = " << arg[2] << std::endl;
     if (arg.size() < 3)
     {
         std::cerr << "Error: need more params" << std::endl;
