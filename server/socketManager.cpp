@@ -111,7 +111,7 @@ int Server::verifyClientAndServerResponse(struct pollfd fds) {
         std::cerr << "Error: couldn't retrieve client information on connection" << std::endl;
         return (1);
     }
-    std::cout << "connection test" << std::endl;
+
     // This function parse the buffer to find the username and nickname of the user who connected to the server
     // and it creates a new user in the server's users_list
     server_response_for_connection = createServerResponseForConnection(buffer, fds.fd);
@@ -131,28 +131,30 @@ std::string Server::getClientInformationsOnConnection(struct pollfd fds) {
     int     size = 100;
     char    buffer[size];
 
-    memset(buffer, 0, size);
+    memset(buffer, 0, sizeof(char) * (size - 1));
 
-    do {
+    // First to read all the available data so we can define the exact size of the buffer
+    while (totalBytesRead < size) {
         bytesRead = 0;
         bytesRead = recv(fds.fd, buffer, size, MSG_PEEK);
         if (bytesRead <= 0) {
             std::cerr << "Error: recv() failed for connection registration" << std::endl;
         }
         totalBytesRead += bytesRead;
-    } while (totalBytesRead < size);
-    if (totalBytesRead > size) {
-        std::cerr << "There is more data to read!" << std::endl;
-        int diff = totalBytesRead - size;
-        totalBytesRead += diff;
     }
-    memset(buffer, 0, totalBytesRead);
-    if (recv(fds.fd, buffer, totalBytesRead, 0) <= 0) {
+
+    // Now we can receive the available data
+    size = totalBytesRead;
+    char nBuffer[size - 1];
+
+    memset(nBuffer, 0, sizeof(char) * (size - 1));
+
+    if (recv(fds.fd, nBuffer, size - 1, 0) <= 0) {
         std::cerr << "Error: recv() failed for connection registration" << std::endl;
         return NULL;
     }
-    buffer[totalBytesRead - 1] = '\0';
-    return (std::string(buffer, totalBytesRead - 1));
+    nBuffer[size - 1] = '\0'; 
+    return (std::string(nBuffer, size - 1));
 }
 
 void    Server::createNewUserAtConnection(std::string nickname, std::string username, int socket) {
