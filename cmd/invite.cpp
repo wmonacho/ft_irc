@@ -47,12 +47,14 @@ bool    cmd::parseInvite(std::string str, Server *server, User *user)
 		send(user->getSocket(), error.c_str(), error.size(), 0);
 		return false;
 	}
-    // //checker si l'user est deja sur le chan
-	// if (server->userInChannel(channel, server->getChannelUser(channel, nick)))
-	// {
-	// 	std::cerr << "ERR_USERONCHANNEL" << std::endl;
-	// 	return false;
-	// }
+    //checker si l'user est deja sur le chan
+	if (server->userInChannel(channel, server->getChannelUser(channel, nick)))
+	{
+		// 443	ERR_USERONCHANNEL
+		std::string error = generateErrorMessage("443", arg[0]);
+		send(user->getSocket(), error.c_str(), error.size(), 0);
+		return false;
+	}
 	//check si le channel a une limit
 	if (server->channelHaveLimit(channel))
 	{
@@ -64,12 +66,14 @@ bool    cmd::parseInvite(std::string str, Server *server, User *user)
 		}
 	}
 
-	// Execution de la cmd: envoyer le nouveau User dans le channel
+	// Execution de la cmd
 	UserAspects channel_aspects(false);
 	server->addUserToChannel(channel, server->getConstUser(nick), channel_aspects);
 	channel.insert(0, "#");
+
 	std::string invite_message = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + arg[0] + " " + nick + " " + channel + "\r\n";
-	// send(user->getSocket(), invite_message.c_str(), invite_message.size(), 0);
+	std::string invite_confirmation = std::string(":localhost ") + "341" + "\r\n";
+	send(user->getSocket(), invite_confirmation.c_str(), invite_confirmation.size(), 0);
 	send(server->getUser(nick)->getSocket(), invite_message.c_str(), invite_message.size(), 0);
 	return true;
 }
