@@ -72,7 +72,7 @@ bool    cmd::parseInvite(std::string str, Server *server, User *user)
 	channel.insert(0, "#");
 
 	std::string invite_message = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + arg[0] + " " + nick + " " + channel + "\r\n";
-	std::string invite_confirmation = std::string(":localhost ") + "341" + "\r\n";
+	std::string invite_confirmation = std::string(":localhost 341 ") + channel + " " + server->getUser(nick)->getNickname() + "\r\n";
 	send(user->getSocket(), invite_confirmation.c_str(), invite_confirmation.size(), 0);
 	send(server->getUser(nick)->getSocket(), invite_message.c_str(), invite_message.size(), 0);
 	return true;
