@@ -4,13 +4,20 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
 {
     // Parsing de la string (commande + argument )
     std::vector<std::string> splitArg = splitString(str, " ");
-    if (splitArg.size() != 2)
-	 return false;
+    if (splitArg.size() != 2) {
+        // 461 ERR_NEEDMOREPARAMS
+        std::string error = generateErrorMessage("461", splitArg[0]);
+        send(user->getSocket(), error.c_str(), error.size(), 0);
+	    return false;
+    }
     if (splitArg[1][0] != '#')
     {
-	 std::cerr << "ERR_BADCHANNELKEY" << std::endl;
-	 return false;
+        // 475	ERR_BADCHANNELKEY
+	    std::string error = generateErrorMessage("475", splitArg[0]);
+        send(user->getSocket(), error.c_str(), error.size(), 0);
+	    return false;
     }
+
     std::string channel_name= &splitArg[1][1];
     std::string server_response = createServerMessage(user, "", splitArg);
 
@@ -39,12 +46,12 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
             while (userNode != lastUserNode) {
                 user_list.append(userNode->first->getUsername());
                 if (userNode != userMap.end()--)
-                    user_list.append(" ");
+                    user_list.append(",");
                 userNode++;
             }
             user_list.append("\r\n");
 
-            std::cout << "USER_LIST --> " << user_list;
+            // std::cout << "USER_LIST --> " << user_list;
             send(user->getSocket(), user_list.c_str(), user_list.size(), 0);
             std::string end_of_list = std::string(":localhost ") + "366" + " " + user->getUsername() + " #" + channel->getName() + ":End of NAMES list\r\n";
             send(user->getSocket(), end_of_list.c_str(), end_of_list.size(), 0);
@@ -56,11 +63,12 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
     UserAspects	new_aspects(1);
     Channel *channel = new Channel(channel_name);
     server->createNewChannel(channel_name, channel);
+    std::cout << "DEBUG 1" << std::endl;
     if (!server->getChannel(channel_name))
 	 return false;
     server->addUserToChannel(channel_name, user, new_aspects);
     sendMessageToAllUsersInChannel(server_response, server->getChannel(channel_name));
-    //sendChannelTopicToUser(server->getChannel(channel_name), user);
+    std::cout << "DEBUG 2" << std::endl;
     return true;
 }
 
@@ -70,3 +78,10 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
 // Users on :ebrodeur: issou
 // Test cote serveur, on envoie bien ca :
     // :localhost 353 coucou == #lol :ebrodeur issou coucou
+    
+	// ERR_BANNEDFROMCHAN
+	// ERR_INVITEONLYCHAN
+	// ERR_CHANNELISFULL
+	// ERR_BADCHANMASK
+	// ERR_NOSUCHCHANNEL
+	// ERR_TOOMANYCHANNELS
