@@ -12,7 +12,7 @@ bool    cmd::parseMode(std::string str, Server *server, User *user)
         return (false);
     }
     //check si # devant la cible et si le channel existe
-	if (splitArg[1][0] != '#' || server->getMap().find(&splitArg[1][1]) == server->getMap().end())
+	if ((splitArg[1][0] != '#' && splitArg[1][0] != '&') || server->getMap().find(&splitArg[1][1]) == server->getMap().end())
 	{
            std::cerr << "MODE: can't find this channel " << std::endl;
            return (false);
