@@ -42,6 +42,7 @@ public:
     void			sendMessageToOtherUsersInChannel(std::string message, Channel *channel, User *user);
     void			sendChannelTopicToUser(Channel *channel, User *user);
     void			rebuildMessage(std::vector<std::string> &arg, int index);
+    void			rebuildMessageWithIterator(std::vector<std::string> &arg, std::vector<std::string>::iterator messagePos); 
     std::vector<std::string>	splitString(std::string str, const char *delim);
 };
 

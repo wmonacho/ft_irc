@@ -3,6 +3,9 @@
 bool    cmd::parsePrivmsg(std::string str, Server *server, User *user)
 {
 	// parsing de l'input user
+	int	message_check = 0;
+	int	number_of_words = 0;
+	int	number_of_recipients = 0;
 	std::vector<std::string> arg = splitString(str, " ");
 	std::string target = arg[1];
 	int	sizeWithoutMessage;
@@ -14,9 +17,7 @@ bool    cmd::parsePrivmsg(std::string str, Server *server, User *user)
 		return false;
 	}
 
-	int	message_check = 0;
-	int	number_of_words = 0;
-	int	number_of_recipients = 0;
+	int messagePosInt = 0;
 	for (std::vector<std::string>::iterator it = arg.begin(); it != arg.end(); it++) {
 		// On trouve ":" qui signale le debut du message
 		if (it->find(":") != std::string::npos) {
@@ -27,6 +28,8 @@ bool    cmd::parsePrivmsg(std::string str, Server *server, User *user)
 		if (message_check > 0) {
 			number_of_words++;
 		}
+		if (message_check == 0)
+			messagePosInt++;
 	}
 	if (message_check != 1) {
 		// 412	ERR_NOTEXTTOSEND
@@ -75,7 +78,7 @@ bool    cmd::parsePrivmsg(std::string str, Server *server, User *user)
         if (server->channelAlreadyExist(arg[1])) {
             Channel *channel = server->getChannel(arg[1]);
             arg[1].insert(0, "#");
-			rebuildMessage(arg, 2);
+			rebuildMessageWithIterator(arg, messagePos);
             std::string message = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + arg[0] + " " + arg[1] + " " + arg[2] + "\r\n";
 			sendMessageToOtherUsersInChannel(message, channel, user);
             return true ;
@@ -98,10 +101,24 @@ bool    cmd::parsePrivmsg(std::string str, Server *server, User *user)
 		send(user->getSocket(), error.c_str(), error.size(), 0);
 		return false;
 	}
-	rebuildMessage(arg, 2);
+	std::cout << "MessageINTPOS ==> " << messagePosInt << std::endl;
+	// rebuildMessageWithIterator(arg, messagePos);
+	rebuildMessage(arg, messagePosInt);
     std::string message = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + arg[0] + " " + arg[1] + " " + arg[2] + "\r\n";
     std::string rpl_away = std::string(":localhost ") + "401" + " " + arg[0] + " " + user->getNickname() + " :Message sent" + "\r\n";
 	send(dest->getSocket(), message.c_str(), message.size(), 0);
 	send(user->getSocket(), rpl_away.c_str(), rpl_away.size(), 0);
 	return true;
+}
+
+void cmd::rebuildMessageWithIterator(std::vector<std::string> &arg, std::vector<std::string>::iterator messagePos) {
+
+	std::vector<std::string>::iterator it = messagePos + 1;
+	while (it != arg.end()) {
+		messagePos->append(" ");
+		messagePos->append(*it);
+		it++;
+	}
+	messagePos->append("\0");
+    return ;
 }
