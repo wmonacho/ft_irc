@@ -10,7 +10,8 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
         send(user->getSocket(), error.c_str(), error.size(), 0);
 	    return false;
     }
-    if (splitArg[1][0] != '#')
+	std::vector<std::string> channels = splitString(splitArg[1], ",");
+    if (splitArg[1][0] != '#' && splitArg[1][0] != '&')
     {
         // 475	ERR_BADCHANNELKEY
 	    std::string error = generateErrorMessage("475", splitArg[0]);
