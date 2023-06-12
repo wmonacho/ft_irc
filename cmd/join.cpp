@@ -56,6 +56,7 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
             send(user->getSocket(), user_list.c_str(), user_list.size(), 0);
             std::string end_of_list = std::string(":localhost ") + "366" + " " + user->getUsername() + " #" + channel->getName() + ":End of NAMES list\r\n";
             send(user->getSocket(), end_of_list.c_str(), end_of_list.size(), 0);
+			std::cout << "User will add :" << &(*server->getChannelUser(channel_name, "will")) << std::endl;
         }
 		return true;
 	}
@@ -64,12 +65,10 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
     UserAspects	new_aspects(1);
     Channel *channel = new Channel(channel_name);
     server->createNewChannel(channel_name, channel);
-    std::cout << "DEBUG 1" << std::endl;
     if (!server->getChannel(channel_name))
 	 return false;
     server->addUserToChannel(channel_name, user, new_aspects);
     sendMessageToAllUsersInChannel(server_response, server->getChannel(channel_name));
-    std::cout << "DEBUG 2" << std::endl;
     return true;
 }
 

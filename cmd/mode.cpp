@@ -27,21 +27,21 @@ bool    cmd::parseMode(std::string str, Server *server, User *user)
            return (false);
 	}
     //check si le mode existe (tout depend de ceux que l'on prend)
-	std::string modes = "ikto";
+	std::string modes = "iktlo";
 	if (modes.find(&splitArg[2][1]) == std::string::npos)
 	{
            std::cerr << "MODE: unknow mode " << std::endl;
            return (false);
 	}
-
-       Channel *chan = server->getChannel(splitArg[1]);
-       const User* u = server->getChannelUser(splitArg[1], splitArg[3]);
+    Channel *chan = server->getChannel(&splitArg[1][1]);
+    const User* u = server->getChannelUser(&splitArg[1][1], splitArg[3]);
     //execute les modes +
     //il restera a modifier les fonctions affectees par les modes
+
 	for (unsigned int i = 1; splitArg[2][0] == '+' && i < splitArg[2].size(); i++)
 	{
-		const User* u = server->getChannelUser(splitArg[1], splitArg[3]);
-		switch(splitArg[2][i] + 48)
+		const User* u = server->getChannelUser(&splitArg[1][1], splitArg[3]);
+		switch(splitArg[2][i])
 		{
                   case 105:
                     	//execute mode i
@@ -68,7 +68,7 @@ bool    cmd::parseMode(std::string str, Server *server, User *user)
 	//execute les modes -
 	for (unsigned int i = 1; splitArg[2][0] == '-' && i < splitArg[2].size(); i++)
 	{
-		switch(splitArg[2][i] + 48)
+		switch(splitArg[2][i])
 		{
                   case 105:
                       //execute mode i
@@ -91,5 +91,5 @@ bool    cmd::parseMode(std::string str, Server *server, User *user)
                       break;
 		}
 	}
-   return (true);
+	return (true);
 }
