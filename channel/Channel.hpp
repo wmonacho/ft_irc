@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 13:57:00 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/06/07 16:38:38 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/06/12 13:36:53 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,7 @@ class Channel
 		void   						setUserLimit(int nb);
 
 		
-		bool						getUserAdmin(User *user);
+		bool						getUserAdmin(const User *user) const;
 		std::string					getTopic( void ) const;
 		const User* 				getUser(const User *user);
 		std::string					getName( void ) const;
