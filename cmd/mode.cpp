@@ -2,13 +2,13 @@
 
 bool    cmd::parseMode(std::string str, Server *server, User *user)
 {
-    //mode i, t, k, o
+    //mode i, t, k, o, l
     std::vector<std::string> splitArg = splitString(str, " ");
 	//MODE <cible> <mode> <argument(s)>
     if (splitArg.size() < 3)
     {
         // 461  ERR_NEEDMOREPARAMS
-        std::string error = generateErrorMessage("461", splitArg[0]);
+        std::string error = splitArg[0] + " :Not enough parameters";
 		send(user->getSocket(), error.c_str(), error.size(), 0);
         return (false);
     }
@@ -37,10 +37,10 @@ bool    cmd::parseMode(std::string str, Server *server, User *user)
 	std::string modes = "iktlo";
 	if (modes.find(&splitArg[2][1]) == std::string::npos)
 	{
-        	// 472 ERR_UNKNOWNMODE
+			// 472 ERR_UNKNOWNMODE
 			std::string error = generateErrorMessage("472", splitArg[0]);
 			send(user->getSocket(), error.c_str(), error.size(), 0);
-        	return (false);
+			return (false);
 	}
     Channel *chan = server->getChannel(&splitArg[1][1]);
     const User* u = server->getChannelUser(&splitArg[1][1], splitArg[3]);
@@ -62,6 +62,7 @@ bool    cmd::parseMode(std::string str, Server *server, User *user)
 							// 467 ERR_KEYSET
 							std::string error = generateErrorMessage("467", splitArg[0]);
 							send(user->getSocket(), error.c_str(), error.size(), 0);
+							return (false);
 						}
                     	chan->setPassword(splitArg[3]);
                     	break;
@@ -113,8 +114,8 @@ bool    cmd::parseMode(std::string str, Server *server, User *user)
 //
 //                           ERR_CHANOPRIVSNEEDED a voir
 //                       
-//           RPL_CHANNELMODEIS
+//         	324 RPL_CHANNELMODEIS
 //           RPL_BANLIST                     RPL_ENDOFBANLIST
 //           RPL_EXCEPTLIST                  RPL_ENDOFEXCEPTLIST
-//           RPL_INVITELIST                  RPL_ENDOFINVITELIST
+//          346 RPL_INVITELIST              347    RPL_ENDOFINVITELIST
 //           RPL_UNIQOPIS
