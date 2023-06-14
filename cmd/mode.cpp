@@ -8,7 +8,7 @@ bool    cmd::parseMode(std::string str, Server *server, User *user)
     if (splitArg.size() < 3)
     {
         // 461  ERR_NEEDMOREPARAMS
-        std::string error = splitArg[0] + " :Not enough parameters";
+        std::string error = std::string(":localhost ") + "461 " + user->getNickname() + " " + splitArg[0] + " :Not enough parameters" + "\r\n";
 		send(user->getSocket(), error.c_str(), error.size(), 0);
         return (false);
     }
@@ -21,7 +21,7 @@ bool    cmd::parseMode(std::string str, Server *server, User *user)
 	if (!server->userInChannel(&splitArg[1][1], user))
 	{
 			// 441 ERR_USERNOTINCHANNEL
-			std::string error = generateErrorMessage("441", splitArg[0]);
+			std::string error = std::string(":localhost ") + "441 " + user->getNickname() + " " + &splitArg[1][1] + " :They aren't on that channel" + "\r\n";
 			send(user->getSocket(), error.c_str(), error.size(), 0);
         	return false;
 	}
@@ -29,7 +29,7 @@ bool    cmd::parseMode(std::string str, Server *server, User *user)
 	if ((splitArg[2][0] != '-' && splitArg[2][0] != '+') || splitArg[2].size() != 2)
 	{
 			// 477 ERR_NOCHANMODES
-        	std::string error = generateErrorMessage("477", splitArg[0]);
+        	std::string error = std::string(":localhost ") + "477 " + user->getNickname() + " " +  &splitArg[1][1] + " :Channel doesn't support modes" + "\r\n";
 			send(user->getSocket(), error.c_str(), error.size(), 0);
         	return (false);
 	}
@@ -38,7 +38,7 @@ bool    cmd::parseMode(std::string str, Server *server, User *user)
 	if (modes.find(&splitArg[2][1]) == std::string::npos)
 	{
 			// 472 ERR_UNKNOWNMODE
-			std::string error = generateErrorMessage("472", splitArg[0]);
+			std::string error = std::string(":localhost ") + "472 " + user->getNickname() + " " +  &splitArg[2][1] + " :is unknown mode char to me for " + &splitArg[1][1] + "\r\n";
 			send(user->getSocket(), error.c_str(), error.size(), 0);
 			return (false);
 	}
@@ -60,7 +60,7 @@ bool    cmd::parseMode(std::string str, Server *server, User *user)
                     	//execute mode k
 						if (chan->getPassword() != "") {
 							// 467 ERR_KEYSET
-							std::string error = generateErrorMessage("467", splitArg[0]);
+							std::string error = std::string(":localhost ") + "467 " + user->getNickname() + " " + &splitArg[1][1] + " :Channel key already set" + "\r\n";
 							send(user->getSocket(), error.c_str(), error.size(), 0);
 							return (false);
 						}
