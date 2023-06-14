@@ -224,7 +224,7 @@ void cmd::whichCmd(std::string str, Server *server, User *user)
             break;
 
         case 8:
-            parseNames(str, server);
+            parseNames(str, server, user);
             break;
 
         case 9:
