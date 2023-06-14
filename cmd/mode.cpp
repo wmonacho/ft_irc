@@ -5,6 +5,12 @@ bool    cmd::parseMode(std::string str, Server *server, User *user)
     //mode i, t, k, o, l
     std::vector<std::string> splitArg = splitString(str, " ");
 	//MODE <cible> <mode> <argument(s)>
+	if (splitArg.size() == 2)
+	{
+		// MODE <channel>
+		//envoie des modes du channel? de quel maniere l'ecrire? 
+		;
+	}
     if (splitArg.size() < 3)
     {
         // 461  ERR_NEEDMOREPARAMS
