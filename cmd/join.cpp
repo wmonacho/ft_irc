@@ -11,11 +11,7 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
 	    return false;
     }
 	std::vector<std::string> channels = splitString(splitArg[1], ",");
-<<<<<<< HEAD
     for (size_t i = 0; i < channels.size(); i++)
-=======
-    if (splitArg[1][0] != '#' && splitArg[1][0] != '&')
->>>>>>> c5e5dc4818726afc2af045c15bee04846763c8a3
     {
 		if (channels[i][0] != '#' && channels[i][0] != '&') {
         	// 476	ERR_BADCHANNELMASK
