@@ -45,7 +45,7 @@ Server::Server(int port, std::string password) {
     }
 
     // ATTENTION au deuxieme arg (backlog queue)
-    if (listen(_socketfd, 6) < 0) {
+    if (listen(_socketfd, MAX_SOCKETS) < 0) {
 		std::cout << "Error : listen failed" << std::endl;
 		exit(1);
     }
@@ -258,6 +258,11 @@ const User* Server::getChannelUser(std::string channel_name, std::string user_na
 	return (this->_channels.find(channel_name)->second->getUser(this->getConstUser(user_name)));
 }
 
+Server::userConnectionRegistration* Server::getUserConnectionRegistrationStruct(void) {
+
+    return (&this->_userConnectionRegistration);
+}
+
 /* *************************************** */
 /* *************** SETTERS *************** */
 /* *************************************** */
@@ -321,6 +326,14 @@ void	Server::setUserPassword(User user, std::string new_password)
 void	Server::setUserRealname(User user, std::string new_realname)
 {
 	user.setRealname(new_realname);
+}
+
+void    Server::setUserConnectionResitrationStruct(std::string pass, std::string nick, std::string user) {
+
+    this->_userConnectionRegistration.password = pass;
+    this->_userConnectionRegistration.nickName = nick;
+    this->_userConnectionRegistration.userName = user;
+    return ;
 }
 
 //void	Server::setChannelUserAdmin

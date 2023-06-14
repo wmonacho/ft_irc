@@ -3,12 +3,15 @@
 bool    cmd::parseKick(std::string str, Server *server, User *user)
 {
 	(void)server;
+
 	// Parsing de l'input du user
     std::vector<std::string> arg = splitString(str, " ");
     if (arg.size() < 3)
     {
-        std::cerr << "Error: need more params" << std::endl;
-        return false;
+		std::string error = std::string(":localhost ") + "412" + " " + arg[0] + " :No text to send" + "\r\n";
+		// std::cerr << "412	ERR_NOTEXTTOSEND --> " << message_check << " // " << error << std::endl;	// DEBUG
+		send(user->getSocket(), error.c_str(), error.size(), 0);
+		return false;
     }
     // if (arg[2].find("#") == std::string::npos || arg[2].find("&") == std::string::npos)
     // {
