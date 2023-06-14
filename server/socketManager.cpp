@@ -137,10 +137,7 @@ bool	Server::findPassInBuffer(char *buffer, Server::userConnectionRegistration *
 				int j = i;
 				while (buffer[j] != '\r')
 					j++;
-				std::cout << "R position for PASS ==> " << j << std::endl;
 				std::string tmp(&buffer[i], j - i);
-				std::cout << "TEST P ===> " << tmp << std::endl;
-
 				size_t passPos = tmp.find("PASS");
 				passPos += 5;
 				std::string pwd = tmp.substr(passPos);
@@ -164,10 +161,7 @@ bool	Server::findNickInBuffer(char *buffer, Server::userConnectionRegistration *
 				int j = i;
 				while (buffer[j] != '\r')
 					j++;
-				std::cout << "R position for NICK ==> " << j << std::endl;
 				std::string tmp(&buffer[i], j - i);
-				std::cout << "TEST N ===> " << tmp << std::endl;
-
 				size_t nickPos = tmp.find("NICK");
 				nickPos += 5;
 				std::string nick = tmp.substr(nickPos);
@@ -191,10 +185,7 @@ bool	Server::findUserInBuffer(char *buffer, Server::userConnectionRegistration *
 				int j = i;
 				while (buffer[j] != '\r')
 					j++;
-				std::cout << "R position for USER ==> " << j << std::endl;
 				std::string tmp(&buffer[i], j - i);
-				std::cout << "TEST U ===> " << tmp << std::endl;
-
 				size_t userPos = tmp.find("USER");
 				userPos += 5;
 				std::string user = tmp.substr(userPos);
@@ -214,14 +205,12 @@ bool Server::getClientInformationsOnConnection(struct pollfd fds, Server::userCo
 	bool	nickCheck = false;
 	bool	userCheck = false;
 	int		bufferSize = 512;
-	// int		length = 0;
 	char	buffer[bufferSize];
 
 	memset(buffer, 0, sizeof(char) * (bufferSize - 1));
 
 	while (1) {
 		int bytesRead = recv(fds.fd, buffer, bufferSize, 0);
-		std::cout << "BytesRead ==> " << bytesRead << std::endl;
 		if (bytesRead == 0) {
 			std::cerr << "Error: connection closed" << std::endl;
 			return false;
@@ -274,9 +263,6 @@ std::string Server::createServerResponseForConnection(int socket, Server::userCo
 
     createNewUserAtConnection(userInfo->nickName, userInfo->userName, socket);
 
-	std::cout << "PASSWORD ====> " << userInfo->password << std::endl;
-	std::cout << "NICK	   ====> " << userInfo->nickName << std::endl;
-	std::cout << "User     ====> " << userInfo->userName << std::endl;
     std::string server_response = ":localhost 001 " + userInfo->nickName + " :Welcome to the Internet Relay Network " + userInfo->nickName + "!" + userInfo->userName + "@localhost\r\n";
 
     return (server_response);
