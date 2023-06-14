@@ -37,7 +37,6 @@ bool    cmd::parseMode(std::string str, Server *server, User *user)
     const User* u = server->getChannelUser(&splitArg[1][1], splitArg[3]);
     //execute les modes +
     //il restera a modifier les fonctions affectees par les modes
-
 	for (unsigned int i = 1; splitArg[2][0] == '+' && i < splitArg[2].size(); i++)
 	{
 		const User* u = server->getChannelUser(&splitArg[1][1], splitArg[3]);
