@@ -14,9 +14,7 @@ FILES =		main.cpp							\
 			cmd/privmsg.cpp						\
 			cmd/mode.cpp						\
 			cmd/kick.cpp						\
-			cmd/list.cpp						\
 			cmd/invite.cpp						\
-			cmd/names.cpp						\
 			cmd/topic.cpp						\
 			cmd/part.cpp						\
 			cmd/quit.cpp

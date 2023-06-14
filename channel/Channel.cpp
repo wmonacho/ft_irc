@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:31:22 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/06/07 16:43:18 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/06/14 09:48:47 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -80,10 +80,18 @@ const std::map<const User*, UserAspects>&	Channel::getUserList( void ) const
 
 const User* Channel::getUser(const User *user)
 {
+	//std::cout << "DEBUG :" << this->getUserList().count(user) << std::endl;
+	//if (this->getUserList().find(user) != this->getUserList().end())
+	//{
+	//	std::cout << "DEBUG" << std::endl;
+	//	std::cout << "DEBUG user :" << this->getUserList().find(user)->first->getNickname() << std::endl;
+	//}
+	//else 
+	//	std::cout << "NO USER" << std::endl;
 	return this->getUserList().find(user)->first;
 }
 
-bool	Channel::getUserAdmin(User *user)
+bool	Channel::getUserAdmin(const User *user) const
 {
 	if (this->_channel_user_list.count(user) == 0)
 		return (false);
@@ -180,5 +188,7 @@ void	Channel::kickUserFromChannel(const User *user)
 
 void	Channel::changeUserAdmin(const User* user, bool i)
 {
-    this->_channel_user_list[user].setAdmin(i);
+	std::cout << "admin before :" << _channel_user_list.find(user)->second.getAdmin() << std::endl;
+    this->_channel_user_list.find(user)->second.setAdmin(i);
+	std::cout << "admin afterr :" << _channel_user_list.find(user)->second.getAdmin() << std::endl;
 }
