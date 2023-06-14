@@ -21,7 +21,6 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
 		}
     }
 
-	//tmp = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + splitArg[0] + " " + splitArg[1] + "\r\n";
 
     // Cas 1 : le channel existe, donc y ajoute le user et on envoie le message de "bienvenue" a tout le monde
     // + on envoie le topic (s'il existe) et la liste des USER 
