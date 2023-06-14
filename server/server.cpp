@@ -412,6 +412,9 @@ bool	Server::channelHaveLimit(std::string channel_name)
 
 bool	Server::channelEnoughSpace(std::string channel_name)
 {
+	if (this->getChannel(channel_name)->getUserLimit() == -1)
+		return true;
+	std::cout << "debug :" << this->getChannelUserList(channel_name).size() << "limit ==" << this->getChannel(channel_name)->getUserLimit() << std::endl;
 	if (this->getChannelUserList(channel_name).size() >= static_cast<size_t>(this->getChannel(channel_name)->getUserLimit()))
 		return false;
 	return true;

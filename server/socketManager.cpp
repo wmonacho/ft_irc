@@ -22,7 +22,7 @@ void    Server::startServer() {
 
     // This is the main loop which implements poll() : we detect if the socket is connecting or connected and act in consequence
     do {
-        pollReturn = poll(fds, nfds, (2 * 60 * 1000)); // 2 min timeout
+        pollReturn = poll(fds, nfds, -1); // 1 min timeout
         if (pollReturn < 0) {
             std::cerr << "Error: poll() failed" << std::endl;
             break ;
