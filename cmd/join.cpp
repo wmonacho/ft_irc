@@ -58,7 +58,7 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
 					continue;
 				}
 			}
-			if (static_cast<int>(channel->getUserList().size()) >= channel->getUserLimit()) {
+			if (!server->channelEnoughSpace(channel->getName())) {
 				// 471 ERR_CHANNELISFULL
 				std::string error = std::string("localhost :") + "471 " + user->getNickname() + " " + channels[i] + " :Cannot join channel (+l)" + "\r\n";
 				send(user->getSocket(), error.c_str(), error.size(), 0);
