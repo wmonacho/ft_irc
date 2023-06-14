@@ -78,7 +78,7 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
 // Users on :ebrodeur: issou
 // Test cote serveur, on envoie bien ca :
     // :localhost 353 coucou == #lol :ebrodeur issou coucou
-    
+
 	// ERR_BANNEDFROMCHAN
 	// ERR_INVITEONLYCHAN
 	// ERR_CHANNELISFULL
