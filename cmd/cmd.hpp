@@ -16,7 +16,6 @@ private:
     std::string _cmd[14];
 
 public:
-
 	cmd();
 	cmd(const cmd &rhs);
 	cmd &operator=(const cmd &rhs);
@@ -30,8 +29,6 @@ public:
 	bool	parseTopic(std::string str, Server *server, User *user);
 	bool	parseQuit(std::string str, User *user);
 	bool	parseMode(std::string str, Server *server, User *user);
-	bool	parseNames(std::string str, Server *server);
-	bool	parseList(std::string str, Server *server, User *user);
 	bool	parseJoin(std::string str, Server *server, User *user);
 	bool	parseKick(std::string str, Server *server, User *user);
 	bool	parseInvite(std::string str, Server *server, User *user);

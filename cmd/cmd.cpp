@@ -222,15 +222,6 @@ void cmd::whichCmd(std::string str, Server *server, User *user)
                 return ;
             }
             break;
-
-        case 8:
-            parseNames(str, server);
-            break;
-
-        case 9:
-            parseList(str, server, user);
-            break;
-
         case 10:
              parseInvite(str, server, user);
              break;
