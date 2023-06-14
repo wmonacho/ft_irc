@@ -4,7 +4,7 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
 {
     // Parsing de la string (commande + argument )
     std::vector<std::string> splitArg = splitString(str, " ");
-    if (splitArg.size() < 3) {
+    if (splitArg.size() < 2) {
         // 461 ERR_NEEDMOREPARAMS
         std::string error = std::string("localhost :") + "461 " + user->getNickname() + " " + splitArg[0] + " :Not enough parameters" + "\r\n";
         send(user->getSocket(), error.c_str(), error.size(), 0);
@@ -21,12 +21,12 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
 		}
     }
 
-    std::string server_response = createServerMessage(user, "", splitArg);
 
     // Cas 1 : le channel existe, donc y ajoute le user et on envoie le message de "bienvenue" a tout le monde
     // + on envoie le topic (s'il existe) et la liste des USER 
 	for (size_t i = 0; i < channels.size(); i++) {
 		std::string channel_name = &channels[i][1];
+    	std::string server_response = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + splitArg[0] + " " + channels[i] + "\r\n";
     	if (server->channelAlreadyExist(channel_name)) {
 		    Channel* channel = server->getChannel(channel_name);
 			if (channel->getInviteOnly()) {
@@ -88,7 +88,7 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
     	        std::map<const User*, UserAspects>::iterator lastUserNode = userMap.end();
 
     	        while (userNode != lastUserNode) {
-    	            user_list.append(userNode->first->getUsername());
+    	            user_list.append(userNode->first->getNickname());
     	            if (userNode != userMap.end()--)
     	                user_list.append(",");
     	            userNode++;
