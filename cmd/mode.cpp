@@ -42,10 +42,11 @@ bool    cmd::parseMode(std::string str, Server *server, User *user)
 			send(user->getSocket(), error.c_str(), error.size(), 0);
 			return (false);
 	}
-    Channel *chan = server->getChannel(&splitArg[1][1]);
-    const User* u = server->getChannelUser(&splitArg[1][1], splitArg[3]);
+
     //execute les modes +
     //il restera a modifier les fonctions affectees par les modes
+    Channel *chan = server->getChannel(&splitArg[1][1]);
+    const User* u = server->getChannelUser(&splitArg[1][1], splitArg[3]);
 
 	for (unsigned int i = 1; splitArg[2][0] == '+' && i < splitArg[2].size(); i++)
 	{
