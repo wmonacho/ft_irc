@@ -82,7 +82,7 @@ int Server::acceptNewConnection(struct pollfd *fds, int nfds) {
 
     do {
         newSocket = accept(this->_socketfd, NULL, NULL);
-        if (newSocket < 0) {
+        if (newSocket < 0) { 
             if (errno != EWOULDBLOCK) {
                 std::cerr << "Error: accept() failed" << std::endl;
                 nfds = errorStatus;
