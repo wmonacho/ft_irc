@@ -72,34 +72,37 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
     	    if (!channel->getTopic().empty()) {
     	        std::string topic = std::string(":localhost ") + "332 " + user->getNickname() + " " + channels[i] + " :" + channel->getTopic() + "\r\n";
     	        send(user->getSocket(), topic.c_str(), topic.size(), 0);
-				continue;
     	    }
 			if (channel->getTopic().empty()) {
     	        std::string topic = std::string(":localhost ") + "331 " + user->getNickname() + " " + channels[i] + " :Not topic is set" + "\r\n";
     	        send(user->getSocket(), topic.c_str(), topic.size(), 0);
-				continue;
     	    }
-
-    	    // liste des users
-    	    if (channel->getUserList().size() > 0) {
+			if (channel->getUserList().size() > 0) {
+				// 353 RPL_NAMREPLY
     	        std::string user_list = std::string(":localhost ") + "353 " + user->getNickname() + " == " + channels[i] + " :";
     	        std::map<const User*, UserAspects> userMap = channel->getUserList();
     	        std::map<const User*, UserAspects>::iterator userNode = userMap.begin();
     	        std::map<const User*, UserAspects>::iterator lastUserNode = userMap.end();
 
     	        while (userNode != lastUserNode) {
+					std::cout << userNode->first->getNickname();
     	            user_list.append(userNode->first->getNickname());
     	            if (userNode != userMap.end()--)
+					{
+						std::cout << ",";
     	                user_list.append(",");
+					}
     	            userNode++;
     	        }
     	        user_list.append("\r\n");
+				std::cout << "" << std::endl;
 
     	        // std::cout << "USER_LIST --> " << user_list;
     	        send(user->getSocket(), user_list.c_str(), user_list.size(), 0);
     	        std::string end_of_list = std::string(":localhost ") + "366 " + user->getNickname() + " " + channels[i] + ":End of NAMES list\r\n";
     	        send(user->getSocket(), end_of_list.c_str(), end_of_list.size(), 0);
     	    }
+    	    // liste des users
 			continue;
 		}
 
@@ -110,6 +113,8 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
     	if (!server->getChannel(channel_name))
 			return false;
     	server->addUserToChannel(channel_name, user, new_aspects);
+		std::string user_list = std::string(":localhost ") + "353 " + user->getNickname() + " == " + channels[i] + " :" + user->getNickname();
+		send(user->getSocket(), user_list.c_str(), user_list.size(), 0);
     	sendMessageToAllUsersInChannel(server_response, server->getChannel(channel_name));
 	}
 	return true;

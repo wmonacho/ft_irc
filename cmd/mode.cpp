@@ -21,13 +21,15 @@ bool    cmd::parseMode(std::string str, Server *server, User *user)
     //check si # devant la cible et si le channel existe
 	if ((splitArg[1][0] != '#' && splitArg[1][0] != '&') || server->getMap().find(&splitArg[1][1]) == server->getMap().end())
 	{
-           return (false);
+		std::string error = std::string("localhost :") + "476 " + user->getNickname() + " " + splitArg[1] + " :Bad Channel Mask" + "\r\n";
+        send(user->getSocket(), error.c_str(), error.size(), 0);
+        return (false);
 	}
 	//check si le User est bien dans la userlist du channel
 	if (!server->userInChannel(&splitArg[1][1], user))
 	{
 			// 441 ERR_USERNOTINCHANNEL
-			std::string error = std::string(":localhost ") + "441 " + user->getNickname() + " " + &splitArg[1][1] + " :They aren't on that channel" + "\r\n";
+			std::string error = std::string(":localhost ") + "441 " + user->getNickname() + " " + splitArg[1] + " :They aren't on that channel" + "\r\n";
 			send(user->getSocket(), error.c_str(), error.size(), 0);
         	return false;
 	}
@@ -35,7 +37,7 @@ bool    cmd::parseMode(std::string str, Server *server, User *user)
 	if ((splitArg[2][0] != '-' && splitArg[2][0] != '+') || splitArg[2].size() != 2)
 	{
 			// 477 ERR_NOCHANMODES
-        	std::string error = std::string(":localhost ") + "477 " + user->getNickname() + " " +  &splitArg[1][1] + " :Channel doesn't support modes" + "\r\n";
+        	std::string error = std::string(":localhost ") + "477 " + user->getNickname() + " " +  splitArg[1] + " :Channel doesn't support modes" + "\r\n";
 			send(user->getSocket(), error.c_str(), error.size(), 0);
         	return (false);
 	}
@@ -44,7 +46,7 @@ bool    cmd::parseMode(std::string str, Server *server, User *user)
 	if (modes.find(&splitArg[2][1]) == std::string::npos)
 	{
 			// 472 ERR_UNKNOWNMODE
-			std::string error = std::string(":localhost ") + "472 " + user->getNickname() + " " +  &splitArg[2][1] + " :is unknown mode char to me for " + &splitArg[1][1] + "\r\n";
+			std::string error = std::string(":localhost ") + "472 " + user->getNickname() + " " +  &splitArg[2][1] + " :is unknown mode char to me for " + splitArg[1] + "\r\n";
 			send(user->getSocket(), error.c_str(), error.size(), 0);
 			return (false);
 	}
