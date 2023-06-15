@@ -20,7 +20,7 @@ bool    cmd::parseInvite(std::string str, Server *server, User *user)
             break ;
         }
     }
-    //channel pas valide = pas d erreur
+    //channel pas valide = pas d'erreur
     if (chanFound == 0)
         return false;
     if (server->nickAlreadyExist(nick) == false)
@@ -70,9 +70,9 @@ bool    cmd::parseInvite(std::string str, Server *server, User *user)
 	UserAspects channel_aspects(false);
 	server->addUserToChannel(channel, server->getConstUser(nick), channel_aspects);
 	channel.insert(0, "#");
-
 	std::string invite_message = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + arg[0] + " " + nick + " " + channel + "\r\n";
-	std::string invite_confirmation = std::string(":localhost 341 ") + channel + " " + server->getUser(nick)->getNickname() + "\r\n";
+	std::string user_nickname = server->getUser(nick)->getNickname();
+	std::string invite_confirmation = std::string(":localhost ") + "341" + " " + user->getUsername() + " " + user_nickname + " " + channel + "\r\n";
 	send(user->getSocket(), invite_confirmation.c_str(), invite_confirmation.size(), 0);
 	send(server->getUser(nick)->getSocket(), invite_message.c_str(), invite_message.size(), 0);
 	return true;
