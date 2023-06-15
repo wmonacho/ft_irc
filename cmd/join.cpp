@@ -21,11 +21,11 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
 		}
     }
 
+    std::string server_response = createServerMessage(user, "", splitArg);
 
     // Cas 1 : le channel existe, donc y ajoute le user et on envoie le message de "bienvenue" a tout le monde
     // + on envoie le topic (s'il existe) et la liste des USER 
 	for (size_t i = 0; i < channels.size(); i++) {
-		std::string channel_name = &channels[i][1];
     	std::string server_response = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + splitArg[0] + " " + channels[i] + "\r\n";
     	if (server->channelAlreadyExist(channel_name)) {
 		    Channel* channel = server->getChannel(channel_name);
