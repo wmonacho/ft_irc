@@ -36,7 +36,7 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
 			  continue;
 			}
 			if (splitArg.size() < 3 && channel->getPassword() != "") {
-				//475    ERR_BADCHANNELKEY
+				// 475    ERR_BADCHANNELKEY
 				std::string error = std::string("localhost :") + "475 " + user->getNickname() + " " + channels[i] + " :Cannot join channel (+k)" + "\r\n";
 				send(user->getSocket(), error.c_str(), error.size(), 0);
 				continue;
@@ -72,16 +72,13 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
     	    if (!channel->getTopic().empty()) {
     	        std::string topic = std::string(":localhost ") + "332 " + user->getNickname() + " " + channels[i] + " :" + channel->getTopic() + "\r\n";
     	        send(user->getSocket(), topic.c_str(), topic.size(), 0);
-				continue;
     	    }
 			if (channel->getTopic().empty()) {
     	        std::string topic = std::string(":localhost ") + "331 " + user->getNickname() + " " + channels[i] + " :Not topic is set" + "\r\n";
     	        send(user->getSocket(), topic.c_str(), topic.size(), 0);
-				continue;
     	    }
-
-    	    // liste des users
-    	    if (channel->getUserList().size() > 0) {
+			if (channel->getUserList().size() > 0) {
+				// 353 RPL_NAMREPLY
     	        std::string user_list = std::string(":localhost ") + "353 " + user->getNickname() + " == " + channels[i] + " :";
     	        std::map<const User*, UserAspects> userMap = channel->getUserList();
     	        std::map<const User*, UserAspects>::iterator userNode = userMap.begin();
@@ -100,17 +97,22 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
     	        std::string end_of_list = std::string(":localhost ") + "366 " + user->getNickname() + " " + channels[i] + ":End of NAMES list\r\n";
     	        send(user->getSocket(), end_of_list.c_str(), end_of_list.size(), 0);
     	    }
+    	    // liste des users
 			continue;
 		}
 
     	// Cas 2 : le channel n'existe pas, il faut donc le creer dans notre serveur et y ajouter l'utilisateur
-    	UserAspects	new_aspects(0);
-    	Channel *channel = new Channel(channel_name);
-    	server->createNewChannel(channel_name, channel);
-    	if (!server->getChannel(channel_name))
-			return false;
-    	server->addUserToChannel(channel_name, user, new_aspects);
-    	sendMessageToAllUsersInChannel(server_response, server->getChannel(channel_name));
+    	if (!server->channelAlreadyExist(channel_name)) {
+			UserAspects	new_aspects(0);
+    		Channel *channel = new Channel(channel_name);
+    		server->createNewChannel(channel_name, channel);
+    		if (!server->getChannel(channel_name))
+				return false;
+    		server->addUserToChannel(channel_name, user, new_aspects);
+    		sendMessageToAllUsersInChannel(server_response, server->getChannel(channel_name));
+			std::string user_list = std::string(":localhost ") + "353 " + user->getNickname() + " == " + channels[i] + " :" + user->getNickname();
+			send(user->getSocket(), user_list.c_str(), user_list.size(), 0);
+		}
 	}
 	return true;
 }
