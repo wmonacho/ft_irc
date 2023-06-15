@@ -261,6 +261,9 @@ std::string Server::createServerResponseForConnection(int socket, Server::userCo
         return NULL;
     }
 
+    std::cout << "nick --> " << userInfo->nickName << std::endl;
+    std::cout << "user --> " << userInfo->userName << std::endl;
+
     createNewUserAtConnection(userInfo->nickName, userInfo->userName, socket);
 
     std::string server_response = ":localhost 001 " + userInfo->nickName + " :Welcome to the Internet Relay Network " + userInfo->nickName + "!" + userInfo->userName + "@localhost\r\n";
