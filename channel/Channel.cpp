@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:31:22 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/06/14 16:47:35 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/06/15 14:36:55 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -176,7 +176,7 @@ bool	Channel::channelIsSecret( void )
 
 bool	Channel::userInChannel(const User *user)
 {
-	if (this->_channel_user_list.count(user) == 0)
+	if (this->_channel_user_list.find(user) == this->_channel_user_list.end() )
 		return (false);
     return true;
 }

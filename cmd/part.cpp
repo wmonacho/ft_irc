@@ -19,18 +19,18 @@ bool    cmd::parsePart(std::string str, Server *server, User *user)
     std::vector<std::string>::iterator it = channels.begin();
 	while (it != channels.end())
     {
-		// //verifier si le channel existe
+		 //verifier si le channel existe
 		// 403 ERR_NOSUCHCHANNEL
-		// if (!server->channelAlreadyExist(*it)) {
-		// 	std::cerr << "FIRST FALSE" << std::endl;
-		//     return false;
-		// }
-    	// //verifier si l'user est bien dans le channel
+		 if (!server->channelAlreadyExist(*it)) {
+		 	std::cerr << "FIRST FALSE" << std::endl;
+		     return false;
+		 }
+    	 //verifier si l'user est bien dans le channel
 		// 442 ERR_NOTONCHANNEL
-		// if (!server->userInChannel(*it, user)) {
-		// 	std::cerr << "FIRST FALSE" << std::endl;
-		//     return false;
-		// }
+		 if (!server->userInChannel(*it, user)) {
+		 	std::cerr << "FIRST FALSE" << std::endl;
+		     return false;
+		 }
 		std::string part_message = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + splitArg[0] + " ";
 		part_message.append(*it);
 		part_message.append("\r\n");
