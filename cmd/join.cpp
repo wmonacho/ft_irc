@@ -110,8 +110,8 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
 				return false;
     		server->addUserToChannel(channel_name, user, new_aspects);
     		sendMessageToAllUsersInChannel(server_response, server->getChannel(channel_name));
-			std::string user_list = std::string(":localhost ") + "353 " + user->getNickname() + " == " + channels[i] + " :" + user->getNickname();
-			send(user->getSocket(), user_list.c_str(), user_list.size(), 0);
+			//std::string user_list = std::string(":localhost ") + "353 " + user->getNickname() + " == " + channels[i] + " :" + user->getNickname();
+			//send(user->getSocket(), user_list.c_str(), user_list.size(), 0);
 		}
 	}
 	return true;

@@ -10,9 +10,9 @@
 int main(int ac, char **av)
 {
 
-	if (ac != 3)
+	if (ac == 3)
 	{
-		//Server server(atoi(av[1]), av[2]);
+		Server server(atoi(av[1]), av[2]);
 
 		server.startServer();
 		//// closing the connected socket
