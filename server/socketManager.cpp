@@ -301,7 +301,7 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
     std::cout << "** =============== **" << std::endl;
     // Affichage sur le serveur
     std::cout << "Buffer from socket " << socketID << " : " << buffer << std::endl;
-    std::cout << "** =============== **" << std::endl;
+    std::cout << "------DEBUG OF COMMAND ------\n";
 
     cmd command;
     user = this->getUserBySocket(fds[socketID].fd);

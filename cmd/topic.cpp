@@ -16,7 +16,7 @@ bool	cmd::parseTopic(std::string str, Server *server, User *user)
 		std::cerr << "Error: Channel not found" << std::endl;
 		return false;
 	}
-    // 442 ERR_NOTONCHANNEL "<channel> :You're not on that channel"
+	// 442 ERR_NOTONCHANNEL "<channel> :You're not on that channel"
 	if (channel->getUserList().find(user) == channel->getUserList().end()) {
 		std::string error = std::string(":localhost ") + "442" + " " + arg[0] + " " + channel->getName() + " : No topic is set" + "\r\n";
 		send(user->getSocket(), error.c_str(), error.size(), 0);
@@ -24,12 +24,12 @@ bool	cmd::parseTopic(std::string str, Server *server, User *user)
 	}
 	// 482	ERR_CHANOPRIVSNEEDED "<channel> :You're not channel operator"
    // std::cout << std::endl << std::endl << std::endl << std::endl << "cocu" << std::endl << std::endl << std::endl << std::endl << std::endl;
-    if (channel->getTopicAdmin() && !channel->getUserAdmin(user) && arg.size() >= 3) {
-	    std::string error = std::string(":localhost ") + "482" + " " + arg[0] + " " + channel->getName() + " : No topic is set" + "\r\n";
-	    send(user->getSocket(), error.c_str(), error.size(), 0);
-	    return false;
+	if (channel->getTopicAdmin() && !channel->getUserAdmin(user) && arg.size() >= 3) {
+		std::string error = std::string(":localhost ") + "482" + " " + arg[0] + " " + channel->getName() + " : No topic is set" + "\r\n";
+		send(user->getSocket(), error.c_str(), error.size(), 0);
+		return false;
 	}
-    // Cas 1 : on renvoie le topic s'il existe
+	// Cas 1 : on renvoie le topic s'il existe
 	if (arg.size() <= 2) {
 		std::string topic_message;
 		std::cout << "we should not be here" << std::endl;

@@ -1,25 +1,25 @@
 #include "cmd.hpp"
 
-bool    cmd::parsePart(std::string str, Server *server, User *user)
+bool	cmd::parsePart(std::string str, Server *server, User *user)
 {
 	// Parsing de l'input du user
-    std::vector<std::string> splitArg = splitString(str, " ");
-    if (splitArg.size() < 2)
-    {
+	std::vector<std::string> splitArg = splitString(str, " ");
+	if (splitArg.size() < 2)
+	{
 		// 461 ERR_NEEDMOREPARAMS
 		std::string error = generateErrorMessage("461", splitArg[0]);
 		send(user->getSocket(), error.c_str(), error.size(), 0);
-        return (false);
-    }
+		return (false);
+	}
 
 	// On verifie que les channels renseignes dans la commande existent bien et que l'utilisateur est dedans
 	// et on envoie un PART_reply pour chaque channel a quitter
-    std::vector<std::string> channels = splitString(splitArg[1], ",");
+	std::vector<std::string> channels = splitString(splitArg[1], ",");
 	std::vector<std::string> channels_copy = channels;
-    std::vector<std::string>::iterator it = channels.begin();
+	std::vector<std::string>::iterator it = channels.begin();
 	std::vector<std::string>::iterator it_copy = channels_copy.begin();
 	while (it != channels.end())
-    {
+	{
 		//verifier si le channel existe
 		// 403 ERR_NOSUCHCHANNEL "<channel name> :No such channel"
 		it->erase(0, 1);
@@ -29,7 +29,7 @@ bool    cmd::parsePart(std::string str, Server *server, User *user)
 			send(user->getSocket(), error.c_str(), error.size(), 0);
 			return false;
 		}
-    	//verifier si l'user est bien dans le channel
+		//verifier si l'user est bien dans le channel
 		// 442 ERR_NOTONCHANNEL "<channel> :You're not on that channel"
 		if (server->userInChannel(*it, user) == false) {
 			std::string error = std::string(":localhost ") + "442" + " " + splitArg[0] + " " + *it_copy + " " + " :You're not on that channel" + "\r\n";
@@ -42,6 +42,6 @@ bool    cmd::parsePart(std::string str, Server *server, User *user)
 		send(user->getSocket(), part_message.c_str(), part_message.size(), 0);
 		it++;
 		it_copy++;
-    }
-    return true;
+	}
+	return true;
 }
