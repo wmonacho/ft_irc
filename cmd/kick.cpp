@@ -25,11 +25,9 @@ bool    cmd::parseKick(std::string str, Server *server, User *user)
         std::string error = std::string("localhost :") + "403 " + user->getNickname() +  " :No such channel" + "\r\n";
         return false;
     }
-	std::cout << "user ==" << &arg[3][1] << "=" << std::endl;
     if (!server->userInChannel(&arg[2][1], server->getChannelUser(&arg[2][1], &arg[3][1])))
 	{
 		// 441 ERR_USERNOTINCHANNEL
-		std::cout << "USER NOT IN CHANNEL BORDEL" << std::endl;
 		std::string error = std::string(":localhost ") + "441 " + user->getNickname() + " " + arg[2] + " :They aren't on that channel" + "\r\n";
 		send(user->getSocket(), error.c_str(), error.size(), 0);
         return false;
