@@ -27,7 +27,8 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
     // + on envoie le topic (s'il existe) et la liste des USER 
 	for (size_t i = 0; i < channels.size(); i++) {
     	std::string server_response = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + splitArg[0] + " " + channels[i] + "\r\n";
-    	if (server->channelAlreadyExist(channel_name)) {
+    	std::string channel_name = &channels[i][1];
+		if (server->channelAlreadyExist(channel_name)) {
 		    Channel* channel = server->getChannel(channel_name);
 			if (channel->getInviteOnly()) {
 				// 473    ERR_INVITEONLYCHAN
