@@ -5,12 +5,31 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 	//mode i, t, k, o, l
 	std::vector<std::string> splitArg = splitString(str, " ");
 	//MODE <cible> <mode> <argument(s)>
+
+	// Reponse au client apres le join d'un user pour lui informer des modes active dans ce channel
 	if (splitArg.size() == 2)
 	{
 		// MODE <channel>
-		//envoie des modes du channel? de quel maniere l'ecrire? 
-		;
+		//si le channel existe, renvoyer les modes actives pour celui ci
+		if (server->channelAlreadyExist(&splitArg[1][1])) {
+
+			std::string rpl_channel_mode_is = std::string(":localhost ") + "467 " + user->getNickname() + " " + splitArg[1] + " +";
+			if (server->getChannel(&splitArg[1][1])->getInviteOnly() == true)
+				rpl_channel_mode_is += "i";
+			if (server->getChannel(&splitArg[1][1])->getTopicAdmin() == true)
+				rpl_channel_mode_is += "t";
+			if (server->getChannel(&splitArg[1][1])->getPassword() != "")
+				rpl_channel_mode_is += "k";
+			if (server->getChannel(&splitArg[1][1])->getUserAdmin(user) == true)
+				rpl_channel_mode_is += "o";
+			if (server->getChannel(&splitArg[1][1])->getUserLimit() != -1)
+				rpl_channel_mode_is += "l";
+			rpl_channel_mode_is += "\r\n";
+			send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
+			return (true);
+		}
 	}
+
 	if (splitArg.size() < 3)
 	{
 		// 461  ERR_NEEDMOREPARAMS
@@ -18,6 +37,7 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 		send(user->getSocket(), error.c_str(), error.size(), 0);
 		return (false);
 	}
+
 	//check si # devant la cible et si le channel existe
 	if ((splitArg[1][0] != '#' && splitArg[1][0] != '&') || server->getMap().find(&splitArg[1][1]) == server->getMap().end())
 	{
@@ -25,6 +45,7 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 		send(user->getSocket(), error.c_str(), error.size(), 0);
 		return (false);
 	}
+
 	//check si le User est bien dans la userlist du channel
 	if (!server->userInChannel(&splitArg[1][1], user))
 	{
@@ -33,6 +54,7 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 			send(user->getSocket(), error.c_str(), error.size(), 0);
 			return false;
 	}
+
 	//check si + ou - devant le mode
 	if ((splitArg[2][0] != '-' && splitArg[2][0] != '+'))
 	{
@@ -41,6 +63,7 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 			send(user->getSocket(), error.c_str(), error.size(), 0);
 			return (false);
 	}
+
 	//check si le mode existe (tout depend de ceux que l'on prend)
 	std::string modes = "iktlo";	
 	for (unsigned int i = 1; i < splitArg[2].size() ; i++)
@@ -56,7 +79,6 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 	//execute les modes +
 	//il restera a modifier les fonctions affectees par les modes
 	Channel *chan = server->getChannel(&splitArg[1][1]);
-	const User* u = server->getChannelUser(&splitArg[1][1], splitArg[3]);
 
 	for (unsigned int i = 1; splitArg[2][0] == '+' && i < splitArg[2].size(); i++)
 	{
@@ -119,6 +141,7 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 					  	break;
 		}
 	}
+	
 	//execute les modes -
 	for (unsigned int i = 1; splitArg[2][0] == '-' && i < splitArg[2].size(); i++)
 	{
@@ -145,9 +168,18 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 					  break;
 				  case 111:
 					  	//execute mode o
-					  	chan->changeUserAdmin(u, false);
-					  	// 324 RPL_CHANNELMODEIS
-						send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
+						if (i + 2 < splitArg.size()) {
+					  		chan->changeUserAdmin(server->getChannelUser(&splitArg[1][1], splitArg[i + 2]), false);
+					  		// 324 RPL_CHANNELMODEIS
+							send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
+						}
+						else
+						{
+							// 461  ERR_NEEDMOREPARAMS
+							std::string error = std::string(":localhost ") + "461 " + user->getNickname() + " " + splitArg[0] + " :Not enough parameters" + "\r\n";
+							send(user->getSocket(), error.c_str(), error.size(), 0);
+							return (false);
+						}
 					  break;
 				  case 116:
 					  	chan->setTopicAdmin(false);

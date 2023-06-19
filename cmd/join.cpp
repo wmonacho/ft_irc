@@ -4,6 +4,7 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 {
 	// Parsing de la string (commande + argument )
 	std::vector<std::string> splitArg = splitString(str, " ");
+
 	if (splitArg.size() < 2) {
 		// 461 ERR_NEEDMOREPARAMS
 		std::string error = std::string("localhost :") + "461 " + user->getNickname() + " " + splitArg[0] + " :Not enough parameters" + "\r\n";
@@ -24,6 +25,7 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 	std::string server_response = createServerMessage(user, "", splitArg);
 
 	for (size_t i = 0; i < channels.size(); i++) {
+
 		std::string channel_name = &channels[i][1];
 		std::string server_response = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + splitArg[0] + " " + channels[i] + "\r\n";
 		
@@ -73,6 +75,7 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 			}
 
  			UserAspects	new_aspects(0);
+
 			server->addUserToChannel(channel_name, user, new_aspects);
 			sendMessageToAllUsersInChannel(server_response, channel);
 
@@ -109,8 +112,10 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 
 		// Cas 2 : le channel n'existe pas, il faut donc le creer dans notre serveur et y ajouter l'utilisateur
 		if (!server->channelAlreadyExist(channel_name)) {
+
 			UserAspects	new_aspects(0);
 			Channel *channel = new Channel(channel_name);
+
 			server->createNewChannel(channel_name, channel);
 			if (!server->getChannel(channel_name))
 				return false;

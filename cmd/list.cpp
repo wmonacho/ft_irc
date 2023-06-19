@@ -28,6 +28,7 @@ bool	cmd::parseList(std::string str, Server *server, User *user)
 	}
 	arg.erase(arg.begin());
 	channels = splitString(arg[1], ",");
+
 	for (std::vector<std::string>::iterator it = arg.begin(); it != arg.end(); it++)
 	{
 		std::map<std::string, Channel*>::iterator itMap = map.begin();
