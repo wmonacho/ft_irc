@@ -112,30 +112,8 @@ bool    cmd::parseNick(std::string str, Server *server, User *user) //recup le U
 
 bool    cmd::parseUser(std::string str, Server *server)
 {
-    //verifier si le user existe
-    std::vector<std::string> splitArg = splitString(str, " ");
-    std::cout << "splitArg.size() == " << splitArg.size() << std::endl;
-    if (splitArg.size() < 5)
-    {
-        //envoyer numeric replies
-        std::cerr << "USER: not enough parameters" << std::endl;
-        return (false);
-    }
-    if (splitArg.size() > 4 && (splitArg[2] == "0" && splitArg[3] == "*"))
-    {
-        //setuser
-        User    new_user;
-
-        server->createRandomUsername(new_user);
-        std::string real_name;
-        for (unsigned int i = 4; i < splitArg.size(); i++)
-        {
-            real_name += splitArg[i];
-        }
-        new_user.setRealname(real_name);
-        server->setUserList(new_user);
-        std::cout << "hello from parseUser, it's working bitch" << std::endl;
-    }
+    (void)str;
+    (void)server;
     return (true);
 }
 

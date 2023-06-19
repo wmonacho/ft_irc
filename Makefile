@@ -17,15 +17,17 @@ FILES =		main.cpp							\
 			cmd/invite.cpp						\
 			cmd/topic.cpp						\
 			cmd/part.cpp						\
-			cmd/quit.cpp
+			cmd/quit.cpp						\
+			bot/bot.cpp							\
 # ====================================================================
 
 # HEADER =============================================================
 HEADER =	server/server.hpp					\
 			channel/Channel.hpp					\
-			user_aspects/UserAspects.hpp	\
+			user_aspects/UserAspects.hpp		\
 			user/User.hpp						\
 			cmd/cmd.hpp							\
+			bot/bot.hpp							\
 
 # ====================================================================
 
@@ -38,7 +40,7 @@ CC =		c++
 # ====================================================================
 
 # SUB_DIR_LST ========================================================
-SUB_DIR_LST =	server channel user cmd user_aspects
+SUB_DIR_LST =	server channel user cmd user_aspects bot
 # ====================================================================
 
 # OBJS_DIR ===========================================================

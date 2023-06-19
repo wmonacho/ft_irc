@@ -17,6 +17,7 @@ Server::Server(int port, std::string password) {
     _clientLen = sizeof(_clientAddr);
     _port = port;
     _password = password;
+    _botConnected = false;
     int on = -1;
 
     _socketfd = socket(AF_INET, SOCK_STREAM, 0);
@@ -58,6 +59,7 @@ Server::Server(const Server& obj) {
     this->_port = obj._port;
     this->_socketfd = obj._socketfd;
     this->_newSocket = obj._newSocket;
+    this->_botConnected = obj._botConnected;
     this->_valRread = obj._valRread;
     this->_servLen = obj._servLen;
     this->_clientLen = obj._clientLen;
