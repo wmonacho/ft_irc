@@ -5,12 +5,14 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 	//mode i, t, k, o, l
 	std::vector<std::string> splitArg = splitString(str, " ");
 	//MODE <cible> <mode> <argument(s)>
+
 	if (splitArg.size() == 2)
 	{
 		// MODE <channel>
 		//envoie des modes du channel? de quel maniere l'ecrire? 
 		;
 	}
+
 	if (splitArg.size() < 3)
 	{
 		// 461  ERR_NEEDMOREPARAMS
@@ -18,6 +20,7 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 		send(user->getSocket(), error.c_str(), error.size(), 0);
 		return (false);
 	}
+
 	//check si # devant la cible et si le channel existe
 	if ((splitArg[1][0] != '#' && splitArg[1][0] != '&') || server->getMap().find(&splitArg[1][1]) == server->getMap().end())
 	{
@@ -25,6 +28,7 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 		send(user->getSocket(), error.c_str(), error.size(), 0);
 		return (false);
 	}
+
 	//check si le User est bien dans la userlist du channel
 	if (!server->userInChannel(&splitArg[1][1], user))
 	{
@@ -33,6 +37,7 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 			send(user->getSocket(), error.c_str(), error.size(), 0);
 			return false;
 	}
+
 	//check si + ou - devant le mode
 	if ((splitArg[2][0] != '-' && splitArg[2][0] != '+'))
 	{
@@ -41,6 +46,7 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 			send(user->getSocket(), error.c_str(), error.size(), 0);
 			return (false);
 	}
+
 	//check si le mode existe (tout depend de ceux que l'on prend)
 	std::string modes = "iktlo";	
 	for (unsigned int i = 1; i < splitArg[2].size() ; i++)
@@ -119,6 +125,7 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 					  	break;
 		}
 	}
+	
 	//execute les modes -
 	for (unsigned int i = 1; splitArg[2][0] == '-' && i < splitArg[2].size(); i++)
 	{
@@ -145,9 +152,18 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 					  break;
 				  case 111:
 					  	//execute mode o
-					  	chan->changeUserAdmin(u, false);
-					  	// 324 RPL_CHANNELMODEIS
-						send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
+						if (i + 2 < splitArg.size()) {
+					  		chan->changeUserAdmin(server->getChannelUser(&splitArg[1][1], splitArg[i + 2]), false);
+					  		// 324 RPL_CHANNELMODEIS
+							send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
+						}
+						else
+						{
+							// 461  ERR_NEEDMOREPARAMS
+							std::string error = std::string(":localhost ") + "461 " + user->getNickname() + " " + splitArg[0] + " :Not enough parameters" + "\r\n";
+							send(user->getSocket(), error.c_str(), error.size(), 0);
+							return (false);
+						}
 					  break;
 				  case 116:
 					  	chan->setTopicAdmin(false);
