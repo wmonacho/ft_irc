@@ -19,13 +19,13 @@ bool	cmd::parseKick(std::string str, Server *server, User *user)
 		send(user->getSocket(), error.c_str(), error.size(), 0);
 		return false;
 	}
-	if (!server->channelAlreadyExist(&arg[2][1]))
+	if (!server->channelAlreadyExist(arg[2]))
 	{
 		// 403 ERR_NOSUCHCHANNEL
 		std::string error = std::string("localhost :") + "403 " + user->getNickname() +  " :No such channel" + "\r\n";
 		return false;
 	}
-	if (!server->userInChannel(&arg[2][1], server->getChannelUser(&arg[2][1], &arg[3][1])))
+	if (!server->userInChannel(arg[2], server->getChannelUser(arg[2], &arg[3][1])))
 	{
 		// 441 ERR_USERNOTINCHANNEL
 		std::string error = std::string(":localhost ") + "441 " + user->getNickname() + " " + arg[2] + " :They aren't on that channel" + "\r\n";
@@ -34,7 +34,7 @@ bool	cmd::parseKick(std::string str, Server *server, User *user)
 	}
 	
 	// Cas 1 : il y a un commentaire au KICK
-	server->kickUserFromChannel(&arg[2][1], server->getUser(&arg[3][1]));
+	server->kickUserFromChannel(arg[2], server->getUser(&arg[3][1]));
 	if (arg.size() > 4)
 	{
 		if (arg[4][0] != ':')
@@ -51,14 +51,14 @@ bool	cmd::parseKick(std::string str, Server *server, User *user)
 		}
 		kick_comment += arg[i];
 		std::string kick_message = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + arg[0] + " " + arg[2] + " " + arg[3] + kick_comment + "\r\n";
-		sendMessageToAllUsersInChannel(kick_message, server->getChannel(&arg[2][1]));
+		sendMessageToAllUsersInChannel(kick_message, server->getChannel(arg[2]));
 		return true;
 	}
 
 	// Cas 2 : pas de commentaire au KICK
 	std::string kick_message = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + arg[0] + " " + arg[2] + " " + arg[3] + " You are KICK man" + "\r\n";
 	std::cout << kick_message << std::endl;
-	sendMessageToAllUsersInChannel(kick_message, server->getChannel(&arg[2][1]));
+	sendMessageToAllUsersInChannel(kick_message, server->getChannel(arg[2]));
 	kick_message = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + arg[0] + " " + arg[2] + " " + arg[3] + " You are KICK man" + "\r\n";
 	send(server->getUser(&arg[3][1])->getSocket(), kick_message.c_str(), kick_message.size(), 0);
     return true;
