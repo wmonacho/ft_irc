@@ -34,7 +34,7 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 			return false;
 	}
 	//check si + ou - devant le mode
-	if ((splitArg[2][0] != '-' && splitArg[2][0] != '+') || splitArg[2].size() != 2)
+	if ((splitArg[2][0] != '-' && splitArg[2][0] != '+'))
 	{
 			// 477 ERR_NOCHANMODES
 			std::string error = std::string(":localhost ") + "477 " + user->getNickname() + " " +  splitArg[1] + " :Channel doesn't support modes" + "\r\n";
@@ -42,13 +42,15 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 			return (false);
 	}
 	//check si le mode existe (tout depend de ceux que l'on prend)
-	std::string modes = "iktlo";
-	if (modes.find(&splitArg[2][1]) == std::string::npos)
+	std::string modes = "iktlo";	
+	for (unsigned int i = 1; i < splitArg[2].size() ; i++)
 	{
-			// 472 ERR_UNKNOWNMODE
-			std::string error = std::string(":localhost ") + "472 " + user->getNickname() + " " +  &splitArg[2][1] + " :is unknown mode char to me for " + splitArg[1] + "\r\n";
-			send(user->getSocket(), error.c_str(), error.size(), 0);
-			return (false);
+			if ( modes.find(splitArg[2][i]) == std::string::npos) {
+				// 472 ERR_UNKNOWNMODE
+				std::string error = std::string(":localhost ") + "472 " + user->getNickname() + " " +  splitArg[2][i] + " :is unknown mode char to me for " + splitArg[1] + "\r\n";
+				send(user->getSocket(), error.c_str(), error.size(), 0);
+				return (false);
+			}
 	}
 
 	//execute les modes +
@@ -58,7 +60,6 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 
 	for (unsigned int i = 1; splitArg[2][0] == '+' && i < splitArg[2].size(); i++)
 	{
-		const User* u = server->getChannelUser(&splitArg[1][1], splitArg[3]);
 		std::string rpl_channel_mode_is = std::string(":localhost ") + "467 " + user->getNickname() + " " + splitArg[1] + " +" + splitArg[2][i] + "\r\n";
 		switch(splitArg[2][i])
 		{
@@ -76,21 +77,39 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 							send(user->getSocket(), error.c_str(), error.size(), 0);
 							return (false);
 						}
-						chan->setPassword(splitArg[3]);
-						// 324 RPL_CHANNELMODEIS
-						send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
+						if (i + 2 < splitArg.size()) {
+							chan->setPassword(splitArg[i + 2]);
+							// 324 RPL_CHANNELMODEIS
+							send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
+						}
+						else
+						{
+							// 461  ERR_NEEDMOREPARAMS
+							std::string error = std::string(":localhost ") + "461 " + user->getNickname() + " " + splitArg[0] + " :Not enough parameters" + "\r\n";
+							send(user->getSocket(), error.c_str(), error.size(), 0);
+							return (false);
+						}
 						break;
 				  case 108:
-						chan->setUserLimit(atoi(splitArg[3].c_str()));
+						chan->setUserLimit(atoi(splitArg[i + 2].c_str()));
 						// 324 RPL_CHANNELMODEIS
 						send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
 						break;
 					  	//execute mode L
 				  case 111:
 					  	//execute mode o
-						chan->changeUserAdmin(u, true);
-						// 324 RPL_CHANNELMODEIS
-						send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
+						if (i + 2 < splitArg.size()) {
+							chan->changeUserAdmin(server->getChannelUser(&splitArg[1][1], splitArg[i + 2]), true);
+							// 324 RPL_CHANNELMODEIS
+							send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
+						}
+						else
+						{
+							// 461  ERR_NEEDMOREPARAMS
+							std::string error = std::string(":localhost ") + "461 " + user->getNickname() + " " + splitArg[0] + " :Not enough parameters" + "\r\n";
+							send(user->getSocket(), error.c_str(), error.size(), 0);
+							return (false);
+						}
 					  	break;
 				  case 116:
 					  	//execute mode t
