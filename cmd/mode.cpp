@@ -6,11 +6,28 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 	std::vector<std::string> splitArg = splitString(str, " ");
 	//MODE <cible> <mode> <argument(s)>
 
+	// Reponse au client apres le join d'un user pour lui informer des modes active dans ce channel
 	if (splitArg.size() == 2)
 	{
 		// MODE <channel>
-		//envoie des modes du channel? de quel maniere l'ecrire? 
-		;
+		//si le channel existe, renvoyer les modes actives pour celui ci
+		if (server->channelAlreadyExist(&splitArg[1][1])) {
+
+			std::string rpl_channel_mode_is = std::string(":localhost ") + "467 " + user->getNickname() + " " + splitArg[1] + " +";
+			if (server->getChannel(&splitArg[1][1])->getInviteOnly() == true)
+				rpl_channel_mode_is += "i";
+			if (server->getChannel(&splitArg[1][1])->getTopicAdmin() == true)
+				rpl_channel_mode_is += "t";
+			if (server->getChannel(&splitArg[1][1])->getPassword() != "")
+				rpl_channel_mode_is += "k";
+			if (server->getChannel(&splitArg[1][1])->getUserAdmin(user) == true)
+				rpl_channel_mode_is += "o";
+			if (server->getChannel(&splitArg[1][1])->getUserLimit() != -1)
+				rpl_channel_mode_is += "l";
+			rpl_channel_mode_is += "\r\n";
+			send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
+			return (true);
+		}
 	}
 
 	if (splitArg.size() < 3)
@@ -62,7 +79,6 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 	//execute les modes +
 	//il restera a modifier les fonctions affectees par les modes
 	Channel *chan = server->getChannel(&splitArg[1][1]);
-	const User* u = server->getChannelUser(&splitArg[1][1], splitArg[3]);
 
 	for (unsigned int i = 1; splitArg[2][0] == '+' && i < splitArg[2].size(); i++)
 	{
