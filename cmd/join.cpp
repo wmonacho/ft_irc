@@ -95,23 +95,25 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 
 				// On envoie une RPL_NAMEPLY
 				std::map<const User *, UserAspects> map = channel->getUserList();
-				std::map<const User *, UserAspects>::iterator userInChannel = map.begin();
 				std::string channel_name_with_wildcard = channel->getName();
 				channel_name_with_wildcard.insert(0, "#");
-				std::string user_list = std::string(":localhost ") + "353" + " " + channel_name_with_wildcard + " : ";
+				std::string user_list = std::string(":localhost ") + "353" + " " + user->getNickname() + " " + channel_name_with_wildcard + " :";
 
-				for (;userInChannel != map.end(); userInChannel++) {
+				for (std::map<const User *, UserAspects>::iterator userInChannel = map.begin(); userInChannel != map.end(); userInChannel++) {
 					
 					//"( "=" / "*" / "@" ) <channel> :[ "@" / "+" ] <nick> *( " " [ "@" / "+" ] <nick> )
 					// std::string(":localhost ") + "353" + " " + "=" + channel + " " + :@+userInChannel->first->getNickrname()  * nick + "\r\n";
 					if (userInChannel->second.getAdmin())
 						user_list.append("@");
 					user_list.append(userInChannel->first->getNickname());
-					if (map.size() > 1 && (userInChannel != map.end()--))
+					if (userInChannel != --map.end())
 						user_list.append(" ");
 				}
 				user_list.append("\r\n");
 				std::cout << "USER_LIST = " << user_list << std::endl;
+				// :localhost 353 ebrodeur #lol :issou ebrodeur --> mon output
+				// Users on ebrodeur: issou --> output hexchat
+				// Users on :: issou ebrodeu
 				send(user->getSocket(), user_list.c_str(), user_list.size(), 0);
 
 				// On envoie une RPL_ENDOFNAMES pour signaler la fin de la liste des users dans le channel
