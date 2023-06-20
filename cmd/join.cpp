@@ -35,7 +35,7 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 
 			Channel* channel = server->getChannel(channel_name);
 
-			if (channel->getInviteOnly()) {
+			if (channel->getInviteOnly() && !channel->userInInviteList(user->getNickname())) {
 				// 473    ERR_INVITEONLYCHAN
 			  std::string error = std::string("localhost :") + "473 " + user->getNickname() + " " + channels[i] + " :Cannot join channel (+i)" + "\r\n";
 			  send(user->getSocket(), error.c_str(), error.size(), 0);
