@@ -262,6 +262,8 @@ void    cmd::sendMessageToAllUsersInChannel(std::string message, Channel *channe
 
 	while (user != userEnd) {
 		std::string tmp = message;
+		std::cout << "********** Recipient ==> " << user->first->getUsername() << std::endl;
+		std::cout << "********** Message   ==> " << tmp << std::endl;
 		send(user->first->getSocket(), tmp.c_str(), tmp.size(), 0);
 		user++;
 	}
