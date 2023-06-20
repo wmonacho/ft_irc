@@ -18,7 +18,6 @@ FILES =		main.cpp							\
 			cmd/topic.cpp						\
 			cmd/part.cpp						\
 			cmd/quit.cpp						\
-			bot/bot.cpp							\
 # ====================================================================
 
 # HEADER =============================================================
@@ -27,8 +26,8 @@ HEADER =	server/server.hpp					\
 			user_aspects/UserAspects.hpp		\
 			user/User.hpp						\
 			cmd/cmd.hpp							\
-			bot/bot.hpp							\
 
+BOTPATH = bot/
 # ====================================================================
 
 # FLAGS ==============================================================
@@ -74,9 +73,13 @@ fclean :
 					rm -f ${OBJ} ${OBJ_B} $(OBJS_DIR)/*.o
 					rm -f ${NAME}
 					rm -rf $(OBJS_DIR)
+					make -C $(BOTPATH) fclean
+
+bot:
+					make -C $(BOTPATH)
 
 re :				fclean all
 
-.PHONY:				all clean fclean re
+.PHONY:				all clean fclean re bot
 
 # ====================================================================

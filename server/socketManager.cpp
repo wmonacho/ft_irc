@@ -1,5 +1,4 @@
 #include "server.hpp"
-#include "../bot/bot.hpp"
 #include <cerrno>
 #include <string.h>
 #include <fcntl.h>
@@ -19,12 +18,8 @@ void    Server::startServer() {
 
     // Set the first struct of the array to the listening socket
     fds[0].fd = this->_socketfd;
-	fds[0].events = POLLIN;
+    fds[0].events = POLLIN;
 
-	std::cout << "socketfd from server " << _socketfd << std::endl;
-    bot inst;
-    std::cout << "bot initializing...." << std::endl;
-    inst.startBot(this->_socketfd);
     // This is the main loop which implements poll() : we detect if the socket is connecting or connected and act in consequence
     do {
 	 std::cout << "nfds " << nfds << std::endl;
@@ -48,7 +43,7 @@ void    Server::startServer() {
             // }
             // If it's a connecting socket we accept the connection and add it to the socket pool (fds[nfds])
             if (fds[socketID].fd == this->_socketfd) {
-                connectionStatus = acceptNewConnection(fds, nfds, &inst);
+                connectionStatus = acceptNewConnection(fds, nfds);
 		  if (connectionStatus == -1)
                     endOfServer = true;
                 else
@@ -56,7 +51,7 @@ void    Server::startServer() {
             }
             // If it's already a connected socket, we try to receive the data
             else {
-                closeConnection = retrieveDataFromConnectedSocket(socketID, fds, closeConnection, &inst);
+                closeConnection = retrieveDataFromConnectedSocket(socketID, fds, closeConnection);
                 if (closeConnection) {
                     std::cerr << "Closing connection for socket " << socketID << std::endl;
                     close(fds[socketID].fd);
@@ -81,13 +76,14 @@ void    Server::startServer() {
 /* CONNECTING SOCKET FUNCTIONS */
 /*******************************/
 
-int Server::acceptNewConnection(struct pollfd *fds, int nfds, bot *bot) {
+int Server::acceptNewConnection(struct pollfd *fds, int nfds) {
 
     int newSocket;
     int errorStatus = -1;
 
     do {
         newSocket = accept(this->_socketfd, NULL, NULL);
+	 std::cerr << "FD accept ==> " << newSocket << std::endl;
         if (newSocket < 0) {
             if (errno != EWOULDBLOCK) {
                 std::cerr << "Error: accept() failed" << std::endl;
@@ -98,7 +94,7 @@ int Server::acceptNewConnection(struct pollfd *fds, int nfds, bot *bot) {
         }
 	 fds[nfds].fd = newSocket;
         fds[nfds].events = POLLIN;
-        if (verifyClientAndServerResponse(fds[nfds], bot) == 1)
+        if (verifyClientAndServerResponse(fds[nfds]) == 1)
             return (-1);
         nfds++;
     } while (newSocket != -1);
@@ -106,7 +102,7 @@ int Server::acceptNewConnection(struct pollfd *fds, int nfds, bot *bot) {
     return (nfds);
 }
 
-int Server::verifyClientAndServerResponse(struct pollfd fds, bot *bot) {
+int Server::verifyClientAndServerResponse(struct pollfd fds) {
 
     // We retrieve the informations sent by the client to create the new user which connected to our server
     // and we send back the RPL_WELCOME
@@ -115,7 +111,8 @@ int Server::verifyClientAndServerResponse(struct pollfd fds, bot *bot) {
     std::string server_response_for_connection;
 
     // We retrieve the data from the socket in buffer
-	if (getClientInformationsOnConnection(fds, userInfo, bot) == false) {
+    std::cerr << "FD before getClient --> " << fds.fd << std::endl;
+	if (getClientInformationsOnConnection(fds, userInfo) == false) {
 		std::cerr << "Error: user information on connection could't be handled" << std::endl;
 		return (1);
 	}
@@ -205,7 +202,7 @@ bool	Server::findUserInBuffer(char *buffer, Server::userConnectionRegistration *
 	return false;
 }
 
-bool Server::getClientInformationsOnConnection(struct pollfd fds, Server::userConnectionRegistration *userInfo, bot *bot) {
+bool Server::getClientInformationsOnConnection(struct pollfd fds, Server::userConnectionRegistration *userInfo) {
 
 	bool	passCheck = false;
 	bool	nickCheck = false;
@@ -213,14 +210,11 @@ bool Server::getClientInformationsOnConnection(struct pollfd fds, Server::userCo
     int		bufferSize = 512;
     char	buffer[bufferSize];
 
-	memset(buffer, 0, sizeof(char) * (bufferSize - 1));
+    std::cout << "FD ==> " << fds.fd << std::endl;
+    memset(buffer, 0, sizeof(char) * (bufferSize - 1));
+
 
 	while (1) {
-	    if (_botConnected == false)
-	    {
-		 bot->sendFromBot();
-		 _botConnected = true;
-	    }
 	    int bytesRead = recv(fds.fd, buffer, bufferSize, 0);
 	    if (bytesRead == 0) {
 			std::cerr << "Error: connection closed" << std::endl;
@@ -283,7 +277,7 @@ std::string Server::createServerResponseForConnection(int socket, Server::userCo
 /*  CONNECTED SOCKET FUNCTIONS  */
 /********************************/
 
-int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bool closeConnection, bot *bot) {
+int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bool closeConnection) {
 
     char    buffer[512];
     int     recvReturn;
@@ -314,6 +308,5 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
     cmd command;
     user = this->getUserBySocket(fds[socketID].fd);
     command.whichCmd(buffer, this, user);
-    bot->runBot(buffer, user);
     return (closeConnection);
 }

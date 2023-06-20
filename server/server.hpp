@@ -3,7 +3,6 @@
 
 #include "../channel/Channel.hpp"
 #include "../cmd/cmd.hpp"
-#include "../bot/bot.hpp"
 #include <sys/socket.h>
 #include <netinet/in.h>
 #include <arpa/inet.h>
@@ -24,7 +23,6 @@
 class Channel;
 class User;
 class ChannelApects;
-class bot;
 
 class Server {
 
@@ -41,7 +39,6 @@ class Server {
         struct sockaddr_in  _servAddr;
         struct sockaddr_in  _clientAddr;
         std::map<std::string, Channel*>  _channels;
-	 bool _botConnected;
 
 		struct userConnectionRegistration {
 			std::string	password;
@@ -105,12 +102,12 @@ class Server {
 		userConnectionRegistration*					getUserConnectionRegistrationStruct(void);
 
         // Socket connection and user registration for "socketManager.cpp"
-        int                                     verifyClientAndServerResponse(struct pollfd fds, bot *bot);
-        int                                     acceptNewConnection(struct pollfd *fds, int nfds, bot *bot);
-        int                                     retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bool closeConnection, bot *bot);
+        int                                     verifyClientAndServerResponse(struct pollfd fds);
+        int                                     acceptNewConnection(struct pollfd *fds, int nfds);
+        int                                     retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bool closeConnection);
         std::string                             createServerResponseForConnection(int socket, Server::userConnectionRegistration *userInfo);
         void                                    createNewUserAtConnection(std::string nickname, std::string username, int socket);
-        bool           		                  	getClientInformationsOnConnection(struct pollfd fds, Server::userConnectionRegistration *userInfo, bot *bot);
+        bool           		                  	getClientInformationsOnConnection(struct pollfd fds, Server::userConnectionRegistration *userInfo);
         bool									findPassInBuffer(char *buffer, Server::userConnectionRegistration *userInfo);
 		bool									findNickInBuffer(char *buffer, Server::userConnectionRegistration *userInfo);
 		bool									findUserInBuffer(char *buffer, Server::userConnectionRegistration *userInfo);

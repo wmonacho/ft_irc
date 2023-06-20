@@ -28,6 +28,7 @@ bool    cmd::parseJoin(std::string str, Server *server, User *user)
 		std::string channel_name = &channels[i][1];
     	std::string server_response = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + splitArg[0] + " " + channels[i] + "\r\n";
     	if (server->channelAlreadyExist(channel_name)) {
+		 std::cout << "victoire ??" << std::endl;
 		    Channel* channel = server->getChannel(channel_name);
 			if (channel->getInviteOnly()) {
 				// 473    ERR_INVITEONLYCHAN
