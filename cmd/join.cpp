@@ -6,7 +6,7 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 	std::vector<std::string> splitArg = splitString(str, " ");
 
 	if (splitArg.size() < 2) {
-		// 461 ERR_NEEDMOREPARAMS
+		// 461	ERR_NEEDMOREPARAMS
 		std::string error = std::string("localhost :") + "461 " + user->getNickname() + " " + splitArg[0] + " :Not enough parameters" + "\r\n";
 		send(user->getSocket(), error.c_str(), error.size(), 0);
 		return false;
@@ -34,7 +34,7 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 		if (server->channelAlreadyExist(channel_name)) {
 
 			Channel* channel = server->getChannel(channel_name);
-
+ 
 			if (channel->getInviteOnly() && !channel->userInInviteList(user->getNickname())) {
 				// 473    ERR_INVITEONLYCHAN
 			  std::string error = std::string("localhost :") + "473 " + user->getNickname() + " " + channels[i] + " :Cannot join channel (+i)" + "\r\n";
@@ -43,7 +43,7 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 			}
 
 			if (splitArg.size() < 3 && channel->getPassword() != "") {
-				// 475    ERR_BADCHANNELKEY
+				// 475	ERR_BADCHANNELKEY
 				std::string error = std::string("localhost :") + "475 " + user->getNickname() + " " + channels[i] + " :Cannot join channel (+k)" + "\r\n";
 				send(user->getSocket(), error.c_str(), error.size(), 0);
 				continue;
@@ -90,22 +90,29 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 				send(user->getSocket(), topic.c_str(), topic.size(), 0);
 			}
 
-			// liste des users
+			// User list : we send a RPL_NAMREPLY
 			if (channel->getUserList().size() > 0) {
 
-				// On envoie une RPL_NAMEPLY
 				std::map<const User *, UserAspects> map = channel->getUserList();
-				std::map<const User *, UserAspects>::iterator userInChannel = map.begin();
+				std::string channel_name_with_wildcard = channel->getName();
 
-				for (;userInChannel != map.end(); userInChannel++) {
-					std::cout << "Sending user list : " << userInChannel->first->getUsername() << std::endl;
-					std::string user_list = std::string(":localhost ") + "353" + " " + "NAMES" + " " + userInChannel->first->getUsername() + "\r\n";
-					send(user->getSocket(), user_list.c_str(), user_list.size(), 0);
+				// Create RPL_NAMREPLY string
+				channel_name_with_wildcard.insert(0, "#");
+				std::string user_list = std::string(":localhost ") + "353 " + user->getNickname() + " = " + channel_name_with_wildcard + " :";
+				
+				// Loop to append all of the nicknames of all the users present in the channel
+				for (std::map<const User *, UserAspects>::iterator userInChannel = map.begin(); userInChannel != map.end(); userInChannel++) {
+
+					if (userInChannel->second.getAdmin())
+						user_list.append("@");
+					user_list.append(userInChannel->first->getNickname());
+					if (userInChannel != --map.end())
+						user_list.append(" ");
 				}
 
-				// On envoie une RPL_ENDOFNAMES pour signaler la fin de la liste des users dans le channel
-				std::string end_of_names = std::string(":localhost ") + "366" + " " + "NAMES" + "\r\n";
-				send(user->getSocket(), end_of_names.c_str(), end_of_names.size(), 0);
+				user_list.append("\r\n");
+				std::cout << "USER_LIST = " << user_list << std::endl;
+				send(user->getSocket(), user_list.c_str(), user_list.size(), 0);
 			}
 			continue;
 		}
@@ -121,23 +128,12 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 				return false;
 			server->addUserToChannel(channel_name, user, new_aspects);
 			sendMessageToAllUsersInChannel(server_response, server->getChannel(channel_name));
-			//std::string user_list = std::string(":localhost ") + "353 " + user->getNickname() + " == " + channels[i] + " :" + user->getNickname();
-			//send(user->getSocket(), user_list.c_str(), user_list.size(), 0);
+
+			// We send a RPL_NAMREPLY so the first user of the channel can see he is in the channel
+			channel_name.insert(0, "#");
+			std::string user_list = std::string(":localhost ") + "353 " + user->getNickname() + " = " + channel_name + " :" + user->getNickname() + "\r\n";
+			send(user->getSocket(), user_list.c_str(), user_list.size(), 0);
 		}
 	}
 	return true;
 }
-
-//:localhost 353 user == #channel :user1 user2...
-//:localhost 366 user #channel :End of NAMES list
-
-// Users on :ebrodeur: issou
-// Test cote serveur, on envoie bien ca :
-	// :localhost 353 coucou == #lol :ebrodeur issou coucou
-
-	// ERR_BANNEDFROMCHAN
-	// ERR_INVITEONLYCHAN
-	// ERR_CHANNELISFULL
-	// ERR_BADCHANMASK
-	// ERR_NOSUCHCHANNEL
-	// ERR_TOOMANYCHANNELS

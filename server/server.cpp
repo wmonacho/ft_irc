@@ -11,74 +11,74 @@ Server::Server() {
 // This Server constructor sets up a listening socket
 Server::Server(int port, std::string password) {
 
-    // We create and initiate a new server, a listening socket is created and he's listening for connection
+	// We create and initiate a new server, a listening socket is created and he's listening for connection
 	this->_user_list.reserve(MAX_SOCKETS);
-    _servLen = sizeof(_servAddr);
-    _clientLen = sizeof(_clientAddr);
-    _port = port;
-    _password = password;
-    int on = -1;
+	_servLen = sizeof(_servAddr);
+	_clientLen = sizeof(_clientAddr);
+	_port = port;
+	_password = password;
+	int on = -1;
 
-    _socketfd = socket(AF_INET, SOCK_STREAM, 0);
-    if (_socketfd < 0) {
-        std::cout << "Error: socket creation failed" << std::endl;
-        exit(1);
-    }
-
-    // Allow socket descriptor to be reuseable 
-    if (setsockopt(_socketfd, SOL_SOCKET,  SO_REUSEADDR, (char *)&on, sizeof(on)) < 0) {
-        std::cerr << "Error: setsockopt() failed" << std::endl;
-        exit(1);
-    }
-
-    // Set the socket to be non-blocking (the sockets created after will inherit)
-    if (ioctl(_socketfd, FIONBIO, (char *)&on) < 0) {
-        std::cerr << "Error: ioctl() failed" << std::endl;
-        exit(1);
-    }
-
-    setServAddr(_port);
-
-    if (bind(_socketfd, (struct sockaddr*)&_servAddr, sizeof(_servAddr)) < 0) {
-        std::cout << "Error : socket binding failed" << std::endl;
+	_socketfd = socket(AF_INET, SOCK_STREAM, 0);
+	if (_socketfd < 0) {
+		std::cout << "Error: socket creation failed" << std::endl;
 		exit(1);
-    }
+	}
 
-    // ATTENTION au deuxieme arg (backlog queue)
-    if (listen(_socketfd, MAX_SOCKETS) < 0) {
+	// Allow socket descriptor to be reuseable 
+	if (setsockopt(_socketfd, SOL_SOCKET,  SO_REUSEADDR, (char *)&on, sizeof(on)) < 0) {
+		std::cerr << "Error: setsockopt() failed" << std::endl;
+		exit(1);
+	}
+
+	// Set the socket to be non-blocking (the sockets created after will inherit)
+	if (ioctl(_socketfd, FIONBIO, (char *)&on) < 0) {
+		std::cerr << "Error: ioctl() failed" << std::endl;
+		exit(1);
+	}
+
+	setServAddr(_port);
+
+	if (bind(_socketfd, (struct sockaddr*)&_servAddr, sizeof(_servAddr)) < 0) {
+		std::cout << "Error : socket binding failed" << std::endl;
+		exit(1);
+	}
+
+	// ATTENTION au deuxieme arg (backlog queue)
+	if (listen(_socketfd, MAX_SOCKETS) < 0) {
 		std::cout << "Error : listen failed" << std::endl;
 		exit(1);
-    }
+	}
 
-    return ;
+	return ;
 }
 
 Server::Server(const Server& obj) {
 
-    this->_port = obj._port;
-    this->_socketfd = obj._socketfd;
-    this->_newSocket = obj._newSocket;
-    this->_valRread = obj._valRread;
-    this->_servLen = obj._servLen;
-    this->_clientLen = obj._clientLen;
-    this->_servAddr = obj._servAddr;
-    this->_clientAddr = obj._clientAddr;
-    *this = obj;
-    return ;
+	this->_port = obj._port;
+	this->_socketfd = obj._socketfd;
+	this->_newSocket = obj._newSocket;
+	this->_valRread = obj._valRread;
+	this->_servLen = obj._servLen;
+	this->_clientLen = obj._clientLen;
+	this->_servAddr = obj._servAddr;
+	this->_clientAddr = obj._clientAddr;
+	*this = obj;
+	return ;
 }
 
 Server& Server::operator=(const Server& obj) {
 
-    this->_port = obj._port;
-    this->_socketfd = obj._socketfd;
-    this->_newSocket = obj._newSocket;
-    this->_valRread = obj._valRread;
-    this->_servLen = obj._servLen;
-    this->_clientLen = obj._clientLen;
-    this->_servAddr = obj._servAddr;
-    this->_clientAddr = obj._clientAddr;
-    // *this = obj; #BOUCLE INFINI OPE=
-    return *this;
+	this->_port = obj._port;
+	this->_socketfd = obj._socketfd;
+	this->_newSocket = obj._newSocket;
+	this->_valRread = obj._valRread;
+	this->_servLen = obj._servLen;
+	this->_clientLen = obj._clientLen;
+	this->_servAddr = obj._servAddr;
+	this->_clientAddr = obj._clientAddr;
+	// *this = obj; #BOUCLE INFINI OPE=
+	return *this;
 }
 
 Server::~Server() {}
@@ -89,68 +89,68 @@ Server::~Server() {}
 
 int Server::getSocketfd(void) {
 
-    return this->_socketfd;
+	return this->_socketfd;
 }
 
 int Server::getNewSocket(void) {
 
-    return this->_newSocket;
+	return this->_newSocket;
 }
 
 ssize_t Server::getValRead(void) {
 
-    return this->_valRread;
+	return this->_valRread;
 }
 
 int Server::getPort(void) {
 
-    return this->_port;
+	return this->_port;
 }
 
 socklen_t Server::getServLen(void) {
 
-    return this->_servLen;
+	return this->_servLen;
 }
 
 socklen_t* Server::getClientLen(void) {
 
-    return &this->_clientLen;
+	return &this->_clientLen;
 }
 
 sockaddr_in* Server::getServAddr(void) {
 
-    return &this->_servAddr;
+	return &this->_servAddr;
 }
 
 sockaddr_in* Server::getClientAddr(void) {
 
-    return &this->_clientAddr;
+	return &this->_clientAddr;
 }
 std::string Server::getPassword(void) 
 {
-    return (this->_password);
+	return (this->_password);
 }
 
 std::vector<User>  Server::getUserList(void)
 {
-    return (this->_user_list);
+	return (this->_user_list);
 }
-    
+	
 const std::map<std::string, Channel*>&  Server::getMap(void) {
 
-    return this->_channels;
+	return this->_channels;
 }
 
 std::map<std::string, Channel*>::iterator  Server::getItMap(void) {
 
-    return this->_channels.begin();
+	return this->_channels.begin();
 }
 
 Channel*			Server::getChannel(std::string channel_name)
 {
 	if (this->_channels.count(channel_name) == 0)
-        return (NULL);
-    return (this->_channels.find(channel_name)->second);
+		return (NULL);
+	return (this->_channels.find(channel_name)->second);
 }
 
 const std::string	Server::getChannelUserUsername(std::string channel_name, User *user)
@@ -209,20 +209,20 @@ User*	Server::getUser(std::string user_nickname)
 
 User*	Server::getUserWithName(std::string user_name)
 {
-    for (std::vector<User>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
-    {
-        if (it->getUsername() == user_name)
-            return (&(*it));
-    }
-    return (NULL);
+	for (std::vector<User>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
+	{
+		if (it->getUsername() == user_name)
+			return (&(*it));
+	}
+	return (NULL);
 }
 User*	Server::getUserBySocket(int socket)
 {
 	std::vector<User>::iterator user;
 
 	for (user = this->_user_list.begin(); user != this->_user_list.end(); user++) {
-	        if (user->getSocket() == socket)
-	            return (&(*user));
+			if (user->getSocket() == socket)
+				return (&(*user));
 	}
 	return (NULL);
 }
@@ -260,7 +260,7 @@ const User* Server::getChannelUser(std::string channel_name, std::string user_na
 
 Server::userConnectionRegistration* Server::getUserConnectionRegistrationStruct(void) {
 
-    return (&this->_userConnectionRegistration);
+	return (&this->_userConnectionRegistration);
 }
 
 /* *************************************** */
@@ -269,43 +269,43 @@ Server::userConnectionRegistration* Server::getUserConnectionRegistrationStruct(
 
 void    Server::setSocketfd(int fd) {
 
-    this->_socketfd = fd;
+	this->_socketfd = fd;
 }
 
 void    Server::setNewSocket(int fd) {
 
-    this->_newSocket = fd;
+	this->_newSocket = fd;
 }
 
 void    Server::setValRead(ssize_t value) {
 
-    this->_valRread = value;
+	this->_valRread = value;
 }
 
 void    Server::setPort(int port) {
 
-    this->_port = port;
+	this->_port = port;
 }
 
 void    Server::setServAddr(int port) {
 
-    // Server byte order
-    this->_servAddr.sin_family = AF_INET;
-    // Fill with current host's IP address
-    this->_servAddr.sin_addr.s_addr = INADDR_ANY;
-    // The htons() function converts the unsigned short integer hostshort from host byte order to network byte order
-    this->_servAddr.sin_port = htons(port);
+	// Server byte order
+	this->_servAddr.sin_family = AF_INET;
+	// Fill with current host's IP address
+	this->_servAddr.sin_addr.s_addr = INADDR_ANY;
+	// The htons() function converts the unsigned short integer hostshort from host byte order to network byte order
+	this->_servAddr.sin_port = htons(port);
 }
 
 void    Server::setPassword(std::string new_password)
 {
-    this->_password = new_password;
+	this->_password = new_password;
 }
 
 // Add a new user to the user_list (std::vector type) of the server
 void    Server::setUserList(User new_user)
 {
-    this->_user_list.push_back(new_user);
+	this->_user_list.push_back(new_user);
 }
 
 void	Server::setUserUsername(User user, std::string new_username)
@@ -330,10 +330,10 @@ void	Server::setUserRealname(User user, std::string new_realname)
 
 void    Server::setUserConnectionResitrationStruct(std::string pass, std::string nick, std::string user) {
 
-    this->_userConnectionRegistration.password = pass;
-    this->_userConnectionRegistration.nickName = nick;
-    this->_userConnectionRegistration.userName = user;
-    return ;
+	this->_userConnectionRegistration.password = pass;
+	this->_userConnectionRegistration.nickName = nick;
+	this->_userConnectionRegistration.userName = user;
+	return ;
 }
 
 //void	Server::setChannelUserAdmin
@@ -342,9 +342,9 @@ void    Server::setUserConnectionResitrationStruct(std::string pass, std::string
 
 bool    Server::passwordAlreadyRegistred( void )
 {
-    if (this->_password == "")
-        return (false);
-    return (true);
+	if (this->_password == "")
+		return (false);
+	return (true);
 }
 
 bool    Server::nickAlreadyExist( std::string new_nick )
@@ -359,33 +359,33 @@ bool    Server::nickAlreadyExist( std::string new_nick )
 
 bool    Server::usernameAlreadyExist( std::string new_username )
 {
-    for(unsigned int i = 0; i < this->_user_list.size(); i++)
-    {
-        if (this->_user_list[i].getUsername() == new_username)
-            return (true);
-    }
-    return (false);
+	for(unsigned int i = 0; i < this->_user_list.size(); i++)
+	{
+		if (this->_user_list[i].getUsername() == new_username)
+			return (true);
+	}
+	return (false);
 }
 
 
 //Cree un Username unique pour qu'aucun User ne possede un username par defaut identique
 void	Server::createRandomUsername( User user )
 {
-    int i = 1;
-    int j = 0;
+	int i = 1;
+	int j = 0;
 
-    std::stringstream   str;
-    str << i;
-    std::string id = str.str();
-    std::string new_username = "Guest" + id;
-    while (this->usernameAlreadyExist(new_username) || j < 10000)
-    {
-    	i = rand() % 999;
-        str << i;
-        id = str.str();
-         j++;
-    }
-    user.setUsername("Guest" + id);
+	std::stringstream   str;
+	str << i;
+	std::string id = str.str();
+	std::string new_username = "Guest" + id;
+	while (this->usernameAlreadyExist(new_username) || j < 10000)
+	{
+		i = rand() % 999;
+		str << i;
+		id = str.str();
+		 j++;
+	}
+	user.setUsername("Guest" + id);
 }
 
 bool	Server::userInChannel(std::string channel_name, const User *user)
