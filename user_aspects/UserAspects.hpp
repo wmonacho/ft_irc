@@ -11,13 +11,13 @@ private :
 
 public :
     UserAspects();
-    UserAspects( bool right);
+    UserAspects( int right);
     UserAspects(const UserAspects& obj);
     UserAspects& operator=(const UserAspects& obj);
     ~UserAspects();
 
     bool	getAdmin( void ) const;
-    void	setAdmin( bool new_right );
+    void	setAdmin( int right );
 };
 
 #endif

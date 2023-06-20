@@ -26,7 +26,7 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 
 	for (size_t i = 0; i < channels.size(); i++) {
 
-		std::string channel_name = &channels[i][1];
+		std::string channel_name = channels[i];
 		std::string server_response = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + splitArg[0] + " " + channels[i] + "\r\n";
 		
 		// Cas 1 : le channel existe, donc y ajoute le user et on envoie le message de "bienvenue" a tout le monde
@@ -34,9 +34,9 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 		if (server->channelAlreadyExist(channel_name)) {
 
 			Channel* channel = server->getChannel(channel_name);
-
-			if (channel->getInviteOnly()) {
-				// 473	ERR_INVITEONLYCHAN
+ 
+			if (channel->getInviteOnly() && !channel->userInInviteList(user->getNickname())) {
+				// 473    ERR_INVITEONLYCHAN
 			  std::string error = std::string("localhost :") + "473 " + user->getNickname() + " " + channels[i] + " :Cannot join channel (+i)" + "\r\n";
 			  send(user->getSocket(), error.c_str(), error.size(), 0);
 			  continue;

@@ -5,7 +5,7 @@ UserAspects::UserAspects( void )
 	this->_admin = false;
 }
 
-UserAspects::UserAspects( bool right )
+UserAspects::UserAspects( int right )
 {
 	this->_admin = right;
 }
@@ -33,7 +33,7 @@ bool	UserAspects::getAdmin( void ) const
 	return false;
 }
 
-void	UserAspects::setAdmin( bool new_right )
+void	UserAspects::setAdmin( int right )
 {
-	this->_admin = new_right;
+	this->_admin = right;
 }

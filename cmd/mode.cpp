@@ -11,18 +11,18 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 	{
 		// MODE <channel>
 		//si le channel existe, renvoyer les modes actives pour celui ci
-		if (server->channelAlreadyExist(&splitArg[1][1])) {
+		if (server->channelAlreadyExist(splitArg[1])) {
 
 			std::string rpl_channel_mode_is = std::string(":localhost ") + "467 " + user->getNickname() + " " + splitArg[1] + " +";
-			if (server->getChannel(&splitArg[1][1])->getInviteOnly() == true)
+			if (server->getChannel(splitArg[1])->getInviteOnly() == true)
 				rpl_channel_mode_is += "i";
-			if (server->getChannel(&splitArg[1][1])->getTopicAdmin() == true)
+			if (server->getChannel(splitArg[1])->getTopicAdmin() == true)
 				rpl_channel_mode_is += "t";
-			if (server->getChannel(&splitArg[1][1])->getPassword() != "")
+			if (server->getChannel(splitArg[1])->getPassword() != "")
 				rpl_channel_mode_is += "k";
-			if (server->getChannel(&splitArg[1][1])->getUserAdmin(user) == true)
+			if (server->getChannel(splitArg[1])->getUserAdmin(user) == true)
 				rpl_channel_mode_is += "o";
-			if (server->getChannel(&splitArg[1][1])->getUserLimit() != -1)
+			if (server->getChannel(splitArg[1])->getUserLimit() != -1)
 				rpl_channel_mode_is += "l";
 			rpl_channel_mode_is += "\r\n";
 			send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
@@ -39,7 +39,7 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 	}
 
 	//check si # devant la cible et si le channel existe
-	if ((splitArg[1][0] != '#' && splitArg[1][0] != '&') || server->getMap().find(&splitArg[1][1]) == server->getMap().end())
+	if ((splitArg[1][0] != '#' && splitArg[1][0] != '&') || server->getMap().find(splitArg[1]) == server->getMap().end())
 	{
 		std::string error = std::string("localhost :") + "476 " + user->getNickname() + " " + splitArg[1] + " :Bad Channel Mask" + "\r\n";
 		send(user->getSocket(), error.c_str(), error.size(), 0);
@@ -47,7 +47,7 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 	}
 
 	//check si le User est bien dans la userlist du channel
-	if (!server->userInChannel(&splitArg[1][1], user))
+	if (!server->userInChannel(splitArg[1], user))
 	{
 			// 441 ERR_USERNOTINCHANNEL
 			std::string error = std::string(":localhost ") + "441 " + user->getNickname() + " " + splitArg[1] + " :They aren't on that channel" + "\r\n";
@@ -78,7 +78,7 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 
 	//execute les modes +
 	//il restera a modifier les fonctions affectees par les modes
-	Channel *chan = server->getChannel(&splitArg[1][1]);
+	Channel *chan = server->getChannel(splitArg[1]);
 
 	for (unsigned int i = 1; splitArg[2][0] == '+' && i < splitArg[2].size(); i++)
 	{
@@ -121,7 +121,7 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 				  case 111:
 					  	//execute mode o
 						if (i + 2 < splitArg.size()) {
-							chan->changeUserAdmin(server->getChannelUser(&splitArg[1][1], splitArg[i + 2]), true);
+							chan->changeUserAdmin(server->getChannelUser(splitArg[1], splitArg[i + 2]), true);
 							// 324 RPL_CHANNELMODEIS
 							send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
 						}
@@ -169,7 +169,7 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 				  case 111:
 					  	//execute mode o
 						if (i + 2 < splitArg.size()) {
-					  		chan->changeUserAdmin(server->getChannelUser(&splitArg[1][1], splitArg[i + 2]), false);
+					  		chan->changeUserAdmin(server->getChannelUser(splitArg[1], splitArg[i + 2]), false);
 					  		// 324 RPL_CHANNELMODEIS
 							send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
 						}

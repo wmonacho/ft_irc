@@ -349,13 +349,12 @@ bool    Server::passwordAlreadyRegistred( void )
 
 bool    Server::nickAlreadyExist( std::string new_nick )
 {
-	for(unsigned int i = 0; i < this->_user_list.size(); i++)
-	{
-		std::cout << this->_user_list[i].getNickname() << std::endl;
-		if (this->_user_list[i].getNickname() == new_nick)
-			return (true);
-	}
-	return (false);
+    for(unsigned int i = 0; i < this->_user_list.size(); i++)
+    {
+        if (this->_user_list[i].getNickname() == new_nick)
+            return (true);
+    }
+    return (false);
 }
 
 bool    Server::usernameAlreadyExist( std::string new_username )
@@ -414,7 +413,6 @@ bool	Server::channelEnoughSpace(std::string channel_name)
 {
 	if (this->getChannel(channel_name)->getUserLimit() == -1)
 		return true;
-	std::cout << "debug :" << this->getChannelUserList(channel_name).size() << "limit ==" << this->getChannel(channel_name)->getUserLimit() << std::endl;
 	if (this->getChannelUserList(channel_name).size() >= static_cast<size_t>(this->getChannel(channel_name)->getUserLimit()))
 		return false;
 	return true;
@@ -444,4 +442,14 @@ void	Server::addUserToChannel(std::string channel_name, const User *user, UserAs
 void    Server::createNewChannel(std::string channel_name, Channel *channel)
 {
 	this->_channels.insert(std::make_pair<std::string, Channel*>(channel_name, channel));
+}
+
+void	Server::addUserToChannelInviteList(std::string channel_name, std::string new_guest)
+{
+	this->getChannel(channel_name)->addGuestInviteList(new_guest);
+}
+
+bool	Server::userInChannelInviteList(std::string channel_name, std::string new_guest)
+{
+	return (this->getChannel(channel_name)->userInInviteList(new_guest));
 }
