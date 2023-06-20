@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 13:57:00 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/06/12 13:36:53 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/06/20 14:37:52 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -30,6 +30,7 @@ class Channel
 		bool        _inviteOnly;
         bool        _topicAdmin;
 		int         _userLimit;
+		std::vector<std::string> _invite_list;
 		std::map<const User*, UserAspects> _channel_user_list;
 	public :
 		Channel();
@@ -65,6 +66,10 @@ class Channel
 		bool	userInChannel(const User *user);
 		void	kickUserFromChannel(const User *user);
 		void	changeUserAdmin(const User* user, bool i);
+		
+		//INVITE LIST
+		bool   	userInInviteList(std::string guest);
+		void   	addGuestInviteList(std::string new_guest);
 
 };
 

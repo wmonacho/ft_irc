@@ -18,8 +18,8 @@ bool	cmd::parseNames(std::string str, Server *server, User *user)
 			{
 				std::cout << itUser->first->getUsername() << std::endl;
 				std::vector<User>::iterator iter = std::find(userListCopy.begin(), userListCopy.end(), itUser->first);
-		  std::string rpl_namreply = std::string(":localhost ") + "353" + " " + itUser->first->getNickname();
-		  send(user->getSocket(), rpl_namreply.c_str(), rpl_namreply.size(), 0);
+		  		std::string rpl_namreply = std::string(":localhost ") + "353" + " " + itUser->first->getNickname();
+		  		send(user->getSocket(), rpl_namreply.c_str(), rpl_namreply.size(), 0);
 				if (iter != userListCopy.end())
 					userListCopy.erase(iter);
 		 }

@@ -22,7 +22,7 @@ bool	cmd::parsePart(std::string str, Server *server, User *user)
 	{
 		//verifier si le channel existe
 		// 403 ERR_NOSUCHCHANNEL "<channel name> :No such channel"
-		it->erase(0, 1);
+		//it->erase(0, 1);
 		std::cout << "Channel ==> " << *it << std::endl;
 		if (server->channelAlreadyExist(*it) == false) {
 			std::string error = std::string(":localhost ") + "403" + " " + splitArg[0] + " " + *it_copy + " " + " :No such channel" + "\r\n";

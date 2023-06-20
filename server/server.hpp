@@ -127,6 +127,8 @@ class Server {
 		void	                                kickUserFromChannel(std::string channel_name, const User *user);
 		void									addUserToChannel(std::string channel_name, const User *user, UserAspects channel_aspects);
 		void   	                            	createNewChannel(std::string channel_name, Channel *channel);
+		void									addUserToChannelInviteList(std::string channel_name, std::string new_guest);
+		bool									userInChannelInviteList(std::string channel_name, std::string new_guest);
 };
 
 #endif

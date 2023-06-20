@@ -11,7 +11,7 @@ bool	cmd::parseTopic(std::string str, Server *server, User *user)
 		send(user->getSocket(), error.c_str(), error.size(), 0);
 		return false;
 	}
-	Channel *channel = server->getChannel(&arg[1][1]);
+	Channel *channel = server->getChannel(arg[1]);
 	if (!channel) {
 		std::cerr << "Error: Channel not found" << std::endl;
 		return false;
@@ -34,10 +34,10 @@ bool	cmd::parseTopic(std::string str, Server *server, User *user)
 		std::string topic_message;
 		std::cout << "we should not be here" << std::endl;
 		if (channel->getTopic().empty()) {
-			topic_message = std::string(":localhost ") + "331" + " " + user->getUsername() + " #" + channel->getName() + " : No topic is set" + "\r\n";
+			topic_message = std::string(":localhost ") + "331" + " " + user->getUsername() + " " + channel->getName() + " : No topic is set" + "\r\n";
 		}
 		else
-			topic_message = std::string(":localhost ") + "332" + " " + user->getUsername() + " #" + channel->getName() + " :" + channel->getTopic() + "\r\n";
+			topic_message = std::string(":localhost ") + "332" + " " + user->getUsername() + " " + channel->getName() + " :" + channel->getTopic() + "\r\n";
 		std::cout << "TOPIC : " << topic_message << std::endl;
 		send(user->getSocket(), topic_message.c_str(), topic_message.size(), 0);
 		return true;

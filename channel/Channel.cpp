@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:31:22 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/06/15 14:36:55 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/06/20 14:38:23 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -189,4 +189,19 @@ void	Channel::kickUserFromChannel(const User *user)
 void	Channel::changeUserAdmin(const User* user, bool i)
 {
     this->_channel_user_list.find(user)->second.setAdmin(i);
+}
+
+void   	Channel::addGuestInviteList(std::string new_guest)
+{
+    this->_invite_list.push_back(new_guest);
+}
+
+bool   	Channel::userInInviteList(std::string guest)
+{
+    for(unsigned int i = 0; i < this->_invite_list.size(); i++)
+    {
+        if (this->_invite_list[i] == guest)
+            return (true);
+    }
+    return (false);
 }
