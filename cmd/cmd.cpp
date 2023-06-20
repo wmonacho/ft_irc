@@ -190,7 +190,7 @@ void cmd::whichCmd(std::string str, Server *server, User *user)
 
 		case 4:
 
-			if (parseQuit(str, user) == false)
+			if (parseQuit(server, str, user) == false)
 			{
 				std::cerr << "Usage: QUIT [ <Quit Message> ]" << std::endl;
 				return ;
