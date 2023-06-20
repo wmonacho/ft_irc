@@ -19,18 +19,19 @@ class bot
 {
 private:
 
-    int _botSocket;
+	int _botSocket;
+
 public:
 
-       bot();
+	bot();
 	~bot();
 
-	int	startBot(int socketFd);
+	int		startBot(int socketFd);
 	void	sendFromBot();
-	int	runBot(char *buffer, User *user, Server *server);
-    	void   sendBotMessageToOtherUsersInChannel(std::string message, Channel *channel, User *user);
+	int		runBot(char *buffer, User *user, Server *server);
+	void	sendBotMessageToOtherUsersInChannel(std::string message, Channel *channel, User *user);
 
-	 int 	getBotSocket();
+	int		getBotSocket();
 };
 
 #endif
