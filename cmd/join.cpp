@@ -97,10 +97,11 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 				std::map<const User *, UserAspects> map = channel->getUserList();
 				std::string channel_name_with_wildcard = channel->getName();
 				channel_name_with_wildcard.insert(0, "#");
-				std::string user_list = std::string(":localhost ") + "353" + " " + user->getNickname() + " " + channel_name_with_wildcard + " :";
+				std::string user_list = std::string(":localhost ") + "353 " + user->getNickname() + " = " + channel_name_with_wildcard + " :";
 
 				for (std::map<const User *, UserAspects>::iterator userInChannel = map.begin(); userInChannel != map.end(); userInChannel++) {
 					
+					// The numeric reply MUST be sent as one message consisting of the sender prefix, the three-digit numeric, and the target of the reply
 					//"( "=" / "*" / "@" ) <channel> :[ "@" / "+" ] <nick> *( " " [ "@" / "+" ] <nick> )
 					// std::string(":localhost ") + "353" + " " + "=" + channel + " " + :@+userInChannel->first->getNickrname()  * nick + "\r\n";
 					if (userInChannel->second.getAdmin())
@@ -115,7 +116,7 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 				// Users on ebrodeur: issou --> output hexchat
 				// Users on :: issou ebrodeu
 				send(user->getSocket(), user_list.c_str(), user_list.size(), 0);
-
+				
 				// On envoie une RPL_ENDOFNAMES pour signaler la fin de la liste des users dans le channel
 				std::string end_of_names = std::string(":localhost ") + "366" + " " + channel->getName() + " :End of NAMES list" + "\r\n";
 				send(user->getSocket(), end_of_names.c_str(), end_of_names.size(), 0);
