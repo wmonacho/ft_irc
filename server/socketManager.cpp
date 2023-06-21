@@ -117,6 +117,16 @@ int Server::verifyClientAndServerResponse(struct pollfd fds) {
 		return (1);
 	}
 
+	//	tentative pour ne pas avoir 2 user avec le meme nickname 
+	//	(POSE ICI LE SERV S'ARRETE SI 2 USERS AVEC LE MEME NICK REJOIN) CE QU'ON VEUT PAS
+	//if (this->nickAlreadyExist(userInfo->nickName))
+	//{
+	//	// 462 ERR_ALREADYREGISTRED
+	//	std::string error = std::string(":localhost ") + "462" + " :Unauthorized command (already registered)" + "\r\n";
+	//	send(this->getUser(userInfo->nickName)->getSocket(), error.c_str(), error.size(), 0);
+	//	return (1);
+	//}
+
 	// This function parse the buffer to find the username and nickname of the user who connected to the server
 	// and it creates a new user in the server's users_list
 	server_response_for_connection = createServerResponseForConnection(fds.fd, userInfo);
@@ -251,14 +261,7 @@ void    Server::createNewUserAtConnection(std::string nickname, std::string user
     new_user.setUsername(username);
     new_user.setSocket(socket);
 	
-	//tentative pour ne pas avoir 2 user avec le meme nickname
-	//if (this->nickAlreadyExist(nickname))
-	//{
-	//	// 462 ERR_ALREADYREGISTRED
-	//	std::string error = std::string(":localhost ") + "462" + ":Unauthorized command (already registered)" + "\r\n";
-	//	send(this->getUser(nickname)->getSocket(), error.c_str(), error.size(), 0);
-	//	return ;
-	//}
+
     // Then we add the new user which connected to the server to the USER_LIST of the server
     this->setUserList(new_user);
                                                     
@@ -271,14 +274,7 @@ std::string Server::createServerResponseForConnection(int socket, Server::userCo
 		std::cerr << "Error: client sent wrong password" << std::endl;
 		return NULL;
 	}
-	
-	//if (this->nickAlreadyExist(userInfo->nickName))
-	//{
-	//	// 462 ERR_ALREADYREGISTRED
-	//	std::string error = std::string(":localhost ") + "462" + ":Unauthorized command (already registered)" + "\r\n";
-	//	//send(this->getUser(nickname)->getSocket(), error.c_str(), error.size(), 0);
-	//	return (error);
-	//}
+
     createNewUserAtConnection(userInfo->nickName, userInfo->userName, socket);
     std::string server_response = ":localhost 001 " + userInfo->nickName + " :Welcome to the Internet Relay Network " + userInfo->nickName + "!" + userInfo->userName + "@localhost\r\n";
 

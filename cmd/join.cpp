@@ -16,7 +16,7 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 	{
 		if (channels[i][0] != '#' && channels[i][0] != '&') {
 			// 476	ERR_BADCHANNELMASK
-			std::string error = std::string("localhost :") + "476 " + user->getNickname() + " " + &channels[i][1] + " :Bad Channel Mask" + "\r\n";
+			std::string error = std::string("localhost :") + "476 " + user->getNickname() + " " + channels[i] + " :Bad Channel Mask" + "\r\n";
 			send(user->getSocket(), error.c_str(), error.size(), 0);
 			return false;
 		}
@@ -37,10 +37,17 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
  
 			if (channel->getInviteOnly() && !channel->userInInviteList(user->getNickname())) {
 				// 473    ERR_INVITEONLYCHAN
-			  std::string error = std::string("localhost :") + "473 " + user->getNickname() + " " + channels[i] + " :Cannot join channel (+i)" + "\r\n";
-			  send(user->getSocket(), error.c_str(), error.size(), 0);
-			  continue;
+			  	std::string error = std::string("localhost :") + "473 " + user->getNickname() + " " + channels[i] + " :Cannot join channel (+i)" + "\r\n";
+			  	send(user->getSocket(), error.c_str(), error.size(), 0);
+			  	continue;
 			}
+
+			if (channel->getUserList().find(user) != channel->getUserList().end())
+			{
+				std::cout << "USER ALDREADY ON THIS CHANNEL" << std::endl;
+			}
+			else 
+				std::cout << "USER NOT YET ON THIS CHANNEL" << std::endl;
 
 			if (splitArg.size() < 3 && channel->getPassword() != "") {
 				// 475	ERR_BADCHANNELKEY
@@ -77,7 +84,7 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
  			UserAspects	new_aspects(0);
 
 			server->addUserToChannel(channel_name, user, new_aspects);
-			sendMessageToAllUsersInChannel(server_response, channel);
+			this->sendMessageToAllUsersInChannel(server_response, channel);
 
 			// On envoie le topic s'il existe
 			if (!channel->getTopic().empty()) {
@@ -97,7 +104,7 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 				std::string channel_name_with_wildcard = channel->getName();
 
 				// Create RPL_NAMREPLY string
-				channel_name_with_wildcard.insert(0, "#");
+				//channel_name_with_wildcard.insert(0, "#");
 				std::string user_list = std::string(":localhost ") + "353 " + user->getNickname() + " = " + channel_name_with_wildcard + " :";
 				
 				// Loop to append all of the nicknames of all the users present in the channel
@@ -130,7 +137,7 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 			sendMessageToAllUsersInChannel(server_response, server->getChannel(channel_name));
 
 			// We send a RPL_NAMREPLY so the first user of the channel can see he is in the channel
-			channel_name.insert(0, "#");
+			//channel_name.insert(0, "#");
 			std::string user_list = std::string(":localhost ") + "353 " + user->getNickname() + " = " + channel_name + " :" + user->getNickname() + "\r\n";
 			send(user->getSocket(), user_list.c_str(), user_list.size(), 0);
 		}
