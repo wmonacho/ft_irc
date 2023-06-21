@@ -275,35 +275,57 @@ std::string Server::createServerResponseForConnection(int socket, Server::userCo
 /*  CONNECTED SOCKET FUNCTIONS  */
 /********************************/
 
+bool	dataRetrievingDone(char *buffer) {
+
+	for (size_t i = 0; i < strlen(buffer); i++) {
+		if (buffer[i] == '\n') {
+			return true;
+		}
+	}
+	return false;
+}
+
 int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bool closeConnection) {
 
-	char    buffer[512];
-	int     recvReturn;
-	User	*user;
+	char		buffer[512];
+	int			recvReturn;
+	User		*user;
 
+	Server::clientData *clientData = getClientDataArray();
+
+	clientData = &clientData[socketID];
+
+	clientData->newLineFound = false;
 	closeConnection = false;
 	memset(buffer, 0, sizeof(buffer));
-	recvReturn = recv(fds[socketID].fd, buffer, sizeof(buffer), MSG_DONTWAIT);
-	if (recvReturn < 0) {
-		if (errno != EWOULDBLOCK) {
-			std::cerr << "Error: recv() failed" << std::endl;
-			closeConnection = true;
+	while (1) {
+		recvReturn = recv(fds[socketID].fd, buffer, sizeof(buffer), MSG_DONTWAIT);
+		if (recvReturn < 0) {
+			if (errno != EWOULDBLOCK) {
+				std::cerr << "Error: recv() failed" << std::endl;
+				closeConnection = true;
+			}
+			return (closeConnection);
 		}
-		return (closeConnection);
-	}
-	if (recvReturn == 0) {
-		std::cerr << "Connection closed" << std::endl;
-		closeConnection = true;
-		return (closeConnection);
+		if (recvReturn == 0) {
+			std::cerr << "Connection closed" << std::endl;
+			closeConnection = true;
+			return (closeConnection);
+		}
+		clientData->dataString += buffer;
+		std::cout << "-------> " << clientData->dataString << std::endl;
+		if (clientData->dataString.find("\n") != std::string::npos)
+			break ;
 	}
 
 	// Display for testing purpose
 	std::cout << "** =============== **" << std::endl;
 	// Affichage sur le serveur
 	std::cout << "Buffer from socket " << socketID << " : " << buffer << std::endl;
-
 	cmd command;
 	user = this->getUserBySocket(fds[socketID].fd);
-	command.whichCmd(buffer, this, user);
+	command.whichCmd(clientData->dataString.c_str(), this, user);
+
+	clientData->dataString.clear();
 	return (closeConnection);
 }

@@ -263,6 +263,11 @@ Server::userConnectionRegistration* Server::getUserConnectionRegistrationStruct(
 	return (&this->_userConnectionRegistration);
 }
 
+Server::clientData*	Server::getClientDataArray (void) {
+
+	return _clientDataArray;
+}
+
 /* *************************************** */
 /* *************** SETTERS *************** */
 /* *************************************** */
