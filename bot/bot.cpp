@@ -1,8 +1,9 @@
 #include "bot.hpp"
 
-std::string	retreiveMessageFromBuffer(char *buffer);
-void rebuildMessage(std::vector<std::string> &vector, int index);
-std::vector<std::string> splitString(std::string str, const char *delim);
+std::string					retreiveMessageFromBuffer(char *buffer);
+std::vector<std::string>	splitString(std::string str, const char *delim);
+int							botBehavior(std::string message, int botSocket);
+void						rebuildMessage(std::vector<std::string> &vector, int index);
 
 int	main(int ac, char **av)
 {
@@ -42,8 +43,8 @@ int	main(int ac, char **av)
 		std::cout << " /BOT\\ Login..." << std::endl;	
 
 		std::string sendPass = "PASS " + password + "\r\n";
-		std::string sendNick = "NICK ircbot\r\n";
-		std::string sendUser = "USER ircbot \r\n";
+		std::string sendNick = "NICK ircBot\r\n";
+		std::string sendUser = "USER ircBot \r\n";
 
 		// We send connection details to log to the server
 		send(botSocket, sendPass.c_str(), sendPass.size(), 0);
@@ -65,6 +66,7 @@ int	main(int ac, char **av)
 
 		std::cout << "Ready to receive data!" << std::endl;
 		while (1) {
+			memset(buffer, 0, bufferSize);
 			int bytesRead = recv(botSocket, buffer, bufferSize, 0);
 			if (bytesRead == 0) {
 				std::cerr << "Error: connection closed" << std::endl;
@@ -82,7 +84,8 @@ int	main(int ac, char **av)
 					message	= retreiveMessageFromBuffer(buffer);
 					// Then we can proceed the bot reponses
 					std::cout << "MESSAGE ===> " << message << std::endl;
-					// botBehavior();
+					if (!message.empty())
+						botBehavior(message, botSocket);
 				}
 		}
 	}
@@ -90,14 +93,11 @@ int	main(int ac, char **av)
 
 std::string	retreiveMessageFromBuffer(char *buffer) {
 
-	std::vector<std::string> stringElements = splitString(buffer, ":");
+	std::vector<std::string>	stringElements = splitString(buffer, ":");
+	int							id = stringElements.size() - 1;
 
-	std::cout << "stringElements size = " << stringElements.size();
-	std::cout << "stringElements[0] : " << stringElements[0] << std::endl;
-	std::cout << "stringElements[1] : " << stringElements[1] << std::endl;
-
-	rebuildMessage(stringElements, 1);
-	return stringElements[1];
+	rebuildMessage(stringElements, id);
+	return stringElements[id];
 }
 
 void tokenize(std::string const &str, const char* delim, std::vector<std::string> &out)
@@ -129,36 +129,34 @@ void rebuildMessage(std::vector<std::string> &vector, int index) {
 	return ;
 }
 
-// int 	botBehavior(std::string message)
-// {
-// 	std::string message(buffer);
-// 	std::cout << "from runbot : "  << message << std::endl;
-// 	const char* channelName = "#bot";
-// 	Channel *chan =  server->getChannel(channelName);
+int 	botBehavior(std::string message, int botSocket)
+{
+	const char* channelName = "#bot";
 
-// 	std::string response = ":" + std::string("ircBot") + "!" + std::string("ircBot") + "@locahost " + std::string("PRIVMSG") + " " + channelName + " ";
-// 	if (message.find("PING") != std::string::npos)
-// 	{
-// 	 // Répondre au PING du serveur pour éviter d'être déconnecté
-// 	 std::string pongCommand = response.append("PONG\r\n");
-// 	 sendBotMessageToOtherUsersInChannel(pongCommand, chan, user);
-// 	// send(user->getSocket(), pongCommand.c_str(), pongCommand.length(), 0);
-// 	}
-// 	else if (message.find("bonjour") != std::string::npos)
-// 	{
-// 	 // Répondre au PING du serveur pour éviter d'être déconnecté
-// 	 std::string pongCommand = std::string("bonjour ") + user->getNickname() + " " + "\r\n";
-// 	 send(user->getSocket(), pongCommand.c_str(), pongCommand.length(), 0);
-// 	}
-// 	else if (message.find("msg " + std::string(channelName)) != std::string::npos)
-// 	{
-// 	 // Traiter les messages privés reçus sur le canal spécifié
-// 	 std::string sender = message.substr(message.find(":") + 1, message.find("!") - 1);
-// 	 std::string receivedMessage = message.substr(message.find(std::string(channelName)) + std::string(channelName).length() + 2);
+	std::string response = std::string("PRIVMSG") + " " + channelName + " :";
+	if (message.find("PING") != std::string::npos)
+	{
+		// Répondre au PING du serveur pour éviter d'être déconnecté
+	 	std::string pongCommand = response.append("PONG\r\n");
+		std::cerr << "PING MESSAGE RECEIVED : sending response.." << std::endl;
+		send(botSocket, pongCommand.c_str(), pongCommand.length(), 0);
+		std::cerr << "Response sent" << std::endl;
+	}
+	// else if (message.find("bonjour") != std::string::npos)
+	// {
+	//  // Répondre au PING du serveur pour éviter d'être déconnecté
+	//  std::string pongCommand = std::string("bonjour ") + user->getNickname() + " " + "\r\n";
+	//  send(user->getSocket(), pongCommand.c_str(), pongCommand.length(), 0);
+	// }
+	// else if (message.find("msg " + std::string(channelName)) != std::string::npos)
+	// {
+	//  // Traiter les messages privés reçus sur le canal spécifié
+	//  std::string sender = message.substr(message.find(":") + 1, message.find("!") - 1);
+	//  std::string receivedMessage = message.substr(message.find(std::string(channelName)) + std::string(channelName).length() + 2);
 
-// 	 // Répondre au message privé
-// 	 std::string replyMessage = "PRIVMSG " + sender + " :Bonjour ! J'ai bien reçu votre message : " + receivedMessage + "\r\n";
-// 	 send(user->getSocket(), replyMessage.c_str(), replyMessage.length(), 0);
-// 	}
-// 	return 0;
-// }
+	//  // Répondre au message privé
+	//  std::string replyMessage = "PRIVMSG " + sender + " :Bonjour ! J'ai bien reçu votre message : " + receivedMessage + "\r\n";
+	//  send(user->getSocket(), replyMessage.c_str(), replyMessage.length(), 0);
+	// }
+	return 0;
+}
