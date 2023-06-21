@@ -17,16 +17,17 @@ FILES =		main.cpp							\
 			cmd/invite.cpp						\
 			cmd/topic.cpp						\
 			cmd/part.cpp						\
-			cmd/quit.cpp
+			cmd/quit.cpp						\
 # ====================================================================
 
 # HEADER =============================================================
 HEADER =	server/server.hpp					\
 			channel/Channel.hpp					\
-			user_aspects/UserAspects.hpp	\
+			user_aspects/UserAspects.hpp		\
 			user/User.hpp						\
 			cmd/cmd.hpp							\
 
+BOTPATH = bot/
 # ====================================================================
 
 # FLAGS ==============================================================
@@ -38,7 +39,7 @@ CC =		c++
 # ====================================================================
 
 # SUB_DIR_LST ========================================================
-SUB_DIR_LST =	server channel user cmd user_aspects
+SUB_DIR_LST =	server channel user cmd user_aspects bot
 # ====================================================================
 
 # OBJS_DIR ===========================================================
@@ -72,9 +73,13 @@ fclean :
 					rm -f ${OBJ} ${OBJ_B} $(OBJS_DIR)/*.o
 					rm -f ${NAME}
 					rm -rf $(OBJS_DIR)
+					make -C $(BOTPATH) fclean
+
+bot:
+					make -C $(BOTPATH)
 
 re :				fclean all
 
-.PHONY:				all clean fclean re
+.PHONY:				all clean fclean re bot
 
 # ====================================================================

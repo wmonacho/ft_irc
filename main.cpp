@@ -37,7 +37,7 @@ int main(int ac, char **av)
 		(void)av;
 		while (i < 1)
 		{
-			std::cout << "Enter user1 CMD :";
+		 	std::cout << "Enter user1 CMD :";
 			std::getline(std::cin, line);
 			cmd.whichCmd(line, &server, server.getUser("will"));
 			i++;
