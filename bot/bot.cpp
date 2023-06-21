@@ -1,5 +1,9 @@
 #include "bot.hpp"
 
+std::string	retreiveMessageFromBuffer(char *buffer);
+void rebuildMessage(std::vector<std::string> &vector, int index);
+std::vector<std::string> splitString(std::string str, const char *delim);
+
 int	main(int ac, char **av)
 {
 	if (ac == 4) {
@@ -32,7 +36,7 @@ int	main(int ac, char **av)
 		if (connect(botSocket, (struct sockaddr *) &serverAddress, sizeof(serverAddress)) == -1) {
 			std::cerr << "Error during connection" << std::endl;
 			return 1;
-		}	
+		}
 
 		// The botSocket is connected so we can send identification
 		std::cout << " /BOT\\ Login..." << std::endl;	
@@ -51,11 +55,15 @@ int	main(int ac, char **av)
 		// GESTION DES COMMANDES avec recv()
 		std::string botJoinChannel = "JOIN #bot\r\n";
 
-		send(botSocket, botJoinChannel.c_str(), botJoinChannel.size(), 0);
+		std::cout << botJoinChannel << std::endl;
+		if (send(botSocket, botJoinChannel.c_str(), botJoinChannel.size(), 0) <= 0) {
+			std::cerr << "Error: send failed to join channel" << std::endl;
+		}
 		
 		int		bufferSize = 512;
 		char	buffer[bufferSize];
 
+		std::cout << "Ready to receive data!" << std::endl;
 		while (1) {
 			int bytesRead = recv(botSocket, buffer, bufferSize, 0);
 			if (bytesRead == 0) {
@@ -67,14 +75,61 @@ int	main(int ac, char **av)
 				return 1;
 			}
 			else {
+					std::string message;
 					// We handle the message here
 					std::cout << "Received : " << buffer << std::endl;
+					// First we need to parse the buffer so we retreive only the message
+					message	= retreiveMessageFromBuffer(buffer);
+					// Then we can proceed the bot reponses
+					std::cout << "MESSAGE ===> " << message << std::endl;
+					// botBehavior();
 				}
 		}
 	}
 }
 
-// int 	bot::runBot(char* buffer, User *user, Server *server)
+std::string	retreiveMessageFromBuffer(char *buffer) {
+
+	std::vector<std::string> stringElements = splitString(buffer, ":");
+
+	std::cout << "stringElements size = " << stringElements.size();
+	std::cout << "stringElements[0] : " << stringElements[0] << std::endl;
+	std::cout << "stringElements[1] : " << stringElements[1] << std::endl;
+
+	rebuildMessage(stringElements, 1);
+	return stringElements[1];
+}
+
+void tokenize(std::string const &str, const char* delim, std::vector<std::string> &out)
+{
+	char *token = strtok(const_cast<char*>(str.c_str()), delim);
+	while (token != NULL)
+	{
+		out.push_back(std::string(token));
+		token = strtok(NULL, delim);
+	}
+}
+
+std::vector<std::string> splitString(std::string str, const char *delim)
+{
+	std::vector<std::string> out;
+	tokenize(str, delim, out);
+	return (out);
+}
+
+void rebuildMessage(std::vector<std::string> &vector, int index) {
+
+	size_t i = index + 1;
+	while (i < vector.size()) {
+		vector[index].append(" ");
+		vector[index].append(vector[i]);
+		i++;
+	}
+	vector[index].append("\0");
+	return ;
+}
+
+// int 	botBehavior(std::string message)
 // {
 // 	std::string message(buffer);
 // 	std::cout << "from runbot : "  << message << std::endl;
