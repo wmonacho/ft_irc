@@ -46,6 +46,12 @@ class Server {
 			std::string	userName;
 		};
 		struct userConnectionRegistration _userConnectionRegistration;
+
+        struct clientData {
+			std::string	dataString;
+            bool        newLineFound;
+		};
+		clientData _clientDataArray[MAX_SOCKETS];
 		
 
     public :
@@ -70,7 +76,9 @@ class Server {
         void		            	          	setUserPassword(User user, std::string new_password);
         void				                  	setUserRealname(User user, std::string new_realname);
 		void									setUserConnectionResitrationStruct(std::string pass, std::string nick, std::string user);
-        
+        void                                    setClientDataString(std::string str);
+        void                                    setClientDataBool(bool value);
+
         // Getters functions
         int                              		getPort(void);
         int                              		getSocketfd(void);
@@ -100,6 +108,7 @@ class Server {
         const std::map<const User*, UserAspects>&   getChannelUserList(std::string channel_name);
 		std::map<std::string, Channel*>::iterator	getItMap(void);
 		userConnectionRegistration*					getUserConnectionRegistrationStruct(void);
+        Server::clientData*                           getClientDataArray(void);
 
         // Socket connection and user registration for "socketManager.cpp"
         int                                     verifyClientAndServerResponse(struct pollfd fds);

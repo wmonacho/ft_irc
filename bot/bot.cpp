@@ -40,7 +40,7 @@ int	main(int ac, char **av)
 		}
 
 		// The botSocket is connected so we can send identification
-		std::cout << " /BOT\\ Login..." << std::endl;	
+		std::cout << " /BOT\\ Login..." << std::endl;
 
 		std::string sendPass = "PASS " + password + "\r\n";
 		std::string sendNick = "NICK ircBot\r\n";
@@ -62,7 +62,7 @@ int	main(int ac, char **av)
 		}
 		
 		int		bufferSize = 512;
-		char	buffer[bufferSize];
+		char	buffer[bufferSize];	
 
 		std::cout << "Ready to receive data!" << std::endl;
 		while (1) {
