@@ -19,11 +19,13 @@ void    Server::startServer() {
 	// Set the first struct of the array to the listening socket
 	fds[0].fd = this->_socketfd;
 	fds[0].events = POLLIN;
+ 
+	// BOT CONNECTION CALL
+		// le bot fait un connect(), donc on agit comme un client, on va alors passer dans le "if (fds[socketID].fd == this->_socketfd)" pour se connecter
 
 	// This is the main loop which implements poll() : we detect if the socket is connecting or connected and act in consequence
 	do {
-		std::cout << "nfds " << nfds << std::endl;
-		pollReturn = poll(fds, nfds, -1); // no timeout
+		pollReturn = poll(fds, nfds, -1);
 		if (pollReturn < 0) {
 			std::cerr << "Error: poll() failed" << std::endl;
 			break ;
@@ -44,7 +46,7 @@ void    Server::startServer() {
 			// If it's a connecting socket we accept the connection and add it to the socket pool (fds[nfds])
 			if (fds[socketID].fd == this->_socketfd) {
 				connectionStatus = acceptNewConnection(fds, nfds);
-			if (connectionStatus == -1)
+				if (connectionStatus == -1)
 					endOfServer = true;
 				else
 					nfds = connectionStatus; // connectionStatus is the number of fd if acceptNewConnection() succeeded
@@ -83,7 +85,7 @@ int Server::acceptNewConnection(struct pollfd *fds, int nfds) {
 
 	do {
 		newSocket = accept(this->_socketfd, NULL, NULL);
-		if (newSocket < 0) {
+		if (newSocket < 0) { 
 			if (errno != EWOULDBLOCK) {
 				std::cerr << "Error: accept() failed" << std::endl;
 				nfds = errorStatus;
@@ -91,7 +93,7 @@ int Server::acceptNewConnection(struct pollfd *fds, int nfds) {
 			std::cout << "Socket " << nfds << " is already connected" << std::endl;
 			break ;
 		}
-	 	fds[nfds].fd = newSocket;
+		fds[nfds].fd = newSocket;
 		fds[nfds].events = POLLIN;
 		if (verifyClientAndServerResponse(fds[nfds]) == 1)
 			return (-1);
@@ -299,7 +301,6 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
 	std::cout << "** =============== **" << std::endl;
 	// Affichage sur le serveur
 	std::cout << "Buffer from socket " << socketID << " : " << buffer << std::endl;
-	std::cout << "** =============== **" << std::endl;
 
 	cmd command;
 	user = this->getUserBySocket(fds[socketID].fd);
