@@ -112,6 +112,7 @@ bool    cmd::parseNick(std::string str, Server *server, User *user) //recup le U
 
 bool    cmd::parseUser(std::string str, Server *server)
 {
+
 	//verifier si le user existe
 	std::vector<std::string> splitArg = splitString(str, " ");
 	std::cout << "splitArg.size() == " << splitArg.size() << std::endl;

@@ -19,7 +19,7 @@ void    Server::startServer() {
 	// Set the first struct of the array to the listening socket
 	fds[0].fd = this->_socketfd;
 	fds[0].events = POLLIN;
-
+ 
 	// BOT CONNECTION CALL
 		// le bot fait un connect(), donc on agit comme un client, on va alors passer dans le "if (fds[socketID].fd == this->_socketfd)" pour se connecter
 
@@ -271,10 +271,7 @@ std::string Server::createServerResponseForConnection(int socket, Server::userCo
 		std::cerr << "Error: client sent wrong password" << std::endl;
 		return NULL;
 	}
-
-	std::cout << "nick --> " << userInfo->nickName << std::endl;
-	std::cout << "user --> " << userInfo->userName << std::endl;
-
+	
 	//if (this->nickAlreadyExist(userInfo->nickName))
 	//{
 	//	// 462 ERR_ALREADYREGISTRED
@@ -318,11 +315,9 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
 	std::cout << "** =============== **" << std::endl;
 	// Affichage sur le serveur
 	std::cout << "Buffer from socket " << socketID << " : " << buffer << std::endl;
-	std::cout << "------DEBUG OF COMMAND ------\n";
 
 	cmd command;
 	user = this->getUserBySocket(fds[socketID].fd);
 	command.whichCmd(buffer, this, user);
-
 	return (closeConnection);
 }
