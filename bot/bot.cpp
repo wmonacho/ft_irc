@@ -35,20 +35,21 @@ int	main(int ac, char **av)
 		}	
 
 		// The botSocket is connected so we can send identification
-		std::cout << "Botsocket is connected to the server\nLogin..." << std::endl;	
+		std::cout << " /BOT\\ Login..." << std::endl;	
 
 		std::string sendPass = "PASS " + password + "\r\n";
 		std::string sendNick = "NICK ircbot\r\n";
 		std::string sendUser = "USER ircbot \r\n";
 
+		// We send connection details to log to the server
 		send(botSocket, sendPass.c_str(), sendPass.size(), 0);
 		send(botSocket, sendNick.c_str(), sendNick.size(), 0);
 		send(botSocket, sendUser.c_str(), sendUser.size(), 0);
 
-		std::cout << "The bot is logged !" << std::endl;
+		std::cout << " /BOT\\ The bot is logged !" << std::endl;
 
 		// GESTION DES COMMANDES avec recv()
-		std::string botJoinChannel = "JOIN #lol\r\n";
+		std::string botJoinChannel = "JOIN #bot\r\n";
 
 		send(botSocket, botJoinChannel.c_str(), botJoinChannel.size(), 0);
 		
@@ -66,88 +67,43 @@ int	main(int ac, char **av)
 				return 1;
 			}
 			else {
+					// We handle the message here
 					std::cout << "Received : " << buffer << std::endl;
 				}
 		}
 	}
 }
 
-/*bot::bot()
-{
-	_botSocket = 0;
-}
+// int 	bot::runBot(char* buffer, User *user, Server *server)
+// {
+// 	std::string message(buffer);
+// 	std::cout << "from runbot : "  << message << std::endl;
+// 	const char* channelName = "#bot";
+// 	Channel *chan =  server->getChannel(channelName);
 
-bot::~bot()
-{
+// 	std::string response = ":" + std::string("ircBot") + "!" + std::string("ircBot") + "@locahost " + std::string("PRIVMSG") + " " + channelName + " ";
+// 	if (message.find("PING") != std::string::npos)
+// 	{
+// 	 // Répondre au PING du serveur pour éviter d'être déconnecté
+// 	 std::string pongCommand = response.append("PONG\r\n");
+// 	 sendBotMessageToOtherUsersInChannel(pongCommand, chan, user);
+// 	// send(user->getSocket(), pongCommand.c_str(), pongCommand.length(), 0);
+// 	}
+// 	else if (message.find("bonjour") != std::string::npos)
+// 	{
+// 	 // Répondre au PING du serveur pour éviter d'être déconnecté
+// 	 std::string pongCommand = std::string("bonjour ") + user->getNickname() + " " + "\r\n";
+// 	 send(user->getSocket(), pongCommand.c_str(), pongCommand.length(), 0);
+// 	}
+// 	else if (message.find("msg " + std::string(channelName)) != std::string::npos)
+// 	{
+// 	 // Traiter les messages privés reçus sur le canal spécifié
+// 	 std::string sender = message.substr(message.find(":") + 1, message.find("!") - 1);
+// 	 std::string receivedMessage = message.substr(message.find(std::string(channelName)) + std::string(channelName).length() + 2);
 
-}
-
-int bot::getBotSocket()
-{
-	return(_botSocket);
-}
-
-int 	bot::runBot(char* buffer, User *user, Server *server)
-{
-	std::string message(buffer);
-	std::cout << "from runbot : "  << message << std::endl;
-	const char* channelName = "#bot";
-	Channel *chan =  server->getChannel(channelName);
-
-	std::string response = ":" + std::string("ircBot") + "!" + std::string("ircBot") + "@locahost " + std::string("PRIVMSG") + " " + channelName + " ";
-	if (message.find("PING") != std::string::npos)
-	{
-	 // Répondre au PING du serveur pour éviter d'être déconnecté
-	 std::string pongCommand = response.append("PONG\r\n");
-	 sendBotMessageToOtherUsersInChannel(pongCommand, chan, user);
-	// send(user->getSocket(), pongCommand.c_str(), pongCommand.length(), 0);
-	}
-	else if (message.find("bonjour") != std::string::npos)
-	{
-	 // Répondre au PING du serveur pour éviter d'être déconnecté
-	 std::string pongCommand = std::string("bonjour ") + user->getNickname() + " " + "\r\n";
-	 send(user->getSocket(), pongCommand.c_str(), pongCommand.length(), 0);
-	}
-	else if (message.find("msg " + std::string(channelName)) != std::string::npos)
-	{
-	 // Traiter les messages privés reçus sur le canal spécifié
-	 std::string sender = message.substr(message.find(":") + 1, message.find("!") - 1);
-	 std::string receivedMessage = message.substr(message.find(std::string(channelName)) + std::string(channelName).length() + 2);
-
-	 // Répondre au message privé
-	 std::string replyMessage = "PRIVMSG " + sender + " :Bonjour ! J'ai bien reçu votre message : " + receivedMessage + "\r\n";
-	 send(user->getSocket(), replyMessage.c_str(), replyMessage.length(), 0);
-	}
-	return 0;
-}
-
-void    bot::sendBotMessageToOtherUsersInChannel(std::string message, Channel *channel, User *user) {
-
-	std::map<const User*, UserAspects> userMap = channel->getUserList();
-	std::map<const User*, UserAspects>::iterator userNode = userMap.begin();
-	std::map<const User*, UserAspects>::iterator lastUserNode = userMap.end();
-
-	while (userNode != lastUserNode) {
-	 std::string tmp = message;
-	 if (userNode->first != user)
-		 send(userNode->first->getSocket(), tmp.c_str(), tmp.size(), 0);
-	 userNode++;
-	}
-	return ;
-}
-
-void	bot::sendFromBot()
-{
-	const char* nickname = "ircBot";
-
-	std::string userCommand = "USER " + std::string(nickname) + " 0 * :" + std::string(nickname) + "\r\n";
-	std::string nickCommand = "NICK " + std::string(nickname) + "\r\n";
-	std::string passCommand = std::string("PASS pass") + "\r\n";
-	std::cout << "socketfd from send " << _botSocket << std::endl;
-	usleep(1000);
-	send(_botSocket, userCommand.c_str(), userCommand.length(), 0);
-	usleep(1000);
-	send(_botSocket, nickCommand.c_str(), nickCommand.length(), 0);
-	usleep(1000);
-	send(_botSocket, passCommand.c_str(), passCommand.length(), 0);
-}*/
+// 	 // Répondre au message privé
+// 	 std::string replyMessage = "PRIVMSG " + sender + " :Bonjour ! J'ai bien reçu votre message : " + receivedMessage + "\r\n";
+// 	 send(user->getSocket(), replyMessage.c_str(), replyMessage.length(), 0);
+// 	}
+// 	return 0;
+// }
