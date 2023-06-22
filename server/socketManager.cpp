@@ -110,10 +110,8 @@ int Server::verifyClientAndServerResponse(struct pollfd fds) {
 	// This function parse the buffer to find the username and nickname of the user who connected to the server
 	// and it creates a new user in the server's users_list
 	server_response_for_connection = createServerResponseForConnection(fds.fd, userInfo);
-	if (server_response_for_connection.empty()) {
-		std::cerr << "Error: error while creating server response" << std::endl;
+	if (server_response_for_connection.empty())
 		return (1);
-	}
 
 	// Finally we send back the server response to confirm the connection of the user
 	send(fds.fd, server_response_for_connection.c_str(), server_response_for_connection.size(), 0);
@@ -250,8 +248,8 @@ void    Server::createNewUserAtConnection(std::string nickname, std::string user
 std::string Server::createServerResponseForConnection(int socket, Server::userConnectionRegistration *userInfo) {
 
 	if (userInfo->password != this->_password) {
-		std::cerr << "Error: client sent wrong password" << std::endl;
-		return NULL;
+		std::cerr << "Error: client sent a wrong password to access the server" << std::endl;
+		return "";
 	}
 
 	createNewUserAtConnection(userInfo->nickName, userInfo->userName, socket);
