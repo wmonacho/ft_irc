@@ -50,18 +50,18 @@ bool	cmd::parseKick(std::string str, Server *server, User *user)
 			i++;
 		}
 		kick_comment += arg[i];
-		std::string kick_message = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + arg[0] + " " + arg[2] + " " + arg[3] + kick_comment + "\r\n";
+		std::string kick_message = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + arg[0] + " " + arg[2] + " " + &arg[3][1] + kick_comment + "\r\n";
 		sendMessageToAllUsersInChannel(kick_message, server->getChannel(arg[2]));
 		return true;
 	}
 
 	// Cas 2 : pas de commentaire au KICK
-	std::string kick_message = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + arg[0] + " " + arg[2] + " " + arg[3] + " You are KICK man" + "\r\n";
+	std::string kick_message = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + arg[0] + " " + arg[2] + " " + &arg[3][1] + " :You are KICK man" + "\r\n";
 	std::cout << kick_message << std::endl;
 	sendMessageToAllUsersInChannel(kick_message, server->getChannel(arg[2]));
-	kick_message = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + arg[0] + " " + arg[2] + " " + arg[3] + " You are KICK man" + "\r\n";
+	kick_message = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + arg[0] + " " + arg[2] + " " + &arg[3][1] + " :You are KICK man" + "\r\n";
 	send(server->getUser(&arg[3][1])->getSocket(), kick_message.c_str(), kick_message.size(), 0);
-    return true;
+	return true;
 }
 
 /*---------------------------------------------*/
