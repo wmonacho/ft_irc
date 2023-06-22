@@ -72,6 +72,7 @@ int Server::acceptNewConnection(struct pollfd *fds, int nfds) {
 
 	int newSocket;
 	int errorStatus = -1;
+	int	error;
 
 	do {
 		newSocket = accept(this->_socketfd, NULL, NULL);
@@ -85,8 +86,14 @@ int Server::acceptNewConnection(struct pollfd *fds, int nfds) {
 		}
 		fds[nfds].fd = newSocket;
 		fds[nfds].events = POLLIN;
-		if (verifyClientAndServerResponse(fds[nfds]) == 1)
+		error = verifyClientAndServerResponse(fds[nfds]);
+		if (error == 1)
 			return (-1);
+		if (error == 2) {
+			std::string errorSameUsername = "Error: this username is already used, try a new one\r\n";
+			send(fds[nfds].fd, errorSameUsername.c_str(), errorSameUsername.size(), 0);
+			return nfds;
+		}
 		nfds++;
 	} while (newSocket != -1);
 
@@ -121,7 +128,7 @@ int Server::verifyClientAndServerResponse(struct pollfd fds) {
 	// and it creates a new user in the server's users_list
 	server_response_for_connection = createServerResponseForConnection(fds.fd, userInfo);
 	if (server_response_for_connection.empty())
-		return (1);
+		return (2);
 
 	// Finally we send back the server response to confirm the connection of the user
 	send(fds.fd, server_response_for_connection.c_str(), server_response_for_connection.size(), 0);
@@ -258,13 +265,27 @@ void    Server::createNewUserAtConnection(std::string nickname, std::string user
 
 std::string Server::createServerResponseForConnection(int socket, Server::userConnectionRegistration *userInfo) {
 
+	bool	userWithSameNicknameExists = false;
+	std::vector<User> userVector = this->getUserList();
+
+	for (std::vector<User>::iterator it = userVector.begin(); it != userVector.end(); it++) {
+		if (it->getNickname() == userInfo->nickName)
+			userWithSameNicknameExists = true;
+	}
+
 	if (userInfo->password != this->_password) {
 		std::cerr << "Error: client sent a wrong password to access the server" << std::endl;
 		return "";
 	}
 
-    createNewUserAtConnection(userInfo->nickName, userInfo->userName, socket);
-    std::string server_response = ":localhost 001 " + userInfo->nickName + " :Welcome to the Internet Relay Network " + userInfo->nickName + "!" + userInfo->userName + "@localhost\r\n";
+	if (userWithSameNicknameExists == true) {
+		std::cerr << "Error: This nickname already exists" << std::endl;
+		return "";
+	}
+
+	createNewUserAtConnection(userInfo->nickName, userInfo->userName, socket);
+
+	std::string server_response = ":localhost 001 " + userInfo->nickName + " :Welcome to the Internet Relay Network " + userInfo->nickName + "!" + userInfo->userName + "@localhost\r\n";
 
 	return (server_response);
 }
