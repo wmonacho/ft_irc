@@ -44,7 +44,7 @@ Server::Server(int port, std::string password) {
 		exit(1);
 	}
 
-	// ATTENTION au deuxieme arg (backlog queue)
+	// The second arg is the maximum value of the backlog queue
 	if (listen(_socketfd, MAX_SOCKETS) < 0) {
 		std::cout << "Error : listen failed" << std::endl;
 		exit(1);
@@ -261,6 +261,11 @@ const User* Server::getChannelUser(std::string channel_name, std::string user_na
 Server::userConnectionRegistration* Server::getUserConnectionRegistrationStruct(void) {
 
 	return (&this->_userConnectionRegistration);
+}
+
+Server::clientData*	Server::getClientDataArray (void) {
+
+	return _clientDataArray;
 }
 
 /* *************************************** */

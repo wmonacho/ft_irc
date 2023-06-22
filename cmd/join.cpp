@@ -101,11 +101,9 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 			if (channel->getUserList().size() > 0) {
 
 				std::map<const User *, UserAspects> map = channel->getUserList();
-				std::string channel_name_with_wildcard = channel->getName();
 
 				// Create RPL_NAMREPLY string
-				//channel_name_with_wildcard.insert(0, "#");
-				std::string user_list = std::string(":localhost ") + "353 " + user->getNickname() + " = " + channel_name_with_wildcard + " :";
+				std::string user_list = std::string(":localhost ") + "353 " + user->getNickname() + " = " + channel_name + " :";
 				
 				// Loop to append all of the nicknames of all the users present in the channel
 				for (std::map<const User *, UserAspects>::iterator userInChannel = map.begin(); userInChannel != map.end(); userInChannel++) {
@@ -137,7 +135,6 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 			sendMessageToAllUsersInChannel(server_response, server->getChannel(channel_name));
 
 			// We send a RPL_NAMREPLY so the first user of the channel can see he is in the channel
-			//channel_name.insert(0, "#");
 			std::string user_list = std::string(":localhost ") + "353 " + user->getNickname() + " = " + channel_name + " :" + user->getNickname() + "\r\n";
 			send(user->getSocket(), user_list.c_str(), user_list.size(), 0);
 		}

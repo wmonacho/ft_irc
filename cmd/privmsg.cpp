@@ -103,10 +103,8 @@ std::string	err_tooManyTargets(std::vector<std::string> &arg, std::vector<std::s
 
 bool	cmd::privMsgInChannel(std::vector<std::string> &arg, Server *server, User *user, int messagePosInt) {
 
-	//arg[1].erase(0, 1);
 	if (server->channelAlreadyExist(arg[1])) {
 		Channel *channel = server->getChannel(arg[1]);
-		//arg[1].insert(0, "#");
 		rebuildMessage(arg, messagePosInt);
 		std::string message = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + arg[0] + " " + arg[1] + " " + arg[2] + "\r\n";
 		sendMessageToOtherUsersInChannel(message, channel, user);

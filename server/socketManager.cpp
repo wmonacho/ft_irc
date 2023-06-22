@@ -5,7 +5,6 @@
 
 void    Server::startServer() {
 
-	// We create a socket for client/server communication
 	int             connectionStatus, pollReturn, socketID;
 	int             nfds = 1;
 	int             currentSize = 0;
@@ -19,11 +18,8 @@ void    Server::startServer() {
 	// Set the first struct of the array to the listening socket
 	fds[0].fd = this->_socketfd;
 	fds[0].events = POLLIN;
- 
-	// BOT CONNECTION CALL
-		// le bot fait un connect(), donc on agit comme un client, on va alors passer dans le "if (fds[socketID].fd == this->_socketfd)" pour se connecter
 
-	// This is the main loop which implements poll() : we detect if the socket is connecting or connected and act in consequence
+	// The main loops implements poll() : we detect if the socket is connecting or connected and act in consequence
 	do {
 		pollReturn = poll(fds, nfds, -1);
 		if (pollReturn < 0) {
@@ -37,12 +33,6 @@ void    Server::startServer() {
 		// We set the currentSize to the number of sockets in our pollfd array
 		currentSize = nfds;
 		for (socketID = 0; socketID < currentSize; socketID++) {
-			// revents should be POLLIN 
-			// if (fds[socketID].revents != POLLIN) {
-			//     std::cerr << "Error: revents: " << fds[socketID].revents << std::endl;
-			//     endOfServer = true;
-			//     break ;
-			// }
 			// If it's a connecting socket we accept the connection and add it to the socket pool (fds[nfds])
 			if (fds[socketID].fd == this->_socketfd) {
 				connectionStatus = acceptNewConnection(fds, nfds);
@@ -130,10 +120,8 @@ int Server::verifyClientAndServerResponse(struct pollfd fds) {
 	// This function parse the buffer to find the username and nickname of the user who connected to the server
 	// and it creates a new user in the server's users_list
 	server_response_for_connection = createServerResponseForConnection(fds.fd, userInfo);
-	if (server_response_for_connection.empty()) {
-		std::cerr << "Error: error while creating server response" << std::endl;
+	if (server_response_for_connection.empty())
 		return (1);
-	}
 
 	// Finally we send back the server response to confirm the connection of the user
 	send(fds.fd, server_response_for_connection.c_str(), server_response_for_connection.size(), 0);
@@ -243,7 +231,7 @@ bool Server::getClientInformationsOnConnection(struct pollfd fds, Server::userCo
 			std::cout << "DEBUG NC ==> " << nickCheck << std::endl;
 			std::cout << "DEBUG UC ==> " << userCheck << std::endl;
 			if (passCheck == true && nickCheck == true && userCheck == true) {
-				std::cout << "== ALL DATA RETRIEVED ==" << std::endl;
+				std::cout << "== ALL CONNECTION INFORMATIONS RETRIEVED ==" << std::endl;
 				break ;
 			}
 		}
@@ -271,8 +259,8 @@ void    Server::createNewUserAtConnection(std::string nickname, std::string user
 std::string Server::createServerResponseForConnection(int socket, Server::userConnectionRegistration *userInfo) {
 
 	if (userInfo->password != this->_password) {
-		std::cerr << "Error: client sent wrong password" << std::endl;
-		return NULL;
+		std::cerr << "Error: client sent a wrong password to access the server" << std::endl;
+		return "";
 	}
 
     createNewUserAtConnection(userInfo->nickName, userInfo->userName, socket);
@@ -287,33 +275,45 @@ std::string Server::createServerResponseForConnection(int socket, Server::userCo
 
 int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bool closeConnection) {
 
-	char    buffer[512];
-	int     recvReturn;
-	User	*user;
+	char		buffer[512];
+	int			recvReturn;
+	User		*user;
+
+	Server::clientData *clientData = getClientDataArray();
+
+	clientData = &clientData[socketID];
 
 	closeConnection = false;
 	memset(buffer, 0, sizeof(buffer));
-	recvReturn = recv(fds[socketID].fd, buffer, sizeof(buffer), MSG_DONTWAIT);
-	if (recvReturn < 0) {
-		if (errno != EWOULDBLOCK) {
-			std::cerr << "Error: recv() failed" << std::endl;
-			closeConnection = true;
+	while (1) {
+		recvReturn = recv(fds[socketID].fd, buffer, sizeof(buffer), MSG_DONTWAIT);
+		if (recvReturn < 0) {
+			if (errno != EWOULDBLOCK) {
+				std::cerr << "Error: recv() failed" << std::endl;
+				closeConnection = true;
+			}
+			return (closeConnection);
 		}
-		return (closeConnection);
-	}
-	if (recvReturn == 0) {
-		std::cerr << "Connection closed" << std::endl;
-		closeConnection = true;
-		return (closeConnection);
+		if (recvReturn == 0) {
+			std::cerr << "Connection closed for socket " << socketID << std::endl;
+			closeConnection = true;
+			return (closeConnection);
+		}
+		clientData->dataString += buffer;
+		if (clientData->dataString.find("\n") != std::string::npos)
+			break ;
 	}
 
 	// Display for testing purpose
-	std::cout << "** =============== **" << std::endl;
-	// Affichage sur le serveur
-	std::cout << "Buffer from socket " << socketID << " : " << buffer << std::endl;
+	std::cout << "** ======= SOCKET " << socketID <<  " ======== **" << std::endl;
+	std::cout << "Buffer " << " : " << buffer << std::endl;
 
+	// We handle the command here
 	cmd command;
 	user = this->getUserBySocket(fds[socketID].fd);
-	command.whichCmd(buffer, this, user);
+	command.whichCmd(clientData->dataString.c_str(), this, user);
+
+	// We clear the dataString for the next data that will be in that socket and we get back to the poll() loop
+	clientData->dataString.clear();
 	return (closeConnection);
 }
