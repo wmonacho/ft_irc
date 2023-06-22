@@ -114,16 +114,6 @@ int Server::verifyClientAndServerResponse(struct pollfd fds) {
 		return (1);
 	}
 
-	//	tentative pour ne pas avoir 2 user avec le meme nickname 
-	//	(POSE ICI LE SERV S'ARRETE SI 2 USERS AVEC LE MEME NICK REJOIN) CE QU'ON VEUT PAS
-	//if (this->nickAlreadyExist(userInfo->nickName))
-	//{
-	//	// 462 ERR_ALREADYREGISTRED
-	//	std::string error = std::string(":localhost ") + "462" + " :Unauthorized command (already registered)" + "\r\n";
-	//	send(this->getUser(userInfo->nickName)->getSocket(), error.c_str(), error.size(), 0);
-	//	return (1);
-	//}
-
 	// This function parse the buffer to find the username and nickname of the user who connected to the server
 	// and it creates a new user in the server's users_list
 	server_response_for_connection = createServerResponseForConnection(fds.fd, userInfo);
