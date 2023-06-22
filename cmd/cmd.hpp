@@ -27,7 +27,7 @@ public:
 	bool			parseUser(std::string str, Server *server);
 	bool			parsePart(std::string str, Server *server, User *user);
 	bool			parseTopic(std::string str, Server *server, User *user);
-	bool			parseQuit(std::string str, User *user);
+	bool			parseQuit(Server *server, std::string str, User *user);
 	bool			parseMode(std::string str, Server *server, User *user);
 	bool			parseJoin(std::string str, Server *server, User *user);
 	bool			parseKick(std::string str, Server *server, User *user);

@@ -89,7 +89,8 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 						//execute mode i
 						chan->setInviteOnly(true);
 						// 324 RPL_CHANNELMODEIS
-						send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
+						//send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
+						this->sendMessageToAllUsersInChannel(rpl_channel_mode_is, chan);
 						break;
 				  case 107:
 						//execute mode k
@@ -102,7 +103,7 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 						if (i + 2 < splitArg.size()) {
 							chan->setPassword(splitArg[i + 2]);
 							// 324 RPL_CHANNELMODEIS
-							send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
+							this->sendMessageToAllUsersInChannel(rpl_channel_mode_is, chan);
 						}
 						else
 						{
@@ -115,7 +116,7 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 				  case 108:
 						chan->setUserLimit(atoi(splitArg[i + 2].c_str()));
 						// 324 RPL_CHANNELMODEIS
-						send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
+						this->sendMessageToAllUsersInChannel(rpl_channel_mode_is, chan);
 						break;
 					  	//execute mode L
 				  case 111:
@@ -137,7 +138,7 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 					  	//execute mode t
 					  	chan->setTopicAdmin(true);
 						// 324 RPL_CHANNELMODEIS
-						send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
+						this->sendMessageToAllUsersInChannel(rpl_channel_mode_is, chan);
 					  	break;
 		}
 	}
@@ -152,19 +153,19 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 					  	//execute mode i
 					  	chan->setInviteOnly(false);
 					  	// 324 RPL_CHANNELMODEIS
-						send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
+						this->sendMessageToAllUsersInChannel(rpl_channel_mode_is, chan);
 					  break;
 				  case 107:
 					  	//execute mode k
 					  	chan->setPassword("");
 					  	// 324 RPL_CHANNELMODEIS
-						send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
+						this->sendMessageToAllUsersInChannel(rpl_channel_mode_is, chan);
 					  break;
 				  case 108:
 					  	//execute mode L
 					  	chan->setUserLimit(-1);
 					  	// 324 RPL_CHANNELMODEIS
-						send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
+						this->sendMessageToAllUsersInChannel(rpl_channel_mode_is, chan);
 					  break;
 				  case 111:
 					  	//execute mode o
@@ -184,7 +185,7 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 				  case 116:
 					  	chan->setTopicAdmin(false);
 					  	// 324 RPL_CHANNELMODEIS
-						send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
+						this->sendMessageToAllUsersInChannel(rpl_channel_mode_is, chan);
 					  break;
 		}
 	}

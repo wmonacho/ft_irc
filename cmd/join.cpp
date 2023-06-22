@@ -16,7 +16,7 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 	{
 		if (channels[i][0] != '#' && channels[i][0] != '&') {
 			// 476	ERR_BADCHANNELMASK
-			std::string error = std::string("localhost :") + "476 " + user->getNickname() + " " + &channels[i][1] + " :Bad Channel Mask" + "\r\n";
+			std::string error = std::string("localhost :") + "476 " + user->getNickname() + " " + channels[i] + " :Bad Channel Mask" + "\r\n";
 			send(user->getSocket(), error.c_str(), error.size(), 0);
 			return false;
 		}
@@ -37,10 +37,17 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
  
 			if (channel->getInviteOnly() && !channel->userInInviteList(user->getNickname())) {
 				// 473    ERR_INVITEONLYCHAN
-			  std::string error = std::string("localhost :") + "473 " + user->getNickname() + " " + channels[i] + " :Cannot join channel (+i)" + "\r\n";
-			  send(user->getSocket(), error.c_str(), error.size(), 0);
-			  continue;
+			  	std::string error = std::string("localhost :") + "473 " + user->getNickname() + " " + channels[i] + " :Cannot join channel (+i)" + "\r\n";
+			  	send(user->getSocket(), error.c_str(), error.size(), 0);
+			  	continue;
 			}
+
+			if (channel->getUserList().find(user) != channel->getUserList().end())
+			{
+				std::cout << "USER ALDREADY ON THIS CHANNEL" << std::endl;
+			}
+			else 
+				std::cout << "USER NOT YET ON THIS CHANNEL" << std::endl;
 
 			if (splitArg.size() < 3 && channel->getPassword() != "") {
 				// 475	ERR_BADCHANNELKEY
@@ -77,7 +84,7 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
  			UserAspects	new_aspects(0);
 
 			server->addUserToChannel(channel_name, user, new_aspects);
-			sendMessageToAllUsersInChannel(server_response, channel);
+			this->sendMessageToAllUsersInChannel(server_response, channel);
 
 			// On envoie le topic s'il existe
 			if (!channel->getTopic().empty()) {
