@@ -131,7 +131,7 @@ std::string Server::getPassword(void)
 	return (this->_password);
 }
 
-std::vector<User>  Server::getUserList(void)
+std::vector<User*>  Server::getUserList(void)
 {
 	return (this->_user_list);
 }
@@ -199,43 +199,43 @@ bool	Server::getChannelUserAdmin(std::string channel_name, User *user)
 
 User*	Server::getUser(std::string user_nickname)
 {
-	for (std::vector<User>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
+	for (std::vector<User*>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
 	{
-		if (it->getNickname() == user_nickname)
-			return (&(*it));
+		if ((*it)->getNickname() == user_nickname)
+			return ((*it));
 	}
 	return (NULL);
 }
 
 User*	Server::getUserWithName(std::string user_name)
 {
-	for (std::vector<User>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
+	for (std::vector<User*>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
 	{
-		if (it->getUsername() == user_name)
-			return (&(*it));
+		if ((*it)->getUsername() == user_name)
+			return ((*it));
 	}
 	return (NULL);
 }
 User*	Server::getUserBySocket(int socket)
 {
-	std::vector<User>::iterator user;
+	std::vector<User*>::iterator user;
 
 	for (user = this->_user_list.begin(); user != this->_user_list.end(); user++) {
-			if (user->getSocket() == socket)
-				return (&(*user));
+			if ((*user)->getSocket() == socket)
+				return ((*user));
 	}
 	return (NULL);
 }
 const User*  Server::getConstUser(std::string user_nickname)
 {
-	for (std::vector<User>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
+	for (std::vector<User*>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
 	{
-		if (it->getNickname() == user_nickname)
-			return (&*it);
+		if ((*it)->getNickname() == user_nickname)
+			return (*it);
 	}
 	//throw une exception si possible a la place de return cette merde
-	std::vector<User>::iterator it = this->_user_list.begin();
-	return (&*it);
+	std::vector<User*>::iterator it = this->_user_list.begin();
+	return (*it);
 }
 
 //il faudra checker si le channel existe avant d'utiliser cette focntion
@@ -308,7 +308,7 @@ void    Server::setPassword(std::string new_password)
 }
 
 // Add a new user to the user_list (std::vector type) of the server
-void    Server::setUserList(User new_user)
+void    Server::setUserList(User *new_user)
 {
 	this->_user_list.push_back(new_user);
 }
@@ -356,7 +356,7 @@ bool    Server::nickAlreadyExist( std::string new_nick )
 {
     for(unsigned int i = 0; i < this->_user_list.size(); i++)
     {
-        if (this->_user_list[i].getNickname() == new_nick)
+        if (this->_user_list[i]->getNickname() == new_nick)
             return (true);
     }
     return (false);
@@ -366,7 +366,7 @@ bool    Server::usernameAlreadyExist( std::string new_username )
 {
 	for(unsigned int i = 0; i < this->_user_list.size(); i++)
 	{
-		if (this->_user_list[i].getUsername() == new_username)
+		if (this->_user_list[i]->getUsername() == new_username)
 			return (true);
 	}
 	return (false);

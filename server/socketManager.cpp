@@ -258,7 +258,7 @@ void    Server::createNewUserAtConnection(std::string nickname, std::string user
 	
 
     // Then we add the new user which connected to the server to the USER_LIST of the server
-    this->setUserList(new_user);
+    this->setUserList(&new_user);
                                                     
     return ;
 }
@@ -266,10 +266,10 @@ void    Server::createNewUserAtConnection(std::string nickname, std::string user
 std::string Server::createServerResponseForConnection(int socket, Server::userConnectionRegistration *userInfo) {
 
 	bool	userWithSameNicknameExists = false;
-	std::vector<User> userVector = this->getUserList();
+	std::vector<User*> userVector = this->getUserList();
 
-	for (std::vector<User>::iterator it = userVector.begin(); it != userVector.end(); it++) {
-		if (it->getNickname() == userInfo->nickName)
+	for (std::vector<User*>::iterator it = userVector.begin(); it != userVector.end(); it++) {
+		if ((*it)->getNickname() == userInfo->nickName)
 			userWithSameNicknameExists = true;
 	}
 
