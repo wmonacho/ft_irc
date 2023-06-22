@@ -374,7 +374,7 @@ bool    Server::usernameAlreadyExist( std::string new_username )
 
 
 //Cree un Username unique pour qu'aucun User ne possede un username par defaut identique
-void	Server::createRandomUsername( User user )
+void	Server::createRandomUsername( User *user )
 {
 	int i = 1;
 	int j = 0;
@@ -390,7 +390,7 @@ void	Server::createRandomUsername( User user )
 		id = str.str();
 		 j++;
 	}
-	user.setUsername("Guest" + id);
+	user->setUsername("Guest" + id);
 }
 
 bool	Server::userInChannel(std::string channel_name, const User *user)

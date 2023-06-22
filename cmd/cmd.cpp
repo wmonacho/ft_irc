@@ -125,7 +125,7 @@ bool    cmd::parseUser(std::string str, Server *server)
 	if (splitArg.size() > 4 && (splitArg[2] == "0" && splitArg[3] == "*"))
 	{
 		//setuser
-		User    new_user;
+		User    *new_user = new User;
 
 		server->createRandomUsername(new_user);
 		std::string real_name;
@@ -133,8 +133,8 @@ bool    cmd::parseUser(std::string str, Server *server)
 		{
 			real_name += splitArg[i];
 		}
-		new_user.setRealname(real_name);
-		server->setUserList(&new_user);
+		new_user->setRealname(real_name);
+		server->setUserList(new_user);
 		std::cout << "hello from parseUser, it's working bitch" << std::endl;
 	}
 	return (true);

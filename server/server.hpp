@@ -123,7 +123,7 @@ class Server {
 
 		// Utility functions
 		void									startServer();
-		void									createRandomUsername( User user );
+		void									createRandomUsername( User *user );
 		bool									passwordAlreadyRegistred( void );
 		bool									nickAlreadyExist( std::string new_nick );
 		bool									channelAlreadyExist(std::string channel_name);

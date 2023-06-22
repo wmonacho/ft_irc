@@ -250,15 +250,15 @@ bool Server::getClientInformationsOnConnection(struct pollfd fds, Server::userCo
 void    Server::createNewUserAtConnection(std::string nickname, std::string username, int socket) {
 
 	// We create a new user and set his nickname and realname thanks to the message the client sent
-	User new_user;
+	User *new_user = new User;
 
-    new_user.setNickname(nickname);
-    new_user.setUsername(username);
-    new_user.setSocket(socket);
+    new_user->setNickname(nickname);
+    new_user->setUsername(username);
+    new_user->setSocket(socket);
 	
 
     // Then we add the new user which connected to the server to the USER_LIST of the server
-    this->setUserList(&new_user);
+    this->setUserList(new_user);
                                                     
     return ;
 }
