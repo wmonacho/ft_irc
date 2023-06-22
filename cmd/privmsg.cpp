@@ -106,7 +106,7 @@ bool	cmd::privMsgInChannel(std::vector<std::string> &arg, Server *server, User *
 	if (server->channelAlreadyExist(arg[1])) {
 		Channel *channel = server->getChannel(arg[1]);
 		rebuildMessage(arg, messagePosInt);
-		std::string message = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + arg[0] + " " + arg[1] + " " + arg[2] + "\r\n";
+		std::string message = ":" + user->getNickname() + "!" + user->getUsername() + "@localhost " + arg[0] + " " + arg[1] + " " + arg[2] + "\r\n";
 		sendMessageToOtherUsersInChannel(message, channel, user);
 		return true ;
 	}
@@ -128,7 +128,7 @@ bool	cmd::privMsgToDirectUser(std::vector<std::string> &arg, Server *server, Use
 		return false;
 	}
 	rebuildMessage(arg, messagePosInt);
-	std::string message = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + arg[0] + " " + arg[1] + " " + arg[messagePosInt] + "\r\n";
+	std::string message = ":" + user->getNickname() + "!" + user->getUsername() + "@localhost " + arg[0] + " " + arg[1] + " " + arg[messagePosInt] + "\r\n";
 	std::string rpl_away = std::string(":localhost ") + "401" + " " + arg[0] + " " + user->getNickname() + " :Message sent" + "\r\n";
 	send(dest->getSocket(), message.c_str(), message.size(), 0);
 	send(user->getSocket(), rpl_away.c_str(), rpl_away.size(), 0);

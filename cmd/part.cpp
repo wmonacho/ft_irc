@@ -39,7 +39,7 @@ bool	cmd::parsePart(std::string str, Server *server, User *user)
 			send(user->getSocket(), error.c_str(), error.size(), 0);
 			return false;
 		}
-		std::string part_message = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + splitArg[0] + " ";
+		std::string part_message = ":" + user->getNickname() + "!" + user->getUsername() + "@localhost " + splitArg[0] + " ";
 		part_message.append(*it_copy);
 		if (!splitArg[2].empty())
 			part_message.append(" :" + splitArg[2]);

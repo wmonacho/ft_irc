@@ -100,7 +100,7 @@ bool    cmd::parseNick(std::string str, Server *server, User *user) //recup le U
 	}
 
 	// On envoie la numeric_reply pour confirmer le changement et on fait le changement sur le serveur  
-	std::string nick_message = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + splitArg[0] + " " + splitArg[1] + "\r\n";
+	std::string nick_message = ":" + user->getNickname() + "!" + user->getUsername() + "@localhost " + splitArg[0] + " " + splitArg[1] + "\r\n";
 	send(user->getSocket(), nick_message.c_str(), nick_message.size(), 0);
 	if (splitArg[1].find("\n") != std::string::npos) {
 		size_t pos = splitArg[1].find("\n");
@@ -243,9 +243,9 @@ std::string    cmd::createServerMessage(User *user, std::string numReply, std::v
 	std::string tmp;
 
 	if (numReply.empty())
-		tmp = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + splitArg[0] + " " + splitArg[1] + "\r\n";
+		tmp = ":" + user->getNickname() + "!" + user->getUsername() + "@localhost " + splitArg[0] + " " + splitArg[1] + "\r\n";
 	else
-		tmp = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + numReply + " " + splitArg[0] + " " + splitArg[1] + "\r\n";
+		tmp = ":" + user->getNickname() + "!" + user->getUsername() + "@localhost " + numReply + " " + splitArg[0] + " " + splitArg[1] + "\r\n";
 	std::cout << "SERVER RESPONSE  " << tmp;
 	return (tmp);
 }
