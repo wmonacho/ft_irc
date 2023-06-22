@@ -36,7 +36,6 @@ void    Server::startServer() {
 			// If it's a connecting socket we accept the connection and add it to the socket pool (fds[nfds])
 			if (fds[socketID].fd == this->_socketfd) {
 				connectionStatus = acceptNewConnection(fds, nfds);
-				std::cout << "CONNECTION STATSU ==  " << connectionStatus << std::endl;
 				if (connectionStatus == -1)
 					endOfServer = true;
 				else
