@@ -27,7 +27,7 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 	for (size_t i = 0; i < channels.size(); i++) {
 
 		std::string channel_name = channels[i];
-		std::string server_response = ":" + user->getNickname() + "!" + user->getUsername() + "@locahost " + splitArg[0] + " " + channels[i] + "\r\n";
+		std::string server_response = ":" + user->getNickname() + "!" + user->getUsername() + "@localhost " + splitArg[0] + " " + channels[i] + "\r\n";
 		
 		// Cas 1 : le channel existe, donc y ajoute le user et on envoie le message de "bienvenue" a tout le monde
 		// + on envoie le topic (s'il existe) et la liste des USER 
@@ -97,6 +97,11 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 				send(user->getSocket(), topic.c_str(), topic.size(), 0);
 			}
 
+			//if (server->getChannelUserAdmin(channel_name, user))
+			//	std::cout << user->getNickname() << " is Admin" << std::endl;
+			//else
+			//	std::cout << user->getNickname() << " is not Admin" << std::endl;
+
 			// User list : we send a RPL_NAMREPLY
 			if (channel->getUserList().size() > 0) {
 
@@ -137,6 +142,11 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 			// We send a RPL_NAMREPLY so the first user of the channel can see he is in the channel
 			std::string user_list = std::string(":localhost ") + "353 " + user->getNickname() + " = " + channel_name + " :" + user->getNickname() + "\r\n";
 			send(user->getSocket(), user_list.c_str(), user_list.size(), 0);
+
+			//if (server->getChannelUserAdmin(channel_name, user))
+			//	std::cout << user->getNickname() << " is Admin" << std::endl;
+			//else
+			//	std::cout << user->getNickname() << " is not Admin" << std::endl;
 		}
 	}
 	return true;
