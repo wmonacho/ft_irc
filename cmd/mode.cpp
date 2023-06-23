@@ -76,6 +76,12 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 			}
 	}
 
+	// Check userAdmin ::
+	if (!server->getChannelUserAdmin(splitArg[1], user)) {
+		// 482    ERR_CHANOPRIVSNEEDED
+        std::string error = std::string(":localhost ") + "482 " + user->getNickname() + " " +  splitArg[1] + " :You're not channel operator" + "\r\n";
+		send(user->getSocket(), error.c_str(), error.size(), 0);
+	}
 	//execute les modes +
 	//il restera a modifier les fonctions affectees par les modes
 	Channel *chan = server->getChannel(splitArg[1]);

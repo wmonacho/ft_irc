@@ -125,7 +125,7 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 		// Cas 2 : le channel n'existe pas, il faut donc le creer dans notre serveur et y ajouter l'utilisateur
 		if (!server->channelAlreadyExist(channel_name)) {
 
-			UserAspects	new_aspects(0);
+			UserAspects	new_aspects(1);
 			Channel *channel = new Channel(channel_name);
 
 			server->createNewChannel(channel_name, channel);

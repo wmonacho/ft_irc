@@ -96,7 +96,6 @@ int Server::acceptNewConnection(struct pollfd *fds, int nfds) {
 		}
 		nfds++;
 	} while (newSocket != -1);
-
 	return (nfds);
 }
 
