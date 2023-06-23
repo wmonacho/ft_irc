@@ -35,7 +35,7 @@ class Server {
 		socklen_t   _servLen;
 		socklen_t   _clientLen;
 		std::string _password;
-		std::vector<User*>	_user_list;
+		std::vector<User>	_user_list;
 		struct sockaddr_in  _servAddr;
 		struct sockaddr_in  _clientAddr;
 		std::map<std::string, Channel*>  _channels;
@@ -68,7 +68,7 @@ class Server {
 		void   	                                setNewSocket(int fd);
 		void   	                                setServAddr(int port);
 		void   	                                setValRead(ssize_t value);
-		void   	                                setUserList(User *new_user);
+		void   	                                setUserList(User new_user);
 		void   	                                setPassword(std::string new_password);
 		void				                 	setUserUsername(User user, std::string new_username);
 		void				    	            setUserNickname(User user, std::string new_nickname);
@@ -102,7 +102,7 @@ class Server {
 		const User* 	                        getConstUser(std::string user_nickname);
 		const User*                             getChannelUser(std::string channel_name, std::string user_name);
 		const User*	                            getChannelUser(std::string channel_name, const User *user);
-		std::vector<User*>							getUserList(void);
+		std::vector<User>							getUserList(void);
 		const std::map<std::string, Channel*>&			getMap(void); //read only
 		const std::map<const User*, UserAspects>&   getChannelUserList(std::string channel_name);
 		std::map<std::string, Channel*>::iterator	getItMap(void);
@@ -123,7 +123,7 @@ class Server {
 
 		// Utility functions
 		void									startServer();
-		void									createRandomUsername( User *user );
+		void									createRandomUsername( User user );
 		bool									passwordAlreadyRegistred( void );
 		bool									nickAlreadyExist( std::string new_nick );
 		bool									channelAlreadyExist(std::string channel_name);
@@ -138,6 +138,7 @@ class Server {
 		void									addUserToChannelInviteList(std::string channel_name, std::string new_guest);
 		bool									userInChannelInviteList(std::string channel_name, std::string new_guest);
 		void									deleteAllChannel();
+		void									deleteUserFromUserList(User user);
 };
 
 #endif

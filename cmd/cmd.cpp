@@ -125,7 +125,7 @@ bool    cmd::parseUser(std::string str, Server *server)
 	if (splitArg.size() > 4 && (splitArg[2] == "0" && splitArg[3] == "*"))
 	{
 		//setuser
-		User    *new_user = new User;
+		User    new_user;
 
 		server->createRandomUsername(new_user);
 		std::string real_name;
@@ -133,7 +133,7 @@ bool    cmd::parseUser(std::string str, Server *server)
 		{
 			real_name += splitArg[i];
 		}
-		new_user->setRealname(real_name);
+		new_user.setRealname(real_name);
 		server->setUserList(new_user);
 		std::cout << "hello from parseUser, it's working bitch" << std::endl;
 	}
@@ -142,12 +142,6 @@ bool    cmd::parseUser(std::string str, Server *server)
 
 void cmd::whichCmd(std::string str, Server *server, User *user)
 {
-
-	std::vector<User*> user_list = server->getUserList();
-	for (unsigned int i = 0; i < user_list.size(); i++) {
-			std::cerr << "User_list :" << user_list[i]->getNickname() << std::endl;
-	}
-
 
 	std::vector<std::string> arg = splitString(str, " ");
 	size_t pos = str.find("\n");
