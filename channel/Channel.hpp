@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 13:57:00 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/06/20 14:37:52 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/06/23 13:59:38 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,6 +66,7 @@ class Channel
 		bool	userInChannel(const User *user);
 		void	kickUserFromChannel(const User *user);
 		void	changeUserAdmin(const User* user, bool i);
+		void	clearUserList();
 		
 		//INVITE LIST
 		bool   	userInInviteList(std::string guest);

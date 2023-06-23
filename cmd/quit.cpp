@@ -14,7 +14,6 @@ bool	cmd::parseQuit(Server *server, std::string str, User * user)
 	}
 
 	server->deleteUserFromUserList(*user);
-
 	std::cerr << "QUIT COMMAND" << std::endl;
 	return true;
 }

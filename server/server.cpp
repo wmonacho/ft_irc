@@ -462,6 +462,7 @@ bool	Server::userInChannelInviteList(std::string channel_name, std::string new_g
 void	Server::deleteAllChannel()
 {
 	for (std::map<std::string, Channel*>::iterator it = this->_channels.begin(); it != this->_channels.end(); ++it) {
+		it->second->clearUserList();
 		delete it->second; // Supprimez l'objet Channel
 	}
 	this->_channels.clear();

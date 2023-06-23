@@ -97,11 +97,6 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 				send(user->getSocket(), topic.c_str(), topic.size(), 0);
 			}
 
-			//if (server->getChannelUserAdmin(channel_name, user))
-			//	std::cout << user->getNickname() << " is Admin" << std::endl;
-			//else
-			//	std::cout << user->getNickname() << " is not Admin" << std::endl;
-
 			// User list : we send a RPL_NAMREPLY
 			if (channel->getUserList().size() > 0) {
 
@@ -135,7 +130,10 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 
 			server->createNewChannel(channel_name, channel);
 			if (!server->getChannel(channel_name))
+			{
+				delete	channel;
 				return false;
+			}
 			server->addUserToChannel(channel_name, user, new_aspects);
 			sendMessageToAllUsersInChannel(server_response, server->getChannel(channel_name));
 
@@ -143,10 +141,6 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 			std::string user_list = std::string(":localhost ") + "353 " + user->getNickname() + " = " + channel_name + " :" + user->getNickname() + "\r\n";
 			send(user->getSocket(), user_list.c_str(), user_list.size(), 0);
 
-			//if (server->getChannelUserAdmin(channel_name, user))
-			//	std::cout << user->getNickname() << " is Admin" << std::endl;
-			//else
-			//	std::cout << user->getNickname() << " is not Admin" << std::endl;
 		}
 	}
 	return true;

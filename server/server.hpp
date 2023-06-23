@@ -107,7 +107,7 @@ class Server {
 		const std::map<const User*, UserAspects>&   getChannelUserList(std::string channel_name);
 		std::map<std::string, Channel*>::iterator	getItMap(void);
 		userConnectionRegistration*					getUserConnectionRegistrationStruct(void);
-		Server::clientData*                           getClientDataArray(void);
+		Server::clientData*                         getClientDataArray(void);
 
 		// Socket connection and user registration for "socketManager.cpp"
 		int										verifyClientAndServerResponse(struct pollfd fds);
