@@ -19,6 +19,8 @@ void    Server::startServer() {
 	fds[0].fd = this->_socketfd;
 	fds[0].events = POLLIN;
 
+	Server::clientData *clientData = getClientDataArray();
+
 	// The main loops implements poll() : we detect if the socket is connecting or connected and act in consequence
 	do {
 		pollReturn = poll(fds, nfds, -1);
@@ -43,9 +45,9 @@ void    Server::startServer() {
 			}
 			// If it's already a connected socket, we try to receive the data
 			else {
-				closeConnection = retrieveDataFromConnectedSocket(socketID, fds, closeConnection);
-				if (closeConnection) {
-					std::cerr << "Closing connection for socket " << socketID << std::endl;
+				closeConnection = retrieveDataFromConnectedSocket(socketID, fds, closeConnection, &clientData[socketID]);
+				if (closeConnection == true) {
+					std::cerr << "/!!\\ Closing connection for socket " << socketID << " /!!\\" << std::endl;
 					close(fds[socketID].fd);
 					fds[socketID].fd = -1;
 				}
@@ -72,7 +74,6 @@ int Server::acceptNewConnection(struct pollfd *fds, int nfds) {
 
 	int newSocket;
 	int errorStatus = -1;
-	int	error;
 
 	do {
 		newSocket = accept(this->_socketfd, NULL, NULL);
@@ -81,50 +82,41 @@ int Server::acceptNewConnection(struct pollfd *fds, int nfds) {
 				std::cerr << "Error: accept() failed" << std::endl;
 				nfds = errorStatus;
 			}
-			std::cout << "Socket " << nfds << " is already connected" << std::endl;
+			// std::cout << "Socket " << nfds << " is already connected" << std::endl;
 			break ;
 		}
+		// This is a new socket so we add it to our socket pool
 		fds[nfds].fd = newSocket;
 		fds[nfds].events = POLLIN;
-		error = verifyClientAndServerResponse(fds[nfds]);
-		if (error == 1)
-			return (-1);
-		if (error == 2) {
-			std::string errorSameUsername = "Error: this username is already used, try a new one\r\n";
-			send(fds[nfds].fd, errorSameUsername.c_str(), errorSameUsername.size(), 0);
-			return nfds;
-		}
+		std::cout << "--A new socket is now connected to the server--" << std::endl;
 		nfds++;
 	} while (newSocket != -1);
 	return (nfds);
 }
 
-int Server::verifyClientAndServerResponse(struct pollfd fds) {
+int Server::verifyClientAndServerResponse(struct pollfd fds, Server::clientData *clientData) {
 
 	// We retrieve the informations sent by the client to create the new user which connected to our server
 	// and we send back the RPL_WELCOME
 
-	Server::userConnectionRegistration *userInfo = getUserConnectionRegistrationStruct();
+	Server::userConnectionRegistration *userInfo = &clientData->userConnectionRegistration;
 	std::string server_response_for_connection;
 
-	// We retrieve the data from the socket in buffer
-	if (getClientInformationsOnConnection(fds, userInfo) == false) {
-		std::cerr << "Error: user information on connection could't be handled" << std::endl;
-		return (1);
-	}
+	// We retrieve the connection informations from the socket and set flags if we find them
+	if (getClientInformationsOnConnection(fds, userInfo, clientData->dataString) == false)
+		return (0);
 
-	// This function parse the buffer to find the username and nickname of the user who connected to the server
-	// and it creates a new user in the server's users_list
+	// We create the string for the RPL_WELCOME and make a few checks (correct password and if the nickanme is not currently used)
 	server_response_for_connection = createServerResponseForConnection(fds.fd, userInfo);
 	if (server_response_for_connection.empty())
-		return (2);
+		return (0);
 
 	// Finally we send back the server response to confirm the connection of the user
 	send(fds.fd, server_response_for_connection.c_str(), server_response_for_connection.size(), 0);
-	return (0);
+	return (1);
 }
 
-bool	Server::findPassInBuffer(char *buffer, Server::userConnectionRegistration *userInfo) {
+bool	Server::findPassInBuffer(const char *buffer, Server::userConnectionRegistration *userInfo) {
 
 	char	pass[] = "PASS";
 
@@ -148,7 +140,7 @@ bool	Server::findPassInBuffer(char *buffer, Server::userConnectionRegistration *
 	return false;
 }
 
-bool	Server::findNickInBuffer(char *buffer, Server::userConnectionRegistration *userInfo) {
+bool	Server::findNickInBuffer(const char *buffer, Server::userConnectionRegistration *userInfo) {
 
 	char	nick[] = "NICK";
 
@@ -172,7 +164,7 @@ bool	Server::findNickInBuffer(char *buffer, Server::userConnectionRegistration *
 	return false;
 }
 
-bool	Server::findUserInBuffer(char *buffer, Server::userConnectionRegistration *userInfo) {
+bool	Server::findUserInBuffer(const char *buffer, Server::userConnectionRegistration *userInfo) {
 
 	char	user[] = "USER";
 
@@ -196,44 +188,25 @@ bool	Server::findUserInBuffer(char *buffer, Server::userConnectionRegistration *
 	return false;
 }
 
-bool Server::getClientInformationsOnConnection(struct pollfd fds, Server::userConnectionRegistration *userInfo) {
+bool Server::getClientInformationsOnConnection(struct pollfd fds, Server::userConnectionRegistration *userInfo, std::string data) {
 
-	bool	passCheck = false;
-	bool	nickCheck = false;
-	bool	userCheck = false;
-	int		bufferSize = 512;
-	char	buffer[bufferSize];
-
-	memset(buffer, 0, sizeof(char) * (bufferSize - 1));
-
-	while (1) {
-		int bytesRead = recv(fds.fd, buffer, bufferSize, 0);
-		if (bytesRead == 0) {
-			std::cerr << "Error: connection closed" << std::endl;
-			return false;
-		}
-		else if (bytesRead < 0) {
-			std::cerr << "Error: recv() failed" << std::endl;
-			return false;
-		}
-		else {
-			if (passCheck == false)
-				passCheck = findPassInBuffer(buffer, userInfo);
-			if (nickCheck == false)
-				nickCheck = findNickInBuffer(buffer, userInfo);
-			if (userCheck == false)
-				userCheck = findUserInBuffer(buffer, userInfo);
-			std::cout << "DEBUG PC ==> " << passCheck << std::endl;
-			std::cout << "DEBUG NC ==> " << nickCheck << std::endl;
-			std::cout << "DEBUG UC ==> " << userCheck << std::endl;
-			if (passCheck == true && nickCheck == true && userCheck == true) {
-				std::cout << "== ALL CONNECTION INFORMATIONS RETRIEVED ==" << std::endl;
-				break ;
-			}
-		}
+	(void)fds;
+	if (userInfo->passCheck == false)
+		userInfo->passCheck = findPassInBuffer(data.c_str(), userInfo);
+	if (userInfo->nickCheck == false)
+		userInfo->nickCheck = findNickInBuffer(data.c_str(), userInfo);
+	if (userInfo->userCheck == false)
+		userInfo->userCheck = findUserInBuffer(data.c_str(), userInfo);
+	std::cout << "DEBUG PC ==> " << userInfo->passCheck << std::endl;
+	std::cout << "DEBUG NC ==> " << userInfo->nickCheck << std::endl;
+	std::cout << "DEBUG UC ==> " << userInfo->userCheck << std::endl;
+	if (userInfo->passCheck == true && userInfo->nickCheck == true && userInfo->userCheck == true) {
+		
+		std::cout << "== ALL CONNECTION INFORMATIONS RETRIEVED ==" << std::endl;
+		return true;
 	}
 
-	return true;
+	return false;
 }
 
 void    Server::createNewUserAtConnection(std::string nickname, std::string username, int socket) {
@@ -283,19 +256,18 @@ std::string Server::createServerResponseForConnection(int socket, Server::userCo
 /*  CONNECTED SOCKET FUNCTIONS  */
 /********************************/
 
-int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bool closeConnection) {
+int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bool closeConnection, Server::clientData *clientData) {
 
 	char		buffer[512];
 	int			recvReturn;
+	int			connectionDone;
 	User		*user;
 
-	Server::clientData *clientData = getClientDataArray();
-
-	clientData = &clientData[socketID];
+	// clientData = &clientData[socketID];
 
 	closeConnection = false;
-	memset(buffer, 0, sizeof(buffer));
 	while (1) {
+		memset(buffer, 0, sizeof(buffer));
 		recvReturn = recv(fds[socketID].fd, buffer, sizeof(buffer), MSG_DONTWAIT);
 		if (recvReturn < 0) {
 			if (errno != EWOULDBLOCK) {
@@ -309,21 +281,37 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
 			closeConnection = true;
 			return (closeConnection);
 		}
+
 		clientData->dataString += buffer;
-		if (clientData->dataString.find("\n") != std::string::npos)
-			break ;
+
+		// If we get a correct request, we can use it, otherwise we try to receive what is left
+		if (!clientData->dataString.empty() && (clientData->dataString.find("\n") != std::string::npos)) {
+
+			if (clientData->clientIsConnected == false) {
+				connectionDone = verifyClientAndServerResponse(fds[socketID], clientData);
+				if (connectionDone == 1)
+					clientData->clientIsConnected = true;
+				else {
+					clientData->clientIsConnected = false;
+					clientData->dataString.clear();
+				}
+			}
+
+			if (clientData->clientIsConnected == true) {
+
+				// Display for testing purpose
+				std::cout << "------======= SOCKET " << socketID <<  " ========------" << std::endl;
+				std::cout << "Buffer " << " : " << clientData->dataString << std::endl;
+
+				// We handle the command here
+				cmd command;
+				user = this->getUserBySocket(fds[socketID].fd);
+				command.whichCmd(clientData->dataString.c_str(), this, user);
+
+				// We clear the dataString for the next data that will be in that socket and we get back to the poll() loop
+				clientData->dataString.clear();
+				return (closeConnection);
+			}
+		}
 	}
-
-	// Display for testing purpose
-	std::cout << "** ======= SOCKET " << socketID <<  " ======== **" << std::endl;
-	std::cout << "Buffer " << " : " << clientData->dataString << std::endl;
-
-	// We handle the command here
-	cmd command;
-	user = this->getUserBySocket(fds[socketID].fd);
-	command.whichCmd(clientData->dataString.c_str(), this, user);
-
-	// We clear the dataString for the next data that will be in that socket and we get back to the poll() loop
-	clientData->dataString.clear();
-	return (closeConnection);
 }
