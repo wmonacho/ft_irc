@@ -76,6 +76,13 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 			}
 	}
 
+	// Check userAdmin ::
+	if (!server->getChannelUserAdmin(splitArg[1], user)) {
+		// 482    ERR_CHANOPRIVSNEEDED
+        std::string error = std::string(":localhost ") + "482 " + user->getNickname() + " " +  splitArg[1] + " :You're not channel operator" + "\r\n";
+		send(user->getSocket(), error.c_str(), error.size(), 0);
+		return (false);
+	}
 	//execute les modes +
 	//il restera a modifier les fonctions affectees par les modes
 	Channel *chan = server->getChannel(splitArg[1]);
@@ -124,6 +131,7 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 						if (i + 2 < splitArg.size()) {
 							chan->changeUserAdmin(server->getChannelUser(splitArg[1], splitArg[i + 2]), true);
 							// 324 RPL_CHANNELMODEIS
+							server->sendUserList(chan, user);
 							send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
 						}
 						else

@@ -96,7 +96,6 @@ int Server::acceptNewConnection(struct pollfd *fds, int nfds) {
 		}
 		nfds++;
 	} while (newSocket != -1);
-
 	return (nfds);
 }
 
@@ -263,6 +262,11 @@ std::string Server::createServerResponseForConnection(int socket, Server::userCo
 			userWithSameNicknameExists = true;
 	}
 
+	if (userInfo->nickName.find('#') != std::string::npos || userInfo->nickName.find('&') != std::string::npos) {
+		std::cerr << "Error: Nickname can't contain # or &" << std::endl;
+		return "";
+	}
+
 	if (userInfo->password != this->_password) {
 		std::cerr << "Error: client sent a wrong password to access the server" << std::endl;
 		return "";
@@ -317,7 +321,7 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
 
 	// Display for testing purpose
 	std::cout << "** ======= SOCKET " << socketID <<  " ======== **" << std::endl;
-	std::cout << "Buffer " << " : " << buffer << std::endl;
+	std::cout << "Buffer " << " : " << clientData->dataString << std::endl;
 
 	// We handle the command here
 	cmd command;
