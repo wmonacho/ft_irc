@@ -258,11 +258,6 @@ const User* Server::getChannelUser(std::string channel_name, std::string user_na
 	return (this->_channels.find(channel_name)->second->getUser(this->getConstUser(user_name)));
 }
 
-Server::userConnectionRegistration* Server::getUserConnectionRegistrationStruct(void) {
-
-	return (&this->_userConnectionRegistration);
-}
-
 Server::clientData*	Server::getClientDataArray (void) {
 
 	return _clientDataArray;
@@ -332,16 +327,6 @@ void	Server::setUserRealname(User user, std::string new_realname)
 {
 	user.setRealname(new_realname);
 }
-
-void    Server::setUserConnectionResitrationStruct(std::string pass, std::string nick, std::string user) {
-
-	this->_userConnectionRegistration.password = pass;
-	this->_userConnectionRegistration.nickName = nick;
-	this->_userConnectionRegistration.userName = user;
-	return ;
-}
-
-//void	Server::setChannelUserAdmin
 
 /* SERVER FUNCTIONS */
 
