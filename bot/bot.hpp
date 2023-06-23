@@ -11,10 +11,9 @@
 #include <netdb.h>
 
 std::string			retreiveMessageFromBuffer(char *buffer);
-std::string			retreiveFullNameFromBuffer(char *buffer);
 std::string			retreiveNickFromBuffer(char *buffer);
 std::vector<std::string>	splitString(std::string str, const char *delim);
-int				botBehavior(std::string message, int botSocket, std::string nick, std::string fullName);
+int				botBehavior(std::string message, int botSocket, std::string nick);
 void				rebuildMessage(std::vector<std::string> &vector, int index);
 
 #endif
