@@ -2,19 +2,20 @@
 
 bool	cmd::parseKick(std::string str, Server *server, User *user)
 {
-	// Parsing de l'input du user
-	// faire un check de channel si en arg[1] ou si en arg[2] si aucun return false
+    std::cout << "here" << std::endl;
+    // Parsing de l'input du user
+    // faire un check de channel si en arg[1] ou si en arg[2] si aucun return false
     std::vector<std::string> arg = splitString(str, " ");
     if (arg.size() < 3)
     {
-        // 461 ERR_NEEDMOREPARAMS
-        std::string error = std::string("localhost :") + "461 " + user->getNickname() + " " + arg[0] + " :Not enough parameters" + "\r\n";
-        send(user->getSocket(), error.c_str(), error.size(), 0);
-	    return false;
+	 // 461 ERR_NEEDMOREPARAMS
+	 std::string error = std::string("localhost :") + "461 " + user->getNickname() + " " + arg[0] + " :Not enough parameters" + "\r\n";
+	 send(user->getSocket(), error.c_str(), error.size(), 0);
+	 return false;
     }
     if (arg[2][0] != '#' && arg[2][0] != '&')
     {
-		// 476 ERR_BADMASKCHANNEL
+	 // 476 ERR_BADMASKCHANNEL
 		std::string error = std::string("localhost :") + "476 " + user->getNickname() + " " + arg[2] + " :Bad Channel Mask" + "\r\n";
 		send(user->getSocket(), error.c_str(), error.size(), 0);
 		return false;
