@@ -138,6 +138,7 @@ class Server {
 		void									addUserToChannelInviteList(std::string channel_name, std::string new_guest);
 		bool									userInChannelInviteList(std::string channel_name, std::string new_guest);
 		void									deleteAllChannel();
+		void									deleteUserFromUserList(User user);
 };
 
 #endif

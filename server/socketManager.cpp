@@ -259,7 +259,7 @@ std::string Server::createServerResponseForConnection(int socket, Server::userCo
 	std::vector<User> userVector = this->getUserList();
 
 	for (std::vector<User>::iterator it = userVector.begin(); it != userVector.end(); it++) {
-		if (it->getNickname() == userInfo->nickName)
+		if ((*it).getNickname() == userInfo->nickName)
 			userWithSameNicknameExists = true;
 	}
 

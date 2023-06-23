@@ -142,6 +142,7 @@ bool    cmd::parseUser(std::string str, Server *server)
 
 void cmd::whichCmd(std::string str, Server *server, User *user)
 {
+
 	std::vector<std::string> arg = splitString(str, " ");
 	size_t pos = str.find("\n");
 	if (pos != std::string::npos)

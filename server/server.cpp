@@ -201,7 +201,7 @@ User*	Server::getUser(std::string user_nickname)
 {
 	for (std::vector<User>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
 	{
-		if (it->getNickname() == user_nickname)
+		if ((*it).getNickname() == user_nickname)
 			return (&(*it));
 	}
 	return (NULL);
@@ -211,7 +211,7 @@ User*	Server::getUserWithName(std::string user_name)
 {
 	for (std::vector<User>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
 	{
-		if (it->getUsername() == user_name)
+		if ((*it).getUsername() == user_name)
 			return (&(*it));
 	}
 	return (NULL);
@@ -221,7 +221,7 @@ User*	Server::getUserBySocket(int socket)
 	std::vector<User>::iterator user;
 
 	for (user = this->_user_list.begin(); user != this->_user_list.end(); user++) {
-			if (user->getSocket() == socket)
+			if ((*user).getSocket() == socket)
 				return (&(*user));
 	}
 	return (NULL);
@@ -230,12 +230,12 @@ const User*  Server::getConstUser(std::string user_nickname)
 {
 	for (std::vector<User>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
 	{
-		if (it->getNickname() == user_nickname)
-			return (&*it);
+		if ((*it).getNickname() == user_nickname)
+			return (&(*it));
 	}
 	//throw une exception si possible a la place de return cette merde
 	std::vector<User>::iterator it = this->_user_list.begin();
-	return (&*it);
+	return (&(*it));
 }
 
 //il faudra checker si le channel existe avant d'utiliser cette focntion
@@ -465,4 +465,16 @@ void	Server::deleteAllChannel()
 		delete it->second; // Supprimez l'objet Channel
 	}
 	this->_channels.clear();
+}
+
+void	Server::deleteUserFromUserList(User user)
+{
+	for (unsigned int i = 0; i < this->_user_list.size(); i++) {
+		if (this->_user_list[i].getNickname() == user.getNickname()) {
+			std::vector<User>::iterator it;
+			it = this->_user_list.begin();
+			this->_user_list.erase(it + i);
+			break;
+		}
+	}
 }
