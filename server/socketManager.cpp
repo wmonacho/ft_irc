@@ -317,7 +317,7 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
 
 	// Display for testing purpose
 	std::cout << "** ======= SOCKET " << socketID <<  " ======== **" << std::endl;
-	std::cout << "Buffer " << " : " << buffer << std::endl;
+	std::cout << "Buffer " << " : " << clientData->dataString << std::endl;
 
 	// We handle the command here
 	cmd command;
