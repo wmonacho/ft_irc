@@ -2,36 +2,19 @@
 #define BOT_HPP
 
 #include <iostream>
+#include <vector>
+#include <stdlib.h>
 #include <cstring>
 #include <unistd.h>
 #include <sys/socket.h>
 #include <arpa/inet.h>
 #include <netdb.h>
-#include "../user/User.hpp"
-#include "../server/server.hpp"
-#include "../channel/Channel.hpp"
 
-class User;
-class Server;
-class Channel;
-
-class bot
-{
-private:
-
-	int _botSocket;
-
-public:
-
-	bot();
-	~bot();
-
-	int		startBot(int socketFd);
-	void	sendFromBot();
-	int		runBot(char *buffer, User *user, Server *server);
-	void	sendBotMessageToOtherUsersInChannel(std::string message, Channel *channel, User *user);
-
-	int		getBotSocket();
-};
+std::string			retreiveMessageFromBuffer(char *buffer);
+std::string			retreiveFullNameFromBuffer(char *buffer);
+std::string			retreiveNickFromBuffer(char *buffer);
+std::vector<std::string>	splitString(std::string str, const char *delim);
+int				botBehavior(std::string message, int botSocket, std::string nick, std::string fullName);
+void				rebuildMessage(std::vector<std::string> &vector, int index);
 
 #endif

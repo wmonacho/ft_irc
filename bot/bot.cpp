@@ -1,10 +1,5 @@
 #include "bot.hpp"
 
-std::string					retreiveMessageFromBuffer(char *buffer);
-std::vector<std::string>	splitString(std::string str, const char *delim);
-int							botBehavior(std::string message, int botSocket);
-void						rebuildMessage(std::vector<std::string> &vector, int index);
-
 int	main(int ac, char **av)
 {
 	if (ac == 4) {
@@ -68,7 +63,7 @@ int	main(int ac, char **av)
 		while (1) {
 			memset(buffer, 0, bufferSize);
 			int bytesRead = recv(botSocket, buffer, bufferSize, 0);
-			if (bytesRead == 0) {
+			if (bytesRead == 0){
 				std::cerr << "Error: connection closed" << std::endl;
 				return 1;
 			}
@@ -78,23 +73,49 @@ int	main(int ac, char **av)
 			}
 			else {
 					std::string message;
+					std::string nick;
+					std::string fullName;
 					// We handle the message here
 					std::cout << "Received : " << buffer << std::endl;
 					// First we need to parse the buffer so we retreive only the message
 					message	= retreiveMessageFromBuffer(buffer);
+					nick		= retreiveNickFromBuffer(buffer);
+					fullName	= retreiveFullNameFromBuffer(buffer);
+					std::cout << "nick ==> " << nick << std::endl;
+					std::cout << "fullname ==> " << fullName << std::endl;
 					// Then we can proceed the bot reponses
 					std::cout << "MESSAGE ===> " << message << std::endl;
 					if (!message.empty())
-						botBehavior(message, botSocket);
+						botBehavior(message, botSocket, nick, fullName);
 				}
 		}
 	}
 }
 
+std::string	retreiveFullNameFromBuffer(char *buffer)
+{
+    size_t pos;
+    std::vector<std::string>	stringElements = splitString(buffer, ":");
+
+    pos = stringElements[0].find(" ");
+    std::string fullName = stringElements[0].substr(0, pos);
+    return (fullName);
+}
+
+std::string	retreiveNickFromBuffer(char *buffer)
+{
+    size_t pos;
+    std::vector<std::string>	stringElements = splitString(buffer, ":");
+
+    pos = stringElements[0].find("!");
+    std::string nick = stringElements[0].substr(0, pos);
+    return (nick);
+}
+
 std::string	retreiveMessageFromBuffer(char *buffer) {
 
 	std::vector<std::string>	stringElements = splitString(buffer, ":");
-	int							id = stringElements.size() - 1;
+	int				id = stringElements.size() - 1;
 
 	rebuildMessage(stringElements, id);
 	return stringElements[id];
@@ -129,10 +150,10 @@ void rebuildMessage(std::vector<std::string> &vector, int index) {
 	return ;
 }
 
-int 	botBehavior(std::string message, int botSocket)
+int 	botBehavior(std::string message, int botSocket, std::string nick, std::string fullName)
 {
 	const char* channelName = "#bot";
-
+    (void)fullName;
 	std::string response = std::string("PRIVMSG") + " " + channelName + " :";
 	if (message.find("PING") != std::string::npos)
 	{
@@ -142,7 +163,44 @@ int 	botBehavior(std::string message, int botSocket)
 		send(botSocket, pongCommand.c_str(), pongCommand.length(), 0);
 		std::cerr << "Response sent" << std::endl;
 	}
-	// else if (message.find("bonjour") != std::string::npos)
+	else if (message.find("bonjour") != std::string::npos)
+	{
+	    std::string helloCommand = response.append("Bonjour ") + nick + ", comment allez vous ?" + std::string("\r\n");
+	    send(botSocket, helloCommand.c_str(), helloCommand.size(), 0);
+	}
+	else if (message.find("bien") != std::string::npos)
+	{
+	    std::string goodCommand = response.append("Cela me rempli de joie ") + nick + " !\r\n";
+	    send(botSocket, goodCommand.c_str(), goodCommand.size(), 0);
+	}
+	else if (message.find("mal") != std::string::npos || message.find("pas bien") != std::string::npos)
+	{
+	    std::string badCommand = response.append("Cela m'attriste pour vous ") + nick + " ...\r\n";
+	    send(botSocket, badCommand.c_str(), badCommand.size(), 0);
+	}
+	else if (message.find("quoi") != std::string::npos)
+	{
+	    srand(time(0));
+	    int nb = rand();
+	    std::string feurCommand;
+	    if (nb % 2 == 0)
+		 feurCommand = response.append("Feur !!\r\n");
+	    else
+		 feurCommand = response.append("coubeh !!\r\n");
+	    send(botSocket, feurCommand.c_str(), feurCommand.size(), 0);
+	}
+	else if (message.find("hein") != std::string::npos || message.find("1") != std::string::npos)
+	{
+	    std::string heinCommand = response.append("apanyan !! apanyan !\r\n");
+	    send(botSocket, heinCommand.c_str(), heinCommand.size(), 0);
+	}
+	else if (message.find("Fils de pendu") != std::string::npos || message.find("orchidoclaste") != std::string::npos || message.find("nigaud") != std::string::npos || message.find("flagorneur") != std::string::npos)
+	{
+	    //std::string kickCommand = fullName + " " + std::string("KICK") + " " + channelName + "\r\n";
+	    std::string kickCommand = std::string("KICK ") + channelName + " " + nick + "\r\n";
+	    std::cout << "kick ====> " << kickCommand << std::endl;
+	    send(botSocket, kickCommand.c_str(), kickCommand.size(), 0);
+	}	// else if (message.find("bonjour") != std::string::npos)
 	// {
 	//  // Répondre au PING du serveur pour éviter d'être déconnecté
 	//  std::string pongCommand = std::string("bonjour ") + user->getNickname() + " " + "\r\n";
