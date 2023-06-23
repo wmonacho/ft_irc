@@ -123,24 +123,32 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 		}
 
 		// Cas 2 : le channel n'existe pas, il faut donc le creer dans notre serveur et y ajouter l'utilisateur
-		if (!server->channelAlreadyExist(channel_name)) {
+		if (!server->channelAlreadyExist(channel_name))
+		{
+		    std::string cpy = channel_name;
+		    cpy.erase(0, 1);
+		    if (cpy.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789", 0) || !cpy.find_first_of("#", 0))
+		    {
+			 std::cerr << "Bad channel name, use only alphanumerics pls" << std::endl;
+			 return false;
+		    }
 
-			UserAspects	new_aspects(1);
-			Channel *channel = new Channel(channel_name);
+		    UserAspects	new_aspects(1);
+		    Channel *channel = new Channel(channel_name);
 
-			server->createNewChannel(channel_name, channel);
-			if (!server->getChannel(channel_name))
-			{
-				delete	channel;
-				return false;
-			}
-			server->addUserToChannel(channel_name, user, new_aspects);
-			sendMessageToAllUsersInChannel(server_response, server->getChannel(channel_name));
+		    server->createNewChannel(channel_name, channel);
+		    if (!server->getChannel(channel_name))
+		    {
+			 delete	channel;
+			 return false;
+		    }
+		    server->addUserToChannel(channel_name, user, new_aspects);
+		    sendMessageToAllUsersInChannel(server_response, server->getChannel(channel_name));
 
-			// We send a RPL_NAMREPLY so the first user of the channel can see he is in the channel
-			std::string user_list = std::string(":localhost ") + "353 " + user->getNickname() + " = " + channel_name + " :" + user->getNickname() + "\r\n";
-			send(user->getSocket(), user_list.c_str(), user_list.size(), 0);
-
+		    // We send a RPL_NAMREPLY so the first user of the channel can see he is in the
+		    // channel
+		    std::string user_list = std::string(":localhost ") + "353 " + user->getNickname() + " = " + channel_name + " :" + user->getNickname() + "\r\n";
+		    send(user->getSocket(), user_list.c_str(), user_list.size(), 0);
 		}
 	}
 	return true;
