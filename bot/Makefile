@@ -37,10 +37,10 @@ SUB_DIR		=	$(addprefix $(OBJS_DIR)/,$(SUB_DIR_LST))
 
 all:				$(NAME)
 
-$(NAME):			$(OBJ)
+$(NAME):			$(OBJ) $(FILES)
 					$(CC) $(OBJ) -o $(NAME)
 
-$(OBJS_DIR)/%.o:	%.cpp Makefile $(HEADER) | $(OBJS_DIR)
+$(OBJS_DIR)/%.o:	%.cpp Makefile $(HEADER) $(OBJS_DIR)
 					${CC} ${FLAGS} -c $< -o $@
 
 $(OBJS_DIR):
