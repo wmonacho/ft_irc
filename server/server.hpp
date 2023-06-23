@@ -44,11 +44,15 @@ class Server {
 			std::string	password;
 			std::string	nickName;
 			std::string	userName;
+			bool		passCheck;
+			bool		nickCheck;
+			bool		userCheck;
 		};
-		struct userConnectionRegistration _userConnectionRegistration;
 
 		struct clientData {
-			std::string	dataString;
+			std::string							dataString;
+			bool								clientIsConnected;
+			struct userConnectionRegistration	userConnectionRegistration;
 		};
 		clientData _clientDataArray[MAX_SOCKETS];
 		
@@ -74,7 +78,6 @@ class Server {
 		void				    	            setUserNickname(User user, std::string new_nickname);
 		void		            	          	setUserPassword(User user, std::string new_password);
 		void				                  	setUserRealname(User user, std::string new_realname);
-		void									setUserConnectionResitrationStruct(std::string pass, std::string nick, std::string user);
 		void                                    setClientDataString(std::string str);
 		void                                    setClientDataBool(bool value);
 
@@ -106,19 +109,18 @@ class Server {
 		const std::map<std::string, Channel*>&			getMap(void); //read only
 		const std::map<const User*, UserAspects>&   getChannelUserList(std::string channel_name);
 		std::map<std::string, Channel*>::iterator	getItMap(void);
-		userConnectionRegistration*					getUserConnectionRegistrationStruct(void);
 		Server::clientData*                         getClientDataArray(void);
 
 		// Socket connection and user registration for "socketManager.cpp"
-		int										verifyClientAndServerResponse(struct pollfd fds);
+		int										verifyClientAndServerResponse(struct pollfd fds, Server::clientData *clientData);
 		int										acceptNewConnection(struct pollfd *fds, int nfds);
-		int										retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bool closeConnection);
+		int										retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bool closeConnection, Server::clientData *clientData);
 		std::string								createServerResponseForConnection(int socket, Server::userConnectionRegistration *userInfo);
 		void									createNewUserAtConnection(std::string nickname, std::string username, int socket);
-		bool									getClientInformationsOnConnection(struct pollfd fds, Server::userConnectionRegistration *userInfo);
-		bool									findPassInBuffer(char *buffer, Server::userConnectionRegistration *userInfo);
-		bool									findNickInBuffer(char *buffer, Server::userConnectionRegistration *userInfo);
-		bool									findUserInBuffer(char *buffer, Server::userConnectionRegistration *userInfo);
+		bool									getClientInformationsOnConnection(struct pollfd fds, Server::userConnectionRegistration *userInfo, std::string data);
+		bool									findPassInBuffer(const char *buffer, Server::userConnectionRegistration *userInfo);
+		bool									findNickInBuffer(const char *buffer, Server::userConnectionRegistration *userInfo);
+		bool									findUserInBuffer(const char *buffer, Server::userConnectionRegistration *userInfo);
 
 
 		// Utility functions
