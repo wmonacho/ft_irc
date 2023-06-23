@@ -200,21 +200,6 @@ int 	botBehavior(std::string message, int botSocket, std::string nick, std::stri
 	    std::string kickCommand = std::string("KICK ") + channelName + " " + nick + "\r\n";
 	    std::cout << "kick ====> " << kickCommand << std::endl;
 	    send(botSocket, kickCommand.c_str(), kickCommand.size(), 0);
-	}	// else if (message.find("bonjour") != std::string::npos)
-	// {
-	//  // Répondre au PING du serveur pour éviter d'être déconnecté
-	//  std::string pongCommand = std::string("bonjour ") + user->getNickname() + " " + "\r\n";
-	//  send(user->getSocket(), pongCommand.c_str(), pongCommand.length(), 0);
-	// }
-	// else if (message.find("msg " + std::string(channelName)) != std::string::npos)
-	// {
-	//  // Traiter les messages privés reçus sur le canal spécifié
-	//  std::string sender = message.substr(message.find(":") + 1, message.find("!") - 1);
-	//  std::string receivedMessage = message.substr(message.find(std::string(channelName)) + std::string(channelName).length() + 2);
-
-	//  // Répondre au message privé
-	//  std::string replyMessage = "PRIVMSG " + sender + " :Bonjour ! J'ai bien reçu votre message : " + receivedMessage + "\r\n";
-	//  send(user->getSocket(), replyMessage.c_str(), replyMessage.length(), 0);
-	// }
+	}
 	return 0;
 }
