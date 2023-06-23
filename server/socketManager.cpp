@@ -235,6 +235,11 @@ std::string Server::createServerResponseForConnection(int socket, Server::userCo
 			userWithSameNicknameExists = true;
 	}
 
+	if (userInfo->nickName.find('#') != std::string::npos || userInfo->nickName.find('&') != std::string::npos) {
+		std::cerr << "Error: Nickname can't contain # or &" << std::endl;
+		return "";
+	}
+
 	if (userInfo->password != this->_password) {
 		std::cerr << "Error: client sent a wrong password to access the server" << std::endl;
 		return "";

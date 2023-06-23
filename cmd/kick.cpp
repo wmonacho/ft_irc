@@ -33,6 +33,12 @@ bool	cmd::parseKick(std::string str, Server *server, User *user)
 		return false;
 	}
 	
+	if (!server->getChannelUserAdmin(arg[2], user)) {
+		// 482    ERR_CHANOPRIVSNEEDED
+        std::string error = std::string(":localhost ") + "482 " + user->getNickname() + " " +  arg[2] + " :You're not channel operator" + "\r\n";
+		send(user->getSocket(), error.c_str(), error.size(), 0);
+		return (false);
+	}
 	// Cas 1 : il y a un commentaire au KICK
 	if (arg.size() > 4)
 	{

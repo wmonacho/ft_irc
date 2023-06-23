@@ -3,6 +3,8 @@
 
 
 #include <vector>
+#include "../user/User.hpp"
+#include <algorithm>
 
 class UserAspects
 {
