@@ -12,8 +12,7 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 		// MODE <channel>
 		//si le channel existe, renvoyer les modes actives pour celui ci
 		if (server->channelAlreadyExist(splitArg[1])) {
-
-			std::string rpl_channel_mode_is = std::string(":localhost ") + "467 " + user->getNickname() + " " + splitArg[1] + " +";
+			std::string rpl_channel_mode_is = std::string(":localhost ") + "324 " + user->getNickname() + " " + splitArg[1] + " +";
 			if (server->getChannel(splitArg[1])->getInviteOnly() == true)
 				rpl_channel_mode_is += "i";
 			if (server->getChannel(splitArg[1])->getTopicAdmin() == true)
@@ -25,7 +24,8 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 			if (server->getChannel(splitArg[1])->getUserLimit() != -1)
 				rpl_channel_mode_is += "l";
 			rpl_channel_mode_is += "\r\n";
-			send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
+			//if (rpl_channel_mode_is != std::string(":localhost ") + "324 " + user->getNickname() + " " + splitArg[1] + " +" + "\r\n")
+				send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
 			return (true);
 		}
 	}
