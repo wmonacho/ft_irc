@@ -5,10 +5,9 @@ bool	cmd::parseKick(std::string str, Server *server, User *user)
 	int	channelArgID;
 	int	userToKickArgID;
 	int	firstCharOfName;
-	bool	noChannelInCommand = false;
+	bool	kickInChannel = false;
+	int		channelArgumentNumber = 0;
 
-	// Parsing de l'input du user
-	// faire un check de channel si en arg[1] ou si en arg[2] si aucun return false
 	std::vector<std::string> arg = splitString(str, " ");
 	if (arg.size() < 3)
 	{
@@ -18,16 +17,17 @@ bool	cmd::parseKick(std::string str, Server *server, User *user)
 		return false;
 	}
 
-	if (arg[2][0] == '#')
-		noChannelInCommand = true;
+	for (unsigned long i = 0; i < arg.size(); i++) {
+		if (arg[i][0] == '#')
+			channelArgumentNumber++;
+	}
 
-	// Cas X : un user KICK un autre user en etant dans un channel --> KICK #lol issou :mdr
-	// dans ce cas la user[1][1] coupe le premier char
-	// dans l'autre cas user[1][1] c'est bueno mdr
-	if (arg.size() == 3) {
+	// We check wether the user is kicking from a channel or not
+	if (channelArgumentNumber == 1) {
 		channelArgID = 1;
 		userToKickArgID = 2;
 		firstCharOfName = 0;
+		kickInChannel = true;
 	}
 	else {
 		channelArgID = 2;
@@ -59,32 +59,27 @@ bool	cmd::parseKick(std::string str, Server *server, User *user)
 		return false;
 	}
 	
-	// Cas 1 : il y a un commentaire au KICK
-	if (noChannelInCommand == true && arg.size() == 3) {
+	// Cas 1 : On KICK dans un channel et il y a un commentaire au KICK
+	if (kickInChannel == true && arg.size() >= 4) {
 		
-		// if (arg[3][0] != ':')
-		// {
-		// 	std::cerr << "Error: wrong parameters" << std::endl;
-		// 	return false;
-		// }
+		if (arg[3][0] != ':')
+		{
+			std::cerr << "Error: wrong parameters" << std::endl;
+			return false;
+		}
 		rebuildMessage(arg, 3);
 		std::string kick_comment = arg[3];
 
 		server->kickUserFromChannel(arg[channelArgID], server->getUser(&arg[userToKickArgID][firstCharOfName]));
-		std::string kick_message = ":" + user->getNickname() + "!" + user->getUsername() + "@localhost " + arg[0] + " " + arg[channelArgID] + " " + &arg[userToKickArgID][1] + " " + kick_comment + "\r\n";
+		std::string kick_message = ":" + user->getNickname() + "!" + user->getUsername() + "@localhost " + arg[0] + " " + arg[channelArgID] + " " + &arg[userToKickArgID][firstCharOfName] + " " + kick_comment + "\r\n";
 		sendMessageToAllUsersInChannel(kick_message, server->getChannel(arg[channelArgID]));
 		std::string kick_message_solo = ":" + user->getNickname() + "!" + user->getUsername() + "@localhost " + arg[0] + " " + arg[channelArgID] + " " + &arg[userToKickArgID][firstCharOfName] + " " + kick_comment + "\r\n";
 		send(server->getUser(&arg[userToKickArgID][firstCharOfName])->getSocket(), kick_message_solo.c_str(), kick_message_solo.size(), 0);
 		return true;
 	}
 
-	if (arg.size() > 4)
+	if (kickInChannel == false && arg.size() > 4)
 	{
-		if (arg[4][0] != ':')
-		{
-			std::cerr << "Error: wrong parameters" << std::endl;
-			return false;
-		}
 		rebuildMessage(arg, 4);
 		std::string kick_comment = arg[4];
 
@@ -97,27 +92,13 @@ bool	cmd::parseKick(std::string str, Server *server, User *user)
 	}
 
 	// Cas 2 : pas de commentaire au KICK
-	std::cerr << "USER -----> " << &arg[userToKickArgID][firstCharOfName] << std::endl;
+	std::cerr << "No comment to KICK, user is -----> " << &arg[userToKickArgID][firstCharOfName] << std::endl;
 	server->kickUserFromChannel(arg[channelArgID], server->getUser(&arg[userToKickArgID][firstCharOfName]));
 	std::string kick_message = ":" + user->getNickname() + "!" + user->getUsername() + "@localhost " + arg[0] + " " + arg[channelArgID] + " " + &arg[userToKickArgID][firstCharOfName] + " :You are KICK man" + "\r\n";
 	std::cout << kick_message << std::endl;
 	sendMessageToAllUsersInChannel(kick_message, server->getChannel(arg[channelArgID]));
 	kick_message = ":" + user->getNickname() + "!" + user->getUsername() + "@localhost " + arg[0] + " " + arg[channelArgID] + " " + &arg[userToKickArgID][firstCharOfName] + " :You are KICK man" + "\r\n";
 	send(server->getUser(&arg[userToKickArgID][firstCharOfName])->getSocket(), kick_message.c_str(), kick_message.size(), 0);
-	std::cerr << "DEBUUUUUUUUUUUUUUUUUUUUUG 1" << std::endl;
 	return true;
 }
-
-/*---------------------------------------------*/
-				/* HELP */
-// arg[2] = channel
-// arg[3] = user
-// arg[4] = message
-
-// KICK channel user :message --> size = 5
-// KICK channel user --> size = 4
-
-// KICK #lol issou --> dans un channel == bad channel mask
-// KICK #lol #lol issou --> dans le serveur (quand on precise le channel)
-/*---------------------------------------------*/
  
