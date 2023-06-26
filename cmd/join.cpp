@@ -48,13 +48,6 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 			  	continue;
 			}
 
-			if (channel->getUserList().find(user) != channel->getUserList().end())
-			{
-				std::cout << "USER ALDREADY ON THIS CHANNEL" << std::endl;
-			}
-			else 
-				std::cout << "USER NOT YET ON THIS CHANNEL" << std::endl;
-
 			if (splitArg.size() < 3 && channel->getPassword() != "") {
 				// 475	ERR_BADCHANNELKEY
 				std::string error = std::string("localhost :") + "475 " + user->getNickname() + " " + channels[i] + " :Cannot join channel (+k)" + "\r\n";
@@ -124,8 +117,9 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 			sendMessageToAllUsersInChannel(server_response, server->getChannel(channel_name));
 
 			// We send a RPL_NAMREPLY so the first user of the channel can see he is in the channel
-			std::string user_list = std::string(":localhost ") + "353 " + user->getNickname() + " = " + channel_name + " :@" + user->getNickname() + "\r\n";
-			send(user->getSocket(), user_list.c_str(), user_list.size(), 0);
+			server->sendUserList(channel, user);
+			//std::string user_list = std::string(":localhost ") + "353 " + user->getNickname() + " = " + channel_name + " :@" + user->getNickname() + "\r\n";
+			//send(user->getSocket(), user_list.c_str(), user_list.size(), 0);
 		}
 	}
 	return true;

@@ -264,7 +264,17 @@ void    cmd::sendMessageToAllUsersInChannel(std::string message, Channel *channe
 
 	while (user != userEnd) {
 		std::string tmp = message;
-		std::cout << "********** Recipient ==> " << user->first->getUsername() << std::endl;
+		//for (std::map<const User*, UserAspects>::iterator user_bis = maptmp.begin(); user_bis != userEnd; user_bis++)
+		//{
+		//	if (tmp.find(user_bis->first->getNickname()) != std::string::npos)
+		//	{
+		//		size_t	index = tmp.find(user_bis->first->getNickname());
+		//		tmp.erase(index, user_bis->first->getNickname().size());
+		//		tmp.insert(index, user->first->getNickname());
+		//		break;
+		//	}
+		//}
+		std::cout << "********** Recipient ==> " << user->first->getNickname() << std::endl;
 		std::cout << "********** Message   ==> " << tmp << std::endl;
 		send(user->first->getSocket(), tmp.c_str(), tmp.size(), 0);
 		user++;
