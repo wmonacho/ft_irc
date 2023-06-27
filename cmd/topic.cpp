@@ -36,7 +36,7 @@ bool	cmd::parseTopic(std::string str, Server *server, User *user)
 			topic_message = std::string(":localhost ") + "331" + " " + user->getNickname() + " " + channel->getName() + " : No topic is set" + "\r\n";
 		}
 		else
-			topic_message = std::string(":localhost ") + "332" + " " + user->getNickname() + " " + channel->getName() + " :" + channel->getTopic() + "\r\n";
+			topic_message = std::string(":localhost ") + "332" + " " + user->getNickname() + " " + channel->getName() + " " + channel->getTopic() + "\r\n";
 		send(user->getSocket(), topic_message.c_str(), topic_message.size(), 0);
 		return true;
 	}
@@ -49,13 +49,12 @@ bool	cmd::parseTopic(std::string str, Server *server, User *user)
 			return true;
 		}
 		std::string new_topic = arg[2];
-		//new_topic.erase(0, 2);
 		std::cout << "Setting up new topic --> " << new_topic << std::endl;
 		channel->setTopic(new_topic);
 		if (!channel->getTopic().empty()) {
-				std::string topic = std::string(":localhost ") + "332 " + user->getNickname() + " " + channel->getName() + " :" + channel->getTopic() + "\r\n";
+				std::string topic = std::string(":localhost ") + "332 " + user->getNickname() + " " + channel->getName() + " " + channel->getTopic() + "\r\n";
 				send(user->getSocket(), topic.c_str(), topic.size(), 0);
-			}
+		}
 		return true ;
 	}
 	return true;

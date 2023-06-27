@@ -1,0 +1,3 @@
+- mode +t renvoie mauvaise rpl en cas d'essaie de changer le topic alors qu'on est pas admin (No topic set = pas bien)
+
+- si l'operator originel quitte le channel et qu'il n'y en a pas d'autres, il faut passer le deuxieme operator
