@@ -197,10 +197,12 @@ bool Server::getClientInformationsOnConnection(struct pollfd fds, Server::userCo
 	(void)fds;
 	if (userInfo->passCheck == false)
 		userInfo->passCheck = findPassInBuffer(data.c_str(), userInfo);
-	if (userInfo->nickCheck == false)
-		userInfo->nickCheck = findNickInBuffer(data.c_str(), userInfo);
-	if (userInfo->userCheck == false)
-		userInfo->userCheck = findUserInBuffer(data.c_str(), userInfo);
+	if (userInfo->passCheck == true) {
+		if (userInfo->nickCheck == false)
+			userInfo->nickCheck = findNickInBuffer(data.c_str(), userInfo);
+		if (userInfo->userCheck == false)
+			userInfo->userCheck = findUserInBuffer(data.c_str(), userInfo);
+	}
 	std::cout << "DEBUG PC ==> " << userInfo->passCheck << std::endl;
 	std::cout << "DEBUG NC ==> " << userInfo->nickCheck << std::endl;
 	std::cout << "DEBUG UC ==> " << userInfo->userCheck << std::endl;
@@ -242,23 +244,27 @@ std::string Server::createServerResponseForConnection(int socket, Server::userCo
 	{
 	    std::string response = std::string(":localhost ") + "431 " + userInfo->nickName + " " + ":No nickname given" + "\r\n";
 	    send(socket, response.c_str(), response.size(), 0);
+		userInfo->nickCheck = false;
 	    return "";
 	}
 	if (userInfo->nickName.find('#') != std::string::npos || userInfo->nickName.find('&') != std::string::npos) {
 	    std::string response = std::string(":localhost ") + "432 " + userInfo->nickName + " " + userInfo->nickName + " :Erroneous nickname" + "\r\n";
 	    send(socket, response.c_str(), response.size(), 0);
+		userInfo->nickCheck = false;
 	    return "";
 	}
 
 	if (userInfo->password != this->_password) {
 	    std::string response = std::string(":localhost ") + "464 " + userInfo->nickName + " " + ":Password incorrect" + "\r\n";
 	    send(socket, response.c_str(), response.size(), 0);
+		userInfo->passCheck = false;
 	    return "";
 	}
 
 	if (userWithSameNicknameExists == true) {
  	    std::string response = std::string(":localhost ") + "433 " + userInfo->nickName + " " + userInfo->nickName + " :Nickname is already in use" + "\r\n";
 	    send(socket, response.c_str(), response.size(), 0);
+		userInfo->nickCheck = false;
 	    return "";
 	}
 

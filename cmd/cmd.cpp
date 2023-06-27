@@ -115,8 +115,7 @@ bool    cmd::parseNick(std::string str, Server *server, User *user) //recup le U
 	// 	splitArg[1].erase(pos, std::string::npos);
 	// }
 	// user->setNickname(splitArg[1]);
-	// return (true);
-	return true;
+	return (true);
 }
 
 bool    cmd::parseUser(std::string str, Server *server)
