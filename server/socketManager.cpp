@@ -330,8 +330,10 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
 				cmd command;
 				user = this->getUserBySocket(fds[socketID].fd);
 				clientStatus = command.whichCmd(clientData->dataString.c_str(), this, user);
-				if (clientStatus == 2)
+				if (clientStatus == 2) {
 					clientData->clientIsConnected = false;
+					closeConnection = true;
+				}
 
 				// We clear the dataString for the next data that will be in that socket and we get back to the poll() loop
 				clientData->dataString.clear();
