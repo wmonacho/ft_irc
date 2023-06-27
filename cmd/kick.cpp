@@ -99,6 +99,15 @@ bool	cmd::parseKick(std::string str, Server *server, User *user)
 	sendMessageToAllUsersInChannel(kick_message, server->getChannel(arg[channelArgID]));
 	kick_message = ":" + user->getNickname() + "!" + user->getUsername() + "@localhost " + arg[0] + " " + arg[channelArgID] + " " + &arg[userToKickArgID][firstCharOfName] + " :You are KICK man" + "\r\n";
 	send(server->getUser(&arg[userToKickArgID][firstCharOfName])->getSocket(), kick_message.c_str(), kick_message.size(), 0);
+	
+	if (server->getChannelUserList(arg[channelArgID]).size() != 0 && !server->channelHasOperator(arg[channelArgID])) {
+		server->setChannelRemplacementOpe(arg[channelArgID]);
+		std::string rpl_channel_mode_is = ":localhost MODE " + arg[channelArgID] + " +o " + server->getChannelUserList(arg[channelArgID]).begin()->first->getNickname() + "\r\n";
+		this->sendMessageToAllUsersInChannel(rpl_channel_mode_is, server->getChannel(arg[channelArgID]));
+	}
+	
+	if (server->getChannelUserList(arg[channelArgID]).size() == 0)
+			server->deleteChannel(arg[channelArgID]);
 	return true;
 }
  

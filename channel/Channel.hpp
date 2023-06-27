@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 13:57:00 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/06/23 17:59:44 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/06/27 14:44:11 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -67,6 +67,8 @@ class Channel
 		void	kickUserFromChannel(const User *user);
 		void	changeUserAdmin(const User* user, bool i);
 		void	clearUserList();
+		bool	channelHasOperator();
+		void	setRemplacementOpe();
 		
 		//INVITE LIST
 		bool   	userInInviteList(std::string guest);

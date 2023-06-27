@@ -140,9 +140,11 @@ class Server {
 		void									addUserToChannelInviteList(std::string channel_name, std::string new_guest);
 		bool									userInChannelInviteList(std::string channel_name, std::string new_guest);
 		void									deleteAllChannel();
+		void									deleteChannel(std::string channel_name);
 		void									deleteUserFromUserList(User user);
 		void									sendUserList(Channel *channel, User *user);
 		void									partAllChannelWhereTheUserIsPresent(User *user) ;
+		bool									channelHasOperator(std::string channel_name) ;
+		void									setChannelRemplacementOpe(std::string channel_name);
 };
-
 #endif
