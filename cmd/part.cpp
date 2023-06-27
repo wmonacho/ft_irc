@@ -41,7 +41,6 @@ bool	cmd::parsePart(std::string str, Server *server, User *user)
 			send(user->getSocket(), error.c_str(), error.size(), 0);
 			return false;
 		}
-		std::cerr << "TEST :" << str << std::endl;
 		std::string part_message = ":" + user->getNickname() + "!" + user->getUsername() + "@localhost " + splitArg[0] + " ";
 		part_message.append(*it_copy);
 		if (!splitArg[2].empty())
@@ -49,6 +48,13 @@ bool	cmd::parsePart(std::string str, Server *server, User *user)
 		part_message.append("\r\n");
 		sendMessageToAllUsersInChannel(part_message, server->getChannel(*it));
 		server->kickUserFromChannel(*it, user);
+		if (server->getChannelUserList(*it).size() != 0 && !server->channelHasOperator(*it)) {
+			server->setChannelRemplacementOpe((*it));
+			std::string rpl_channel_mode_is = ":localhost MODE " + *it + " +o " + server->getChannelUserList(*it).begin()->first->getNickname() + "\r\n";
+			this->sendMessageToAllUsersInChannel(rpl_channel_mode_is, server->getChannel(*it));
+		}
+		if (server->getChannelUserList(*it).size() == 0)
+			server->deleteChannel(*it);
 		it++;
 		it_copy++;
 	}

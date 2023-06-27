@@ -453,6 +453,16 @@ void	Server::deleteAllChannel()
 	this->_channels.clear();
 }
 
+void	Server::deleteChannel(std::string channel_name)
+{
+	std::map<std::string, Channel*>::iterator it = this->_channels.find(channel_name);
+	
+	if (it == this->_channels.end())
+		return ;
+	delete it->second;
+	this->_channels.erase(it);
+}
+
 void	Server::deleteUserFromUserList(User user)
 {
 	for (unsigned int i = 0; i < this->_user_list.size(); i++) {
@@ -501,4 +511,14 @@ void	Server::partAllChannelWhereTheUserIsPresent(User *user)
 			cmd.parsePart("PART " + channel_it->first + " :Leaving", this, user);
 		}
 	}
+}
+
+bool	Server::channelHasOperator(std::string channel_name) 
+{
+	return this->getChannel(channel_name)->channelHasOperator();
+}
+
+void	Server::setChannelRemplacementOpe(std::string channel_name)
+{
+	this->getChannel(channel_name)->setRemplacementOpe();
 }
