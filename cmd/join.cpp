@@ -104,6 +104,12 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 		// Cas 2 : le channel n'existe pas, il faut donc le creer dans notre serveur et y ajouter l'utilisateur
 		if (!server->channelAlreadyExist(channel_name)) {
 
+			std::cout << "channel_name: " << channel_name << std::endl;
+		    	if (channel_name.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789", 1) != std::string::npos)
+			{
+				 std::cerr << "Bad channel name: " << channel_name << " (Not only alphanum char)" << std::endl;
+				 return false;
+			}
 			UserAspects	new_aspects(true);
 			Channel *channel = new Channel(channel_name);
 
