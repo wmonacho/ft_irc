@@ -7,7 +7,6 @@ bool	cmd::parseQuit(Server *server, std::string str, User * user)
 		return false;
 	}
 
-
 	this->parseJoin("JOIN 0", server, user);
 	if (server->getUserList().size() == 1) {
 		server->deleteAllChannel();
@@ -15,7 +14,7 @@ bool	cmd::parseQuit(Server *server, std::string str, User * user)
 		send(user->getSocket(), quit_message.c_str(), quit_message.size(), 0);
 	}
 
-	server->deleteUserFromUserList(*user);
-	std::cerr << "QUIT COMMAND" << std::endl;
+	if (user)
+		server->deleteUserFromUserList(*user);
 	return true;
 }
