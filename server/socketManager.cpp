@@ -234,26 +234,31 @@ std::string Server::createServerResponseForConnection(int socket, Server::userCo
 		if ((*it).getNickname() == userInfo->nickName)
 			userWithSameNicknameExists = true;
 	}
-
+	if (userInfo->nickName.empty())
+	{
+	    std::string response = std::string(":localhost ") + "431 " + userInfo->nickName + " " + ":No nickname given" + "\r\n";
+	    send(socket, response.c_str(), response.size(), 0);
+	    return "";
+	}
 	if (userInfo->nickName.find('#') != std::string::npos || userInfo->nickName.find('&') != std::string::npos) {
-		std::cerr << "Error: Nickname can't contain # or &" << std::endl;
-		return "";
+	    std::string response = std::string(":localhost ") + "432 " + userInfo->nickName + " " + userInfo->nickName + " :Erroneous nickname" + "\r\n";
+	    send(socket, response.c_str(), response.size(), 0);
+	    return "";
 	}
 
 	if (userInfo->password != this->_password) {
-		std::cerr << "Error: client sent a wrong password to access the server" << std::endl;
-		return "";
+	    std::string response = std::string(":localhost ") + "464 " + userInfo->nickName + " " + ":Password incorrect" + "\r\n";
+	    send(socket, response.c_str(), response.size(), 0);
+	    return "";
 	}
 
 	if (userWithSameNicknameExists == true) {
-		std::cerr << "Error: This nickname already exists" << std::endl;
-		return "";
+ 	    std::string response = std::string(":localhost ") + "433 " + userInfo->nickName + " " + userInfo->nickName + " :Nickname is already in use" + "\r\n";
+	    send(socket, response.c_str(), response.size(), 0);
+	    return "";
 	}
-
 	createNewUserAtConnection(userInfo->nickName, userInfo->userName, socket);
-
 	std::string server_response = ":localhost 001 " + userInfo->nickName + " :Welcome to the Internet Relay Network " + userInfo->nickName + "!" + userInfo->userName + "@localhost\r\n";
-
 	return (server_response);
 }
 
