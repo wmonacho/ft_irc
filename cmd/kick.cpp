@@ -12,7 +12,7 @@ bool	cmd::parseKick(std::string str, Server *server, User *user)
 	if (arg.size() < 3)
 	{
 		// 461 ERR_NEEDMOREPARAMS
-		std::string error = std::string("localhost :") + "461 " + user->getNickname() + " " + arg[0] + " :Not enough parameters" + "\r\n";
+		std::string error = std::string(":localhost ") + "461 " + user->getNickname() + " " + arg[0] + " :Not enough parameters" + "\r\n";
 		send(user->getSocket(), error.c_str(), error.size(), 0);
 		return false;
 	}
@@ -39,7 +39,7 @@ bool	cmd::parseKick(std::string str, Server *server, User *user)
 	if (arg[channelArgID][0] != '#' && arg[channelArgID][0] != '&')
 	{
 		// 476 ERR_BADMASKCHANNEL
-		std::string error = std::string("localhost :") + "476 " + user->getNickname() + " " + arg[channelArgID] + " :Bad Channel Mask" + "\r\n";
+		std::string error = std::string(":localhost ") + "476 " + user->getNickname() + " " + arg[channelArgID] + " :Bad Channel Mask" + "\r\n";
 		send(user->getSocket(), error.c_str(), error.size(), 0);
 		return false;
 	}
@@ -47,7 +47,7 @@ bool	cmd::parseKick(std::string str, Server *server, User *user)
 	if (!server->channelAlreadyExist(arg[channelArgID]))
 	{
 		// 403 ERR_NOSUCHCHANNEL
-		std::string error = std::string("localhost :") + "403 " + user->getNickname() +  " :No such channel" + "\r\n";
+		std::string error = std::string(":localhost ") + "403 " + user->getNickname() +  " :No such channel" + "\r\n";
 		return false;
 	}
 
