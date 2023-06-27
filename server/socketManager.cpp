@@ -238,7 +238,7 @@ std::string Server::createServerResponseForConnection(int socket, Server::userCo
 		if ((*it).getNickname() == userInfo->nickName)
 			userWithSameNicknameExists = true;
 	}
-	if (userInfo->nickName.empty())
+	if (userInfo->nickName.empty() || userInfo->nickName == "")
 	{
 	    std::string response = std::string(":localhost ") + "431 " + userInfo->nickName + " " + ":No nickname given" + "\r\n";
 	    send(socket, response.c_str(), response.size(), 0);
