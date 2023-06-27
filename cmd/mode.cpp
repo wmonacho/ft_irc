@@ -128,8 +128,8 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 							chan->setUserLimit(atoi(splitArg[i + 2].c_str()));
 							rpl_channel_mode_is += chan->getName() + " +l " + splitArg[i + 2] + "\r\n";
 							this->sendMessageToAllUsersInChannel(rpl_channel_mode_is, chan);
-							break;
 						}
+						break;
 				  case 111:
 					  	//execute mode o
 						if (i + 2 < splitArg.size()) {
