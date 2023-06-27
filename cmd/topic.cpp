@@ -25,20 +25,18 @@ bool	cmd::parseTopic(std::string str, Server *server, User *user)
 	// 482	ERR_CHANOPRIVSNEEDED "<channel> :You're not channel operator"
    // std::cout << std::endl << std::endl << std::endl << std::endl << "cocu" << std::endl << std::endl << std::endl << std::endl << std::endl;
 	if (channel->getTopicAdmin() && !channel->getUserAdmin(user) && arg.size() >= 3) {
-		std::string error = std::string(":localhost ") + "482" + " " + arg[0] + " " + channel->getName() + " : No topic is set" + "\r\n";
+		std::string error = std::string(":localhost ") + "482" + " " + arg[0] + " " + channel->getName() + " :You're not channel operator" + "\r\n";
 		send(user->getSocket(), error.c_str(), error.size(), 0);
 		return false;
 	}
 	// Cas 1 : on renvoie le topic s'il existe
 	if (arg.size() <= 2) {
 		std::string topic_message;
-		std::cout << "we should not be here" << std::endl;
 		if (channel->getTopic().empty()) {
-			topic_message = std::string(":localhost ") + "331" + " " + user->getUsername() + " " + channel->getName() + " : No topic is set" + "\r\n";
+			topic_message = std::string(":localhost ") + "331" + " " + user->getNickname() + " " + channel->getName() + " : No topic is set" + "\r\n";
 		}
 		else
-			topic_message = std::string(":localhost ") + "332" + " " + user->getUsername() + " " + channel->getName() + " :" + channel->getTopic() + "\r\n";
-		std::cout << "TOPIC : " << topic_message << std::endl;
+			topic_message = std::string(":localhost ") + "332" + " " + user->getNickname() + " " + channel->getName() + " " + channel->getTopic() + "\r\n";
 		send(user->getSocket(), topic_message.c_str(), topic_message.size(), 0);
 		return true;
 	}
@@ -53,6 +51,10 @@ bool	cmd::parseTopic(std::string str, Server *server, User *user)
 		std::string new_topic = arg[2];
 		std::cout << "Setting up new topic --> " << new_topic << std::endl;
 		channel->setTopic(new_topic);
+		if (!channel->getTopic().empty()) {
+				std::string topic = std::string(":localhost ") + "332 " + user->getNickname() + " " + channel->getName() + " " + channel->getTopic() + "\r\n";
+				send(user->getSocket(), topic.c_str(), topic.size(), 0);
+		}
 		return true ;
 	}
 	return true;
