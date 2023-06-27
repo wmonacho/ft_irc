@@ -92,7 +92,7 @@ bool    cmd::parseNick(std::string str, Server *server, User *user) //recup le U
 	// int i = 0;
 	// while (splitArg[1][i])
 	// {
-	// 	if (splitArg[1][i] == '/' || splitArg[1][i] == '_' || splitArg[1][i] == '|'|| \
+	// 	if (splitArg[1][i] == '/' || splitArg[1][i] == '_' || splitArg[1][i] == '|'||
 	// 		splitArg[1][i] == '\\' || splitArg[1][i] == '@')
 	// 	{
 	// 		//numeric_replies
@@ -115,8 +115,7 @@ bool    cmd::parseNick(std::string str, Server *server, User *user) //recup le U
 	// 	splitArg[1].erase(pos, std::string::npos);
 	// }
 	// user->setNickname(splitArg[1]);
-	// return (true);
-	return true;
+	return (true);
 }
 
 bool    cmd::parseUser(std::string str, Server *server)
