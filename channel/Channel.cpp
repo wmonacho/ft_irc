@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:31:22 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/06/23 19:38:12 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/06/27 14:43:53 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -210,4 +210,20 @@ void	Channel::clearUserList()
 {
 	this->_channel_user_list.clear();
 	this->_invite_list.clear();
+}
+
+bool	Channel::channelHasOperator()
+{
+	for (std::map<const User*, UserAspects>::iterator it = this->_channel_user_list.begin(); it != _channel_user_list.end(); it++)
+	{
+		if (it->second.getAdmin())
+			return true;
+	}
+	return false;
+}
+
+void	Channel::setRemplacementOpe()
+{
+	if (this->_channel_user_list.begin() != this->_channel_user_list.end())
+		_channel_user_list.begin()->second.setAdmin(1);
 }

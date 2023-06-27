@@ -52,8 +52,8 @@ bool	cmd::parseTopic(std::string str, Server *server, User *user)
 		std::cout << "Setting up new topic --> " << new_topic << std::endl;
 		channel->setTopic(new_topic);
 		if (!channel->getTopic().empty()) {
-				std::string topic = std::string(":localhost ") + "332 " + user->getNickname() + " " + channel->getName() + " " + channel->getTopic() + "\r\n";
-				send(user->getSocket(), topic.c_str(), topic.size(), 0);
+			std::string topic = std::string(":localhost ") + "332 " + user->getNickname() + " " + channel->getName() + " " + channel->getTopic() + "\r\n";
+			send(user->getSocket(), topic.c_str(), topic.size(), 0);
 		}
 		return true ;
 	}
