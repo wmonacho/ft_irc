@@ -506,9 +506,13 @@ void	Server::sendUserList(Channel *channel, User *user)
 void	Server::partAllChannelWhereTheUserIsPresent(User *user) 
 {
 	cmd	cmd;
-	for (std::map<std::string, Channel*>::iterator channel_it = this->_channels.begin(); channel_it != this->_channels.end(); channel_it++) {
+
+	std::map<std::string, Channel*> map = this->_channels;
+	std::map<std::string, Channel*>::iterator channel_itEnd = map.end(); 
+
+	for (std::map<std::string, Channel*>::iterator channel_it = map.begin(); channel_it != channel_itEnd; channel_it++) {
 		if (this->userInChannel(channel_it->first, user)) {
-			cmd.parsePart("PART " + channel_it->first + " :Leaving", this, user);
+			cmd.parsePart("PART " + channel_it->first + " Leaving", this, user);
 		}
 	}
 }

@@ -30,7 +30,7 @@ bool	cmd::parsePart(std::string str, Server *server, User *user)
 		std::cout << "Channel ==> " << *it << std::endl;
 
 		if (server->channelAlreadyExist(*it) == false) {
-			std::string error = std::string(":localhost ") + "403" + " " + splitArg[0] + " " + *it_copy + " " + " :No such channel" + "\r\n";
+			std::string error = std::string(":localhost ") + "403 " + user->getNickname() + " " + splitArg[0] + " " + *it_copy + " " + " :No such channel" + "\r\n";
 			send(user->getSocket(), error.c_str(), error.size(), 0);
 			return false;
 		}
