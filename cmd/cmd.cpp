@@ -65,89 +65,101 @@ std::vector<std::string> cmd::splitString(std::string str, const char *delim)
 
 bool    cmd::parsePass(User *user, std::string str, Server *server)
 {
-	std::vector<std::string> splitArg = splitString(str, " ");
-	if (splitArg.size() != 2 || server->passwordAlreadyRegistred())
-		return (false);
-	server->setPassword(splitArg[1]);
-	std::string serverResponse = createServerMessage(user, "", splitArg);
-	send(user->getSocket(), serverResponse.c_str(), serverResponse.size(), 0);
+	(void)user;
+	(void)str;
+	(void)server;
+	std::cout << "GOING THROUGH PASS COMMAND" << std::endl;
+	// std::vector<std::string> splitArg = splitString(str, " ");
+	// if (splitArg.size() != 2 || server->passwordAlreadyRegistred())
+	// 	return (false);
+	// server->setPassword(splitArg[1]);
+	// std::string serverResponse = createServerMessage(user, "", splitArg);
+	// send(user->getSocket(), serverResponse.c_str(), serverResponse.size(), 0);
 	return (true);
 }
 
 bool    cmd::parseNick(std::string str, Server *server, User *user) //recup le User originaire de la commande
 {
 
+	(void)str;
+	(void)server;
+	(void)user;
+	std::cout << "GOING THROUGH NICK COMMAND" << std::endl;
 	// Parsing de la string (input du user)
-	std::vector<std::string> splitArg = splitString(str, " ");
-	if (splitArg.size() != 2)
-		return (false);
-	int i = 0;
-	while (splitArg[1][i])
-	{
-		if (splitArg[1][i] == '/' || splitArg[1][i] == '_' || splitArg[1][i] == '|'|| \
-			splitArg[1][i] == '\\' || splitArg[1][i] == '@')
-		{
-			//numeric_replies
-			std::cerr << "Erroneus_nickname" << std::endl;
-			return (false);
-		}
-		i++;
-	}
+	// std::vector<std::string> splitArg = splitString(str, " ");
+	// if (splitArg.size() != 2)
+	// 	return (false);
+	// int i = 0;
+	// while (splitArg[1][i])
+	// {
+	// 	if (splitArg[1][i] == '/' || splitArg[1][i] == '_' || splitArg[1][i] == '|'|| \
+	// 		splitArg[1][i] == '\\' || splitArg[1][i] == '@')
+	// 	{
+	// 		//numeric_replies
+	// 		std::cerr << "Erroneus_nickname" << std::endl;
+	// 		return (false);
+	// 	}
+	// 	i++;
+	// }
 
-	// Verifier si le NICK n'est pas deja attribue
-	if (server->nickAlreadyExist(splitArg[1])) {
-		return (false);
-	}
+	// // Verifier si le NICK n'est pas deja attribue
+	// if (server->nickAlreadyExist(splitArg[1])) {
+	// 	return (false);
+	// }
 
-	// On envoie la numeric_reply pour confirmer le changement et on fait le changement sur le serveur  
-	std::string nick_message = ":" + user->getNickname() + "!" + user->getUsername() + "@localhost " + splitArg[0] + " " + splitArg[1] + "\r\n";
-	send(user->getSocket(), nick_message.c_str(), nick_message.size(), 0);
-	if (splitArg[1].find("\n") != std::string::npos) {
-		size_t pos = splitArg[1].find("\n");
-		splitArg[1].erase(pos, std::string::npos);
-	}
-	user->setNickname(splitArg[1]);
-	return (true);
+	// // On envoie la numeric_reply pour confirmer le changement et on fait le changement sur le serveur  
+	// std::string nick_message = ":" + user->getNickname() + "!" + user->getUsername() + "@localhost " + splitArg[0] + " " + splitArg[1] + "\r\n";
+	// send(user->getSocket(), nick_message.c_str(), nick_message.size(), 0);
+	// if (splitArg[1].find("\n") != std::string::npos) {
+	// 	size_t pos = splitArg[1].find("\n");
+	// 	splitArg[1].erase(pos, std::string::npos);
+	// }
+	// user->setNickname(splitArg[1]);
+	// return (true);
+	return true;
 }
 
 bool    cmd::parseUser(std::string str, Server *server)
 {
 
-	//verifier si le user existe
-	std::vector<std::string> splitArg = splitString(str, " ");
-	std::cout << "splitArg.size() == " << splitArg.size() << std::endl;
-	if (splitArg.size() < 5)
-	{
-		//envoyer numeric replies
-		std::cerr << "USER: not enough parameters" << std::endl;
-		return (false);
-	}
-	if (splitArg.size() > 4 && (splitArg[2] == "0" && splitArg[3] == "*"))
-	{
-		//setuser
-		User    new_user;
+	(void)str;
+	(void)server;
+	std::cout << "GOING THROUGH USER COMMAND" << std::endl;
+	// //verifier si le user existe
+	// std::vector<std::string> splitArg = splitString(str, " ");
+	// std::cout << "splitArg.size() == " << splitArg.size() << std::endl;
+	// if (splitArg.size() < 5)
+	// {
+	// 	//envoyer numeric replies
+	// 	std::cerr << "USER: not enough parameters" << std::endl;
+	// 	return (false);
+	// }
+	// if (splitArg.size() > 4 && (splitArg[2] == "0" && splitArg[3] == "*"))
+	// {
+	// 	//setuser
+	// 	User    new_user;
 
-		server->createRandomUsername(new_user);
-		std::string real_name;
-		for (unsigned int i = 4; i < splitArg.size(); i++)
-		{
-			real_name += splitArg[i];
-		}
-		new_user.setRealname(real_name);
-		server->setUserList(new_user);
-		std::cout << "hello from parseUser, it's working bitch" << std::endl;
-	}
+	// 	server->createRandomUsername(new_user);
+	// 	std::string real_name;
+	// 	for (unsigned int i = 4; i < splitArg.size(); i++)
+	// 	{
+	// 		real_name += splitArg[i];
+	// 	}
+	// 	new_user.setRealname(real_name);
+	// 	server->setUserList(new_user);
+	// 	std::cout << "hello from parseUser, it's working bitch" << std::endl;
+	// }
 	return (true);
 }
 
-void cmd::whichCmd(std::string str, Server *server, User *user)
+int	cmd::whichCmd(std::string str, Server *server, User *user)
 {
-
 	std::vector<std::string> arg = splitString(str, " ");
 	size_t pos = str.find("\n");
 	if (pos != std::string::npos)
 		str[pos - 1] = '\0';
 	int j = -1;
+
 	for (int i = 0; i < 14; i++)
 	{
 		if (arg[0] == _cmd[i])
@@ -156,17 +168,18 @@ void cmd::whichCmd(std::string str, Server *server, User *user)
 			break;
 		}
 	}
+
 	switch (j)
 	{
 		case -1:
 			std::cerr << "str: \"" << str << "\" cmd not found" << std::endl;
-			return ;
+			return 1;
 
 		case 0:
 			if (parsePass(user, str, server) == false) // ** USED ON CONNECTION **
 			{
 				std::cerr << "Usage: PASS [password]" << std::endl;
-				return ;
+				return 1;
 			}
 			break;
 
@@ -174,7 +187,7 @@ void cmd::whichCmd(std::string str, Server *server, User *user)
 			if (parseNick(str, server, user) == false)
 			{
 				std::cerr << "Usage: NICK [nickname]" << std::endl;
-				return ;
+				return 1;
 			}
 			break;
 
@@ -182,12 +195,14 @@ void cmd::whichCmd(std::string str, Server *server, User *user)
 			if (parseUser(str, server) == false) // ** USED ON CONNECTION **
 			{
 				std::cerr << "Usage: USER <user> <mode> <unused> <realname>";
-				return ;
+				return 1;
 			}
 			break;
 
 		case 3:
-			parseMode(str, server, user);
+			if (parseMode(str, server, user) == false) {
+				return 1;
+			}
 			break;
 
 		case 4:
@@ -195,15 +210,15 @@ void cmd::whichCmd(std::string str, Server *server, User *user)
 			if (parseQuit(server, str, user) == false)
 			{
 				std::cerr << "Usage: QUIT [ <Quit Message> ]" << std::endl;
-				return ;
+				return 1;
 			}
-			break;
+			return 2;
 
 		case 5:
 			if (parseJoin(str, server, user) == false)
 			{
 				// std::cerr << "Usage: JOIN <channel>" << std::endl;
-				return ;
+				return 1;
 			}
 			break;
 
@@ -212,7 +227,7 @@ void cmd::whichCmd(std::string str, Server *server, User *user)
 			if (parsePart(str, server, user) == false)
 			{
 				std::cerr << "Usage: PART <channel> *( \",\" <channel> ) [ <Part Message> ] " << std::endl;
-				return ;
+				return 1;
 			}
 			break;
 
@@ -221,7 +236,7 @@ void cmd::whichCmd(std::string str, Server *server, User *user)
 			if (parseTopic(str, server, user) == false)
 			{
 				std::cerr << "Usage: <channel> [ <topic> ]" << std::endl;
-				return ;
+				return 1;
 			}
 			break;
 		case 10:
@@ -236,6 +251,8 @@ void cmd::whichCmd(std::string str, Server *server, User *user)
 			parsePrivmsg(str, server, user);
 			break;
 	}
+	std::cout << "DEBUG 5 (after switch case)" << std::endl;
+	return 0;
 	//std::cout << "user_addr :" << &(*server->getChannelUser("channel", "will")) << std::endl;
 }
 

@@ -52,6 +52,7 @@ class Server {
 		struct clientData {
 			std::string							dataString;
 			bool								clientIsConnected;
+			bool								waitForNewBUffer;
 			struct userConnectionRegistration	userConnectionRegistration;
 		};
 		clientData _clientDataArray[MAX_SOCKETS];

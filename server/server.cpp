@@ -466,12 +466,12 @@ void	Server::deleteChannel(std::string channel_name)
 void	Server::deleteUserFromUserList(User user)
 {
 	for (unsigned int i = 0; i < this->_user_list.size(); i++) {
-		if (this->_user_list[i].getNickname() == user.getNickname()) {
-			std::vector<User>::iterator it;
-			it = this->_user_list.begin();
-			this->_user_list.erase(it + i);
-			break;
-		}
+			if (this->_user_list[i].getNickname() == user.getNickname()) {
+				std::vector<User>::iterator it;
+				it = this->_user_list.begin();
+				this->_user_list.erase(it + i);
+				break;
+			}
 	}
 }
 

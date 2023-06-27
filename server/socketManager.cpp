@@ -21,6 +21,10 @@ void    Server::startServer() {
 
 	Server::clientData *clientData = getClientDataArray();
 
+	for (int i = 0; i < MAX_SOCKETS; i++) {
+		clientData[i].clientIsConnected = false;
+	}
+
 	// The main loops implements poll() : we detect if the socket is connecting or connected and act in consequence
 	do {
 		pollReturn = poll(fds, nfds, -1);
@@ -257,6 +261,7 @@ std::string Server::createServerResponseForConnection(int socket, Server::userCo
 	    send(socket, response.c_str(), response.size(), 0);
 	    return "";
 	}
+
 	createNewUserAtConnection(userInfo->nickName, userInfo->userName, socket);
 	std::string server_response = ":localhost 001 " + userInfo->nickName + " :Welcome to the Internet Relay Network " + userInfo->nickName + "!" + userInfo->userName + "@localhost\r\n";
 	return (server_response);
@@ -271,6 +276,7 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
 	char		buffer[512];
 	int			recvReturn;
 	int			connectionDone;
+	int			clientStatus;
 	User		*user;
 
 	// clientData = &clientData[socketID];
@@ -310,13 +316,16 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
 			if (clientData->clientIsConnected == true) {
 
 				// Display for testing purpose
-				std::cout << "------======= SOCKET " << socketID <<  " ========------" << std::endl;
-				std::cout << "Buffer " << " : " << clientData->dataString << std::endl;
+				std::cout << "------======= HANDLING SOCKET " << socketID <<  " ========------" << std::endl;
+				std::cout << "========Buffer========\n" << clientData->dataString;
+				std::cout << "======================" << std::endl;
 
 				// We handle the command here
 				cmd command;
 				user = this->getUserBySocket(fds[socketID].fd);
-				command.whichCmd(clientData->dataString.c_str(), this, user);
+				clientStatus = command.whichCmd(clientData->dataString.c_str(), this, user);
+				if (clientStatus == 2)
+					clientData->clientIsConnected = false;
 
 				// We clear the dataString for the next data that will be in that socket and we get back to the poll() loop
 				clientData->dataString.clear();
