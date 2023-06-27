@@ -109,7 +109,6 @@ int Server::verifyClientAndServerResponse(struct pollfd fds, Server::clientData 
 	// We retrieve the connection informations from the socket and set flags if we find them
 	if (getClientInformationsOnConnection(fds, userInfo, clientData->dataString) == false)
 		return (0);
-
 	// We create the string for the RPL_WELCOME and make a few checks (correct password and if the nickanme is not currently used)
 	server_response_for_connection = createServerResponseForConnection(fds.fd, userInfo);
 	if (server_response_for_connection.empty())
@@ -236,6 +235,7 @@ std::string Server::createServerResponseForConnection(int socket, Server::userCo
 	bool	userWithSameNicknameExists = false;
 	std::vector<User> userVector = this->getUserList();
 
+	std::cout << "From createserverresponse" << std::endl;
 	for (std::vector<User>::iterator it = userVector.begin(); it != userVector.end(); it++) {
 		if ((*it).getNickname() == userInfo->nickName)
 			userWithSameNicknameExists = true;
@@ -247,10 +247,10 @@ std::string Server::createServerResponseForConnection(int socket, Server::userCo
 		userInfo->nickCheck = false;
 	    return "";
 	}
-	if (userInfo->nickName.find('#') != std::string::npos || userInfo->nickName.find('&') != std::string::npos) {
+	if (userInfo->nickName.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_", 0) != std::string::npos) {
 	    std::string response = std::string(":localhost ") + "432 " + userInfo->nickName + " " + userInfo->nickName + " :Erroneous nickname" + "\r\n";
 	    send(socket, response.c_str(), response.size(), 0);
-		userInfo->nickCheck = false;
+	    userInfo->nickCheck = false;
 	    return "";
 	}
 
