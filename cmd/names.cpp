@@ -16,7 +16,7 @@ bool	cmd::parseNames(std::string str, Server *server, User *user)
 			std::map<const User*, UserAspects> userlist = it->second->getUserList();
 			for (std::map<const User*, UserAspects>::iterator itUser = userlist.begin(); itUser != userlist.end(); itUser++)
 			{
-				std::cout << itUser->first->getUsername() << std::endl;
+				std::cout << itUser->first->getNickname() << std::endl;
 				std::vector<User>::iterator iter = std::find(userListCopy.begin(), userListCopy.end(), itUser->first);
 		  		std::string rpl_namreply = std::string(":localhost ") + "353" + " " + itUser->first->getNickname();
 		  		send(user->getSocket(), rpl_namreply.c_str(), rpl_namreply.size(), 0);
@@ -27,7 +27,7 @@ bool	cmd::parseNames(std::string str, Server *server, User *user)
 		 send(user->getSocket(), rpl_endofnames.c_str(), rpl_endofnames.size(), 0);
 	 }
 		for (std::vector<User>::iterator cpyIt = userListCopy.begin(); cpyIt != userListCopy.end(); cpyIt++)
-			std::cout << "'*' " << (*cpyIt).getUsername() << std::endl;
+			std::cout << "'*' " << (*cpyIt).getNickname() << std::endl;
 	}
 	if (arg.size() == 2)
 	{
@@ -44,7 +44,7 @@ bool	cmd::parseNames(std::string str, Server *server, User *user)
 		  std::map<const User*, UserAspects> userlist = chan->getUserList();
 		  for (std::map<const User*, UserAspects>::iterator itUser = userlist.begin(); itUser != userlist.end(); itUser++)
 		  {
-			  std::cout << itUser->first->getUsername() << std::endl;
+			  std::cout << itUser->first->getNickname() << std::endl;
 			  std::string rpl_namreply = std::string(":localhost ") + "353" + " " + itUser->first->getUsername();
 			  send(user->getSocket(), rpl_namreply.c_str(), rpl_namreply.size(), 0);
 		  }
