@@ -17,7 +17,7 @@ UserAspects::UserAspects( UserAspects const & obj)
 
 UserAspects	&UserAspects::operator=( UserAspects const & rhs)
 {
-	(void)rhs;
+	this->_admin = rhs._admin;
 	return (*this);
 }
 
@@ -28,7 +28,7 @@ UserAspects::~UserAspects( void )
 
 bool	UserAspects::getAdmin( void ) const
 {
-	if(this->_admin)
+	if (this->_admin)
 		return true;
 	return false;
 }

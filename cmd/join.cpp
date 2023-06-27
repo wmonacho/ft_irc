@@ -5,6 +5,12 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 	// Parsing de la string (commande + argument )
 	std::vector<std::string> splitArg = splitString(str, " ");
 
+
+	if (splitArg.size() == 2 && splitArg[1] == "0") {
+		server->partAllChannelWhereTheUserIsPresent(user);
+		return true;
+	}
+
 	if (splitArg.size() < 2) {
 		// 461	ERR_NEEDMOREPARAMS
 		std::string error = std::string("localhost :") + "461 " + user->getNickname() + " " + splitArg[0] + " :Not enough parameters" + "\r\n";
@@ -42,13 +48,6 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 			  	continue;
 			}
 
-			if (channel->getUserList().find(user) != channel->getUserList().end())
-			{
-				std::cout << "USER ALDREADY ON THIS CHANNEL" << std::endl;
-			}
-			else 
-				std::cout << "USER NOT YET ON THIS CHANNEL" << std::endl;
-
 			if (splitArg.size() < 3 && channel->getPassword() != "") {
 				// 475	ERR_BADCHANNELKEY
 				std::string error = std::string("localhost :") + "475 " + user->getNickname() + " " + channels[i] + " :Cannot join channel (+k)" + "\r\n";
@@ -81,7 +80,7 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 				continue;
 			}
 
- 			UserAspects	new_aspects(0);
+ 			UserAspects	new_aspects(false);
 
 			server->addUserToChannel(channel_name, user, new_aspects);
 			this->sendMessageToAllUsersInChannel(server_response, channel);
@@ -98,57 +97,29 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 			}
 
 			// User list : we send a RPL_NAMREPLY
-			if (channel->getUserList().size() > 0) {
-
-				std::map<const User *, UserAspects> map = channel->getUserList();
-
-				// Create RPL_NAMREPLY string
-				std::string user_list = std::string(":localhost ") + "353 " + user->getNickname() + " = " + channel_name + " :";
-				
-				// Loop to append all of the nicknames of all the users present in the channel
-				for (std::map<const User *, UserAspects>::iterator userInChannel = map.begin(); userInChannel != map.end(); userInChannel++) {
-
-					if (userInChannel->second.getAdmin())
-						user_list.append("@");
-					user_list.append(userInChannel->first->getNickname());
-					if (userInChannel != --map.end())
-						user_list.append(" ");
-				}
-
-				user_list.append("\r\n");
-				std::cout << "USER_LIST = " << user_list << std::endl;
-				send(user->getSocket(), user_list.c_str(), user_list.size(), 0);
-			}
+			server->sendUserList(channel, user);
 			continue;
 		}
 
 		// Cas 2 : le channel n'existe pas, il faut donc le creer dans notre serveur et y ajouter l'utilisateur
-		if (!server->channelAlreadyExist(channel_name))
-		{
-		    std::string cpy = channel_name;
-		    cpy.erase(0, 1);
-		    if (cpy.find_first_not_of("abcdefghijklmnopqrstuvwxyz0123456789", 0) || !cpy.find_first_of("#", 0))
-		    {
-			 std::cerr << "Bad channel name, use only alphanumerics pls" << std::endl;
-			 return false;
-		    }
+		if (!server->channelAlreadyExist(channel_name)) {
 
-		    UserAspects	new_aspects(1);
-		    Channel *channel = new Channel(channel_name);
+			UserAspects	new_aspects(true);
+			Channel *channel = new Channel(channel_name);
 
-		    server->createNewChannel(channel_name, channel);
-		    if (!server->getChannel(channel_name))
-		    {
-			 delete	channel;
-			 return false;
-		    }
-		    server->addUserToChannel(channel_name, user, new_aspects);
-		    sendMessageToAllUsersInChannel(server_response, server->getChannel(channel_name));
+			server->createNewChannel(channel_name, channel);
+			if (!server->getChannel(channel_name))
+			{
+				delete	channel;
+				return false;
+			}
+			server->addUserToChannel(channel_name, user, new_aspects);
+			sendMessageToAllUsersInChannel(server_response, server->getChannel(channel_name));
 
-		    // We send a RPL_NAMREPLY so the first user of the channel can see he is in the
-		    // channel
-		    std::string user_list = std::string(":localhost ") + "353 " + user->getNickname() + " = " + channel_name + " :" + user->getNickname() + "\r\n";
-		    send(user->getSocket(), user_list.c_str(), user_list.size(), 0);
+			// We send a RPL_NAMREPLY so the first user of the channel can see he is in the channel
+			server->sendUserList(channel, user);
+			//std::string user_list = std::string(":localhost ") + "353 " + user->getNickname() + " = " + channel_name + " :@" + user->getNickname() + "\r\n";
+			//send(user->getSocket(), user_list.c_str(), user_list.size(), 0);
 		}
 	}
 	return true;

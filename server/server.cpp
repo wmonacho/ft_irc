@@ -258,11 +258,6 @@ const User* Server::getChannelUser(std::string channel_name, std::string user_na
 	return (this->_channels.find(channel_name)->second->getUser(this->getConstUser(user_name)));
 }
 
-Server::userConnectionRegistration* Server::getUserConnectionRegistrationStruct(void) {
-
-	return (&this->_userConnectionRegistration);
-}
-
 Server::clientData*	Server::getClientDataArray (void) {
 
 	return _clientDataArray;
@@ -332,16 +327,6 @@ void	Server::setUserRealname(User user, std::string new_realname)
 {
 	user.setRealname(new_realname);
 }
-
-void    Server::setUserConnectionResitrationStruct(std::string pass, std::string nick, std::string user) {
-
-	this->_userConnectionRegistration.password = pass;
-	this->_userConnectionRegistration.nickName = nick;
-	this->_userConnectionRegistration.userName = user;
-	return ;
-}
-
-//void	Server::setChannelUserAdmin
 
 /* SERVER FUNCTIONS */
 
@@ -476,6 +461,44 @@ void	Server::deleteUserFromUserList(User user)
 			it = this->_user_list.begin();
 			this->_user_list.erase(it + i);
 			break;
+		}
+	}
+}
+
+void	Server::sendUserList(Channel *channel, User *user)
+{
+	(void) user;
+	std::string channel_name = channel->getName();
+	std::map<const User *, UserAspects> map = channel->getUserList();
+	if (channel->getUserList().size() > 0) {
+		for (std::map<const User *, UserAspects>::iterator user_it = map.begin(); user_it != map.end(); user_it++) {
+
+			// Create RPL_NAMREPLY string
+			std::string user_list = std::string(":localhost ") + "353 " + user_it->first->getNickname() + " = " + channel_name + " :";
+
+			// Loop to append all of the nicknames of all the users present in the channel
+			for (std::map<const User *, UserAspects>::iterator userInChannel = map.begin(); userInChannel != map.end(); userInChannel++) {
+
+				if (this->getChannelUserAdmin(channel_name, this->getUser(userInChannel->first->getNickname())))
+					user_list.append("@");
+				user_list.append(userInChannel->first->getNickname());
+				if (userInChannel != --map.end())
+					user_list.append(" ");
+			}
+
+			user_list.append("\r\n");
+			std::cout << "USER_LIST = " << user_list << std::endl;
+			send(user_it->first->getSocket(), user_list.c_str(), user_list.size(), 0);
+		}
+	}
+}
+
+void	Server::partAllChannelWhereTheUserIsPresent(User *user) 
+{
+	cmd	cmd;
+	for (std::map<std::string, Channel*>::iterator channel_it = this->_channels.begin(); channel_it != this->_channels.end(); channel_it++) {
+		if (this->userInChannel(channel_it->first, user)) {
+			cmd.parsePart("PART " + channel_it->first + " :Leaving", this, user);
 		}
 	}
 }
