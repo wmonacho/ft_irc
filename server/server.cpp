@@ -532,3 +532,8 @@ void	Server::setChannelRemplacementOpe(std::string channel_name)
 {
 	this->getChannel(channel_name)->setRemplacementOpe();
 }
+
+void	Server::addReply(int socketfd, std::string	message)
+{
+	this->_reply.push_back(std::make_pair(socketfd, message));
+}

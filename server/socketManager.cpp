@@ -296,7 +296,6 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
 			closeConnection = true;
 			return (closeConnection);
 		}
-
 		clientData->dataString += buffer;
 		// If we get a correct request, we can use it, otherwise we try to receive what is left
 		if (!clientData->dataString.empty() && (clientData->dataString.find("\n") != std::string::npos)) {

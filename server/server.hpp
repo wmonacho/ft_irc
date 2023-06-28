@@ -36,6 +36,7 @@ class Server {
 		socklen_t   _clientLen;
 		std::string _password;
 		std::vector<User>	_user_list;
+		std::vector<std::pair<int, std::string> >	_reply;
 		struct sockaddr_in  _servAddr;
 		struct sockaddr_in  _clientAddr;
 		std::map<std::string, Channel*>  _channels;
@@ -146,5 +147,6 @@ class Server {
 		void									partAllChannelWhereTheUserIsPresent(User *user) ;
 		bool									channelHasOperator(std::string channel_name) ;
 		void									setChannelRemplacementOpe(std::string channel_name);
+		void									addReply(int socketfd, std::string	message);
 };
 #endif
