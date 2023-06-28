@@ -87,7 +87,7 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 
 			// On envoie le topic s'il existe
 			if (!channel->getTopic().empty()) {
-				std::string topic = std::string(":localhost ") + "332 " + user->getNickname() + " " + channels[i] + " :" + channel->getTopic() + "\r\n";
+				std::string topic = std::string(":localhost ") + "332 " + user->getNickname() + " " + channels[i] + " " + channel->getTopic() + "\r\n";
 				send(user->getSocket(), topic.c_str(), topic.size(), 0);
 			}
 
@@ -122,12 +122,12 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 			sendMessageToAllUsersInChannel(server_response, server->getChannel(channel_name));
 
 			if (!channel->getTopic().empty()) {
-				std::string topic = std::string(":localhost ") + "332 " + user->getNickname() + " " + channels[i] + " :" + channel->getTopic() + "\r\n";
+				std::string topic = std::string(":localhost ") + "332 " + user->getNickname() + " " + channels[i] + " " + channel->getTopic() + "\r\n";
 				send(user->getSocket(), topic.c_str(), topic.size(), 0);
 			}
 
 			if (channel->getTopic().empty()) {
-				std::string topic = std::string(":localhost ") + "331 " + user->getNickname() + " " + channels[i] + " :Not topic is set" + "\r\n";
+				std::string topic = std::string(":localhost ") + "331 " + user->getNickname() + " " + channels[i] + " :No topic is set" + "\r\n";
 				send(user->getSocket(), topic.c_str(), topic.size(), 0);
 			}
 
