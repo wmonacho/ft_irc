@@ -167,12 +167,13 @@ int	cmd::whichCmd(std::string str, Server *server, User *user)
 			break;
 		}
 	}
-
+	std::string response;
 	switch (j)
 	{
 		case -1:
-			std::cerr << "str: \"" << str << "\" cmd not found" << std::endl;
-			return 1;
+		    response = std::string(":localhost ") + "421 " + user->getNickname() + " " + arg[0] + ":Unknown command\r\n";
+		    send(user->getSocket(), response.c_str(), response.size(), 0);
+		    return 1;
 
 		// case 0:
 		// 	if (parsePass(user, str, server) == false) // ** USED ON CONNECTION **
