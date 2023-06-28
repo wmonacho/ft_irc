@@ -32,6 +32,7 @@ bool	cmd::parsePart(std::string str, Server *server, User *user)
 			send(user->getSocket(), error.c_str(), error.size(), 0);
 			return false;
 		}
+		
 		//verifier si l'user est bien dans le channel
 		// 442 ERR_NOTONCHANNEL "<channel> :You're not on that channel"
 		if (server->userInChannel(*it, user) == false) {
