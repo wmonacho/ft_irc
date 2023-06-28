@@ -51,9 +51,11 @@ void    Server::startServer() {
 			else {
 				closeConnection = retrieveDataFromConnectedSocket(socketID, fds, closeConnection, &clientData[socketID]);
 				if (closeConnection == true) {
-					//std::cerr << "/!!\\ Closing connection for socket " << socketID << " /!!\\" << std::endl;
-					close(fds[socketID].fd);
-					fds[socketID].fd = -1;
+					std::cerr << "/!!\\ Closing connection for socket " << socketID << " /!!\\" << std::endl;
+					if (fds[socketID].fd != -1) {
+						close(fds[socketID].fd);
+						fds[socketID].fd = -1;
+					}
 				}
 			}
 		}
@@ -77,14 +79,12 @@ void    Server::startServer() {
 int Server::acceptNewConnection(struct pollfd *fds, int nfds) {
 
 	int newSocket;
-	int errorStatus = -1;
+	// int errorStatus = -1;
 
 	do {
 		newSocket = accept(this->_socketfd, NULL, NULL);
 		if (newSocket < 0) { 
-			if (errno != EWOULDBLOCK) {
-				nfds = errorStatus;
-			}
+			std::cerr << "REMOVED EWOULDBLOCK --> ACCEPT returns < 0\n";
 			break ;
 		}
 		// This is a new socket so we add it to our socket pool
@@ -195,10 +195,8 @@ bool Server::getClientInformationsOnConnection(struct pollfd fds, Server::userCo
 	if (userInfo->passCheck == false)
 		userInfo->passCheck = findPassInBuffer(data.c_str(), userInfo);
 	if (userInfo->passCheck == true) {
-		if (userInfo->nickCheck == false) {
-
+		if (userInfo->nickCheck == false)
 			userInfo->nickCheck = findNickInBuffer(data.c_str(), userInfo);
-		}
 		if (userInfo->userCheck == false)
 			userInfo->userCheck = findUserInBuffer(data.c_str(), userInfo);
 	}
@@ -282,27 +280,24 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
 	int			connectionDone;
 	int			clientStatus;
 	User		*user;
-
-	// clientData = &clientData[socketID];
+	cmd			command;
 
 	closeConnection = false;
 	while (1) {
 		memset(buffer, 0, sizeof(buffer));
 		recvReturn = recv(fds[socketID].fd, buffer, sizeof(buffer), MSG_DONTWAIT);
 		if (recvReturn < 0) {
-			if (errno != EWOULDBLOCK) {
-				//std::cerr << "Error: recv() failed" << std::endl;
-				closeConnection = true;
-			}
+			std::cerr << "REMOVED EWOULDBLOCK --> RECV returns < 0\n";
 			return (closeConnection);
 		}
 		if (recvReturn == 0) {
-			//std::cerr << "Connection closed for socket " << socketID << std::endl;
+			std::cerr << "****** Connection closed for socket : " << socketID << std::endl;
+			command.parseQuit(this, "QUIT :Leaving", this->getUserBySocket(fds[socketID].fd));
 			closeConnection = true;
 			return (closeConnection);
 		}
-		clientData->dataString += buffer;
 
+		clientData->dataString += buffer;
 		// If we get a correct request, we can use it, otherwise we try to receive what is left
 		if (!clientData->dataString.empty() && (clientData->dataString.find("\n") != std::string::npos)) {
 
@@ -324,9 +319,8 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
 				std::cout << "======================" << std::endl;
 
 				// We handle the command here
-				cmd command;
 				user = this->getUserBySocket(fds[socketID].fd);
-				clientStatus = command.whichCmd(clientData->dataString.c_str(), this, user);
+				clientStatus = command.whichCmd(clientData->dataString, this, user);
 				if (clientStatus == 2) {
 					clientData->clientIsConnected = false;
 					closeConnection = true;
