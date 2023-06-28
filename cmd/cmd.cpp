@@ -11,8 +11,8 @@ cmd::cmd()
 	_cmd[5] = "JOIN";
 	_cmd[6] = "PART";
 	_cmd[7] = "TOPIC";
-	_cmd[8] = "NAMES";
-	_cmd[9] = "LIST";
+	_cmd[8] = "WHO";
+	_cmd[9] = "CAP";
 	_cmd[10] = "INVITE";
 	_cmd[11] = "KICK";
 	_cmd[12] = "PRIVMSG";
@@ -107,7 +107,7 @@ int	cmd::whichCmd(std::string str, Server *server, User *user)
 	switch (j)
 	{
 		case -1:
-		    response = std::string(":localhost ") + "421 " + user->getNickname() + " " + arg[0] + ":Unknown command\r\n";
+		    response = std::string(":localhost ") + "421 " + user->getNickname() + " " + arg[0] + " :Unknown command\r\n";
 		    send(user->getSocket(), response.c_str(), response.size(), 0);
 		    return 1;
 
@@ -175,6 +175,10 @@ int	cmd::whichCmd(std::string str, Server *server, User *user)
 				return 1;
 			}
 			break;
+		case 8:
+			break;
+		case 9:
+			 break;
 		case 10:
 			 parseInvite(str, server, user);
 			 break;
