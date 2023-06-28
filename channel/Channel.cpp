@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:31:22 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/06/27 14:43:53 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/06/28 18:19:03 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,9 @@ Channel::Channel()
     this->_name = "";
     this->_topic = "";
     this->_password = "";
-    this ->_inviteOnly = false;
+    this->_inviteOnly = false;
+	this->_secret = false;
+	this->_topicAdmin = false;
     this->_userLimit = -1;	
 }
 
@@ -27,6 +29,8 @@ Channel::Channel( std::string name )
     this->_topic = "";
     this->_password = "";
     this ->_inviteOnly = false;
+	this->_secret = false;
+	this->_topicAdmin = false;
     this->_userLimit = -1;
 }
 
