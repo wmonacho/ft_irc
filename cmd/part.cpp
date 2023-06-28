@@ -23,10 +23,6 @@ bool	cmd::parsePart(std::string str, Server *server, User *user)
 	while (it != channels.end())
 	{
 		//verifier si le channel existe
-		// 403 ERR_NOSUCHCHANNEL "<channel name> :No such channel"
-		//it->erase(0, 1);
-		std::cout << "Channel ==> " << *it << std::endl;
-
 		if (server->channelAlreadyExist(*it) == false) {
 			std::string error = std::string(":localhost ") + "403 " + user->getNickname() + " " + splitArg[0] + " " + *it_copy + " " + " :No such channel" + "\r\n";
 			send(user->getSocket(), error.c_str(), error.size(), 0);
@@ -34,7 +30,6 @@ bool	cmd::parsePart(std::string str, Server *server, User *user)
 		}
 		
 		//verifier si l'user est bien dans le channel
-		// 442 ERR_NOTONCHANNEL "<channel> :You're not on that channel"
 		if (server->userInChannel(*it, user) == false) {
 			std::string error = std::string(":localhost ") + "442" + " " + splitArg[0] + " " + *it_copy + " " + " :You're not on that channel" + "\r\n";
 			send(user->getSocket(), error.c_str(), error.size(), 0);

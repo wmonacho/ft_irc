@@ -68,7 +68,6 @@ bool    cmd::parsePass(User *user, std::string str, Server *server)
 	(void)user;
 	(void)str;
 	(void)server;
-
 	return (true);
 }
 
@@ -77,37 +76,6 @@ bool    cmd::parseNick(std::string str, Server *server, User *user) //recup le U
 	(void)str;
 	(void)server;
 	(void)user;
-	std::cout << "GOING THROUGH NICK COMMAND" << std::endl;
-	// Parsing de la string (input du user)
-	// std::vector<std::string> splitArg = splitString(str, " ");
-	// if (splitArg.size() != 2)
-	// 	return (false);
-	// int i = 0;
-	// while (splitArg[1][i])
-	// {
-	// 	if (splitArg[1][i] == '/' || splitArg[1][i] == '_' || splitArg[1][i] == '|'||
-	// 		splitArg[1][i] == '\\' || splitArg[1][i] == '@')
-	// 	{
-	// 		//numeric_replies
-	// 		std::cerr << "Erroneus_nickname" << std::endl;
-	// 		return (false);
-	// 	}
-	// 	i++;
-	// }
-
-	// // Verifier si le NICK n'est pas deja attribue
-	// if (server->nickAlreadyExist(splitArg[1])) {
-	// 	return (false);
-	// }
-
-	// // On envoie la numeric_reply pour confirmer le changement et on fait le changement sur le serveur  
-	// std::string nick_message = ":" + user->getNickname() + "!" + user->getUsername() + "@localhost " + splitArg[0] + " " + splitArg[1] + "\r\n";
-	// send(user->getSocket(), nick_message.c_str(), nick_message.size(), 0);
-	// if (splitArg[1].find("\n") != std::string::npos) {
-	// 	size_t pos = splitArg[1].find("\n");
-	// 	splitArg[1].erase(pos, std::string::npos);
-	// }
-	// user->setNickname(splitArg[1]);
 	return (true);
 }
 
@@ -116,31 +84,6 @@ bool    cmd::parseUser(std::string str, Server *server)
 
 	(void)str;
 	(void)server;
-	std::cout << "GOING THROUGH USER COMMAND" << std::endl;
-	// //verifier si le user existe
-	// std::vector<std::string> splitArg = splitString(str, " ");
-	// std::cout << "splitArg.size() == " << splitArg.size() << std::endl;
-	// if (splitArg.size() < 5)
-	// {
-	// 	//envoyer numeric replies
-	// 	std::cerr << "USER: not enough parameters" << std::endl;
-	// 	return (false);
-	// }
-	// if (splitArg.size() > 4 && (splitArg[2] == "0" && splitArg[3] == "*"))
-	// {
-	// 	//setuser
-	// 	User    new_user;
-
-	// 	server->createRandomUsername(new_user);
-	// 	std::string real_name;
-	// 	for (unsigned int i = 4; i < splitArg.size(); i++)
-	// 	{
-	// 		real_name += splitArg[i];
-	// 	}
-	// 	new_user.setRealname(real_name);
-	// 	server->setUserList(new_user);
-	// 	std::cout << "hello from parseUser, it's working bitch" << std::endl;
-	// }
 	return (true);
 }
 
@@ -168,29 +111,29 @@ int	cmd::whichCmd(std::string str, Server *server, User *user)
 		    send(user->getSocket(), response.c_str(), response.size(), 0);
 		    return 1;
 
-		// case 0:
-		// 	if (parsePass(user, str, server) == false) // ** USED ON CONNECTION **
-		// 	{
-		// 		std::cerr << "Usage: PASS [password]" << std::endl;
-		// 		return 1;
-		// 	}
-		// 	break;
+		 case 0:
+		 	if (parsePass(user, str, server) == false) // ** USED ON CONNECTION **
+		 	{
+		 		std::cerr << "Usage: PASS [password]" << std::endl;
+		 		return 1;
+		 	}
+		 	break;
 
-		// case 1:
-		// 	if (parseNick(str, server, user) == false)
-		// 	{
-		// 		std::cerr << "Usage: NICK [nickname]" << std::endl;
-		// 		return 1;
-		// 	}
-		// 	break;
+		 case 1:
+		 	if (parseNick(str, server, user) == false)
+		 	{
+		 		std::cerr << "Usage: NICK [nickname]" << std::endl;
+		 		return 1;
+		 	}
+		 	break;
 
-		// case 2:
-		// 	if (parseUser(str, server) == false) // ** USED ON CONNECTION **
-		// 	{
-		// 		std::cerr << "Usage: USER <user> <mode> <unused> <realname>";
-		// 		return 1;
-		// 	}
-		// 	break;
+		case 2:
+		 	if (parseUser(str, server) == false) // ** USED ON CONNECTION **
+			{
+			     std::cerr << "Usage: USER <user> <mode> <unused> <realname>";
+			     return 1;
+		 	}
+			break;
 
 		case 3:
 			if (parseMode(str, server, user) == false) {
@@ -245,7 +188,6 @@ int	cmd::whichCmd(std::string str, Server *server, User *user)
 			break;
 	}
 	return 0;
-	//std::cout << "user_addr :" << &(*server->getChannelUser("channel", "will")) << std::endl;
 }
 
 std::string    cmd::createServerMessage(User *user, std::string numReply, std::vector<std::string> splitArg)
@@ -256,7 +198,6 @@ std::string    cmd::createServerMessage(User *user, std::string numReply, std::v
 		tmp = ":" + user->getNickname() + "!" + user->getUsername() + "@localhost " + splitArg[0] + " " + splitArg[1] + "\r\n";
 	else
 		tmp = ":" + user->getNickname() + "!" + user->getUsername() + "@localhost " + numReply + " " + splitArg[0] + " " + splitArg[1] + "\r\n";
-	std::cout << "SERVER RESPONSE  " << tmp;
 	return (tmp);
 }
 
@@ -273,18 +214,6 @@ void    cmd::sendMessageToAllUsersInChannel(std::string message, Channel *channe
 
 	while (user != userEnd) {
 		std::string tmp = message;
-		//for (std::map<const User*, UserAspects>::iterator user_bis = maptmp.begin(); user_bis != userEnd; user_bis++)
-		//{
-		//	if (tmp.find(user_bis->first->getNickname()) != std::string::npos)
-		//	{
-		//		size_t	index = tmp.find(user_bis->first->getNickname());
-		//		tmp.erase(index, user_bis->first->getNickname().size());
-		//		tmp.insert(index, user->first->getNickname());
-		//		break;
-		//	}
-		//}
-		std::cout << "********** Recipient ==> " << user->first->getNickname() << std::endl;
-		std::cout << "********** Message   ==> " << tmp << std::endl;
 		send(user->first->getSocket(), tmp.c_str(), tmp.size(), 0);
 		user++;
 	}
