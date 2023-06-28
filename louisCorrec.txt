@@ -1,0 +1,10 @@
+
+- Part sans message segfault dans netcat (pas de message par defaut dans netcat)
+
+-  pas de retour d'erreur pour les commandes inconnues ( 421 ERR_UNKNOWNCOMMAND "<command> :Unknown command")
+
+- pas de message d'erreur pour privmsg
+
+- espaces mangés dans privmsg (on split sur les espaces alors qu'on devrait find dans le buffer sur les deux points)
+
+- privmsg + " " segfault dans netcat
