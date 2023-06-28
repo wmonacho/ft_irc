@@ -23,7 +23,6 @@ bool	cmd::parseTopic(std::string str, Server *server, User *user)
 		return false; 
 	}
 	// 482	ERR_CHANOPRIVSNEEDED "<channel> :You're not channel operator"
-   // std::cout << std::endl << std::endl << std::endl << std::endl << "cocu" << std::endl << std::endl << std::endl << std::endl << std::endl;
 	if (channel->getTopicAdmin() && !channel->getUserAdmin(user) && arg.size() >= 3) {
 		std::string error = std::string(":localhost ") + "482" + " " + arg[0] + " " + channel->getName() + " :You're not channel operator" + "\r\n";
 		send(user->getSocket(), error.c_str(), error.size(), 0);

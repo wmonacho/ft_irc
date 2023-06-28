@@ -497,7 +497,6 @@ void	Server::sendUserList(Channel *channel, User *user)
 			}
 
 			user_list.append("\r\n");
-			std::cout << "USER_LIST = " << user_list << std::endl;
 			send(user_it->first->getSocket(), user_list.c_str(), user_list.size(), 0);
 		}
 	}

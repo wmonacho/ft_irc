@@ -83,10 +83,8 @@ int Server::acceptNewConnection(struct pollfd *fds, int nfds) {
 		newSocket = accept(this->_socketfd, NULL, NULL);
 		if (newSocket < 0) { 
 			if (errno != EWOULDBLOCK) {
-				//std::cerr << "Error: accept() failed" << std::endl;
 				nfds = errorStatus;
 			}
-			// std::cout << "Socket " << nfds << " is already connected" << std::endl;
 			break ;
 		}
 		// This is a new socket so we add it to our socket pool
@@ -204,9 +202,6 @@ bool Server::getClientInformationsOnConnection(struct pollfd fds, Server::userCo
 		if (userInfo->userCheck == false)
 			userInfo->userCheck = findUserInBuffer(data.c_str(), userInfo);
 	}
-	std::cout << "FOUND PASS ==> " << userInfo->passCheck << std::endl;
-	std::cout << "FOUND NICK ==> " << userInfo->nickCheck << std::endl;
-	std::cout << "FOUND USER ==> " << userInfo->userCheck << std::endl;
 	if (userInfo->passCheck == true && userInfo->nickCheck == true && userInfo->userCheck == true) {
 		
 		std::cout << "== ALL CONNECTION INFORMATIONS RETRIEVED ==" << std::endl;
