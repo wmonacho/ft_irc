@@ -73,7 +73,6 @@ bool    cmd::parsePass(User *user, std::string str, Server *server)
 
 bool    cmd::parseNick(std::string str, Server *server, User *user) //recup le User originaire de la commande
 {
-
 	(void)str;
 	(void)server;
 	(void)user;
