@@ -18,10 +18,8 @@ bool	cmd::parsePart(std::string str, Server *server, User *user)
 	std::vector<std::string> channels_copy = channels;
 	std::vector<std::string>::iterator it = channels.begin();
 	std::vector<std::string>::iterator it_copy = channels_copy.begin();
-	std::cerr << "DEBUG :" << str << std::endl;
-	if (!splitArg[2].empty())
+	if (splitArg.size() >= 3 && !splitArg[2].empty())
 		rebuildMessage(splitArg, 2);
-	std::cerr << "DEBUG :" << str << std::endl;
 	while (it != channels.end())
 	{
 		//verifier si le channel existe
@@ -34,6 +32,7 @@ bool	cmd::parsePart(std::string str, Server *server, User *user)
 			send(user->getSocket(), error.c_str(), error.size(), 0);
 			return false;
 		}
+		
 		//verifier si l'user est bien dans le channel
 		// 442 ERR_NOTONCHANNEL "<channel> :You're not on that channel"
 		if (server->userInChannel(*it, user) == false) {
@@ -43,7 +42,7 @@ bool	cmd::parsePart(std::string str, Server *server, User *user)
 		}
 		std::string part_message = ":" + user->getNickname() + "!" + user->getUsername() + "@localhost " + splitArg[0] + " ";
 		part_message.append(*it_copy);
-		if (!splitArg[2].empty())
+		if (splitArg.size() >= 3 && !splitArg[2].empty())
 			part_message.append(" :" + splitArg[2]);
 		part_message.append("\r\n");
 		sendMessageToAllUsersInChannel(part_message, server->getChannel(*it));
