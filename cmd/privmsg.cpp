@@ -18,7 +18,6 @@ bool	cmd::parsePrivmsg(std::string str, Server *server, User *user)
 
 	if (arg.size() < 3) {
 		std::string error = std::string(":localhost ") + " " + arg[0] + " :Not enough parameters" + "\r\n";
-		// std::cerr << "412	ERR_NOTEXTTOSEND --> " << message_check << " // " << error << std::endl;	// DEBUG
 		send(user->getSocket(), error.c_str(), error.size(), 0);
 		return false;
 	}
@@ -26,7 +25,6 @@ bool	cmd::parsePrivmsg(std::string str, Server *server, User *user)
 	// 412	ERR_NOTEXTTOSEND
 	if (str.find(":") == std::string::npos) {
 		std::string error = std::string(":localhost ") + "412"  + " :No text to send" + "\r\n";
-		// std::cerr << "412	ERR_NOTEXTTOSEND --> " << message_check << " // " << error << std::endl;	// DEBUG
 		send(user->getSocket(), error.c_str(), error.size(), 0);
 		return false;
 	}
@@ -50,12 +48,10 @@ bool	cmd::parsePrivmsg(std::string str, Server *server, User *user)
 			messagePosInt++;
 	}
 
-
 	// 411	ERR_NORECIPIENT ":No recipient given (<command>)"
 	sizeWithoutMessage = arg.size() - number_of_words;
 	if (message_check == 1 && sizeWithoutMessage == 1) {
 		std::string error = std::string(":localhost ") + "411" + " :No recipient given " + arg[0] + "\r\n";
-		// std::cerr << "411	ERR_NORECIPIENT --> " << error << std::endl;	// DEBUG
 		send(user->getSocket(), error.c_str(), error.size(), 0);
 		return false;
 	}
@@ -64,7 +60,6 @@ bool	cmd::parsePrivmsg(std::string str, Server *server, User *user)
 	std::string err_tooManyTargets_return = err_tooManyTargets(arg, messagePos);
 	if (!err_tooManyTargets_return.empty()) {
 		std::string error = std::string(":localhost ") + "407" + " " + arg[0] + " " + err_tooManyTargets_return + " :Duplicate recipients. No message delivered" + "\r\n";
-		// std::cerr << "407	ERR_NORECIPIENT --> " << error << std::endl;	// DEBUG
 		send(user->getSocket(), error.c_str(), error.size(), 0);
 		return false;
 	}
@@ -112,7 +107,6 @@ bool	cmd::privMsgInChannel(std::vector<std::string> &arg, Server *server, User *
 
 	if (server->channelAlreadyExist(arg[1])) {
 		Channel *channel = server->getChannel(arg[1]);
-		// rebuildMessage(arg, messagePosInt);
 		std::string message = ":" + user->getNickname() + "!" + user->getUsername() + "@localhost " + arg[0] + " " + arg[1] + " " + msg + "\r\n";
 		sendMessageToOtherUsersInChannel(message, channel, user);
 		return true ;
@@ -132,7 +126,6 @@ bool	cmd::privMsgToDirectUser(std::vector<std::string> &arg, Server *server, Use
 		send(user->getSocket(), error.c_str(), error.size(), 0);
 		return false;
 	}
-	// rebuildMessage(arg, messagePosInt);
 	std::string message = ":" + user->getNickname() + "!" + user->getUsername() + "@localhost " + arg[0] + " " + arg[1] + " " + msg + "\r\n";
 	std::string rpl_away = std::string(":localhost ") + "401" + " " + arg[0] + " " + user->getNickname() + " :Message sent" + "\r\n";
 	send(dest->getSocket(), message.c_str(), message.size(), 0);
