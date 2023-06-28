@@ -12,13 +12,20 @@ Server::Server() {
 Server::Server(int port, std::string password) {
 
 	// We create and initiate a new server, a listening socket is created and he's listening for connection
+	size_t	index = 0;
+	while (index < MAX_SOCKETS)
+	{
+		this->_clientDataArray[index].userConnectionRegistration.nickCheck = false;
+		this->_clientDataArray[index].userConnectionRegistration.userCheck = false;
+		this->_clientDataArray[index].userConnectionRegistration.passCheck = false;
+		index++;
+	}
 	this->_user_list.reserve(MAX_SOCKETS);
 	_servLen = sizeof(_servAddr);
 	_clientLen = sizeof(_clientAddr);
 	_port = port;
 	_password = password;
 	int on = -1;
-
 	_socketfd = socket(AF_INET, SOCK_STREAM, 0);
 	if (_socketfd < 0) {
 		std::cout << "Error: socket creation failed" << std::endl;
@@ -497,7 +504,6 @@ void	Server::sendUserList(Channel *channel, User *user)
 			}
 
 			user_list.append("\r\n");
-			std::cout << "USER_LIST = " << user_list << std::endl;
 			send(user_it->first->getSocket(), user_list.c_str(), user_list.size(), 0);
 		}
 	}

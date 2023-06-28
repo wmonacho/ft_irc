@@ -52,7 +52,6 @@ class Server {
 		struct clientData {
 			std::string							dataString;
 			bool								clientIsConnected;
-			bool								waitForNewBUffer;
 			struct userConnectionRegistration	userConnectionRegistration;
 		};
 		clientData _clientDataArray[MAX_SOCKETS];
@@ -107,7 +106,7 @@ class Server {
 		const User*                             getChannelUser(std::string channel_name, std::string user_name);
 		const User*	                            getChannelUser(std::string channel_name, const User *user);
 		std::vector<User>							getUserList(void);
-		const std::map<std::string, Channel*>&			getMap(void); //read only
+		const std::map<std::string, Channel*>&			getMap(void);
 		const std::map<const User*, UserAspects>&   getChannelUserList(std::string channel_name);
 		std::map<std::string, Channel*>::iterator	getItMap(void);
 		Server::clientData*                         getClientDataArray(void);

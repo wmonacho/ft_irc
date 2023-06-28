@@ -7,6 +7,7 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 	//MODE <cible> <mode> <argument(s)>
 
 	// Reponse au client apres le join d'un user pour lui informer des modes active dans ce channel
+	std::cerr << splitArg[0] << std::endl;
 	if (splitArg.size() == 2)
 	{
 		// MODE <channel>

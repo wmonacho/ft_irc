@@ -6,7 +6,7 @@
 /*   By: wmonacho <wmonacho@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2023/05/03 14:31:22 by wmonacho          #+#    #+#             */
-/*   Updated: 2023/06/27 14:43:53 by wmonacho         ###   ########.fr       */
+/*   Updated: 2023/06/28 18:19:03 by wmonacho         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -17,7 +17,9 @@ Channel::Channel()
     this->_name = "";
     this->_topic = "";
     this->_password = "";
-    this ->_inviteOnly = false;
+    this->_inviteOnly = false;
+	this->_secret = false;
+	this->_topicAdmin = false;
     this->_userLimit = -1;	
 }
 
@@ -27,6 +29,8 @@ Channel::Channel( std::string name )
     this->_topic = "";
     this->_password = "";
     this ->_inviteOnly = false;
+	this->_secret = false;
+	this->_topicAdmin = false;
     this->_userLimit = -1;
 }
 
@@ -80,14 +84,6 @@ const std::map<const User*, UserAspects>&	Channel::getUserList( void ) const
 
 const User* Channel::getUser(const User *user)
 {
-	//std::cout << "DEBUG :" << this->getUserList().count(user) << std::endl;
-	//if (this->getUserList().find(user) != this->getUserList().end())
-	//{
-	//	std::cout << "DEBUG" << std::endl;
-	//	std::cout << "DEBUG user :" << this->getUserList().find(user)->first->getNickname() << std::endl;
-	//}
-	//else 
-	//	std::cout << "NO USER" << std::endl;
 	return this->getUserList().find(user)->first;
 }
 

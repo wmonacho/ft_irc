@@ -37,7 +37,6 @@ User	&User::operator=( User const & rhs)
 
 User::~User( void )
 {
-	//std::cout << "USER DESTRUCTOR" << std::endl;
 }
 
 std::string	User::getNickname( void ) const
