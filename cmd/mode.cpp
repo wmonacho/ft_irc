@@ -99,14 +99,14 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 						//send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
 						rpl_channel_mode_is += chan->getName() + " +i" + "\r\n";
 						this->sendMessageToAllUsersInChannel(rpl_channel_mode_is, chan);
-						break;
+						continue;
 				  case 107:
 						//execute mode k
 						if (chan->getPassword() != "") {
 							// 467 ERR_KEYSET
 							std::string error = std::string(":localhost ") + "467 " + user->getNickname() + " " + splitArg[1] + " :Channel key already set" + "\r\n";
 							send(user->getSocket(), error.c_str(), error.size(), 0);
-							return (false);
+							continue;
 						}
 						if (i + 2 < splitArg.size()) {
 							chan->setPassword(splitArg[i + 2]);
@@ -119,18 +119,16 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 							// 461  ERR_NEEDMOREPARAMS
 							std::string error = std::string(":localhost ") + "461 " + user->getNickname() + " " + splitArg[0] + " :Not enough parameters" + "\r\n";
 							send(user->getSocket(), error.c_str(), error.size(), 0);
-							return (false);
 						}
-						break;
+						continue;
 				  case 108:
 					  	//execute mode L
 						if (i + 2 < splitArg.size() && splitArg[i + 2].find_first_not_of("1234567890") == std::string::npos) {
-							
 							chan->setUserLimit(atoi(splitArg[i + 2].c_str()));
 							rpl_channel_mode_is += chan->getName() + " +l " + splitArg[i + 2] + "\r\n";
 							this->sendMessageToAllUsersInChannel(rpl_channel_mode_is, chan);
 						}
-						break;
+						continue;
 				  case 111:
 					  	//execute mode o
 						if (i + 2 < splitArg.size() && server->nickAlreadyExist(splitArg[i + 2])) {
@@ -144,15 +142,16 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 							// 461  ERR_NEEDMOREPARAMS
 							std::string error = std::string(":localhost ") + "461 " + user->getNickname() + " " + splitArg[0] + " :Not enough parameters" + "\r\n";
 							send(user->getSocket(), error.c_str(), error.size(), 0);
-							return (false);
 						}
-					  	break;
+					  	continue;
 				  case 116:
 					  	//execute mode t
 					  	chan->setTopicAdmin(true);
 						rpl_channel_mode_is += chan->getName() + " +t" + "\r\n";
 						this->sendMessageToAllUsersInChannel(rpl_channel_mode_is, chan);
-					  	break;
+					  	continue;
+					default:
+						break;
 		}
 	}
 	
@@ -168,21 +167,21 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 					  	// 324 RPL_CHANNELMODEIS
 						rpl_channel_mode_is += chan->getName() + " -i" + "\r\n";
 						this->sendMessageToAllUsersInChannel(rpl_channel_mode_is, chan);
-					  break;
+					  	continue;
 				  case 107:
 					  	//execute mode k
 					  	chan->setPassword("");
 					  	// 324 RPL_CHANNELMODEIS
 						rpl_channel_mode_is += chan->getName() + " -k" + "\r\n";
 						this->sendMessageToAllUsersInChannel(rpl_channel_mode_is, chan);
-					  break;
+					  	continue;
 				  case 108:
 					  	//execute mode L
 					  	chan->setUserLimit(-1);
 					  	// 324 RPL_CHANNELMODEIS
 						rpl_channel_mode_is += chan->getName() + " -l" + "\r\n";
 						this->sendMessageToAllUsersInChannel(rpl_channel_mode_is, chan);
-					  break;
+					  	continue;
 				  case 111:
 					  	//execute mode o
 						if (i + 2 < splitArg.size() && server->nickAlreadyExist(splitArg[i + 2])) {
@@ -197,15 +196,16 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 							// 461  ERR_NEEDMOREPARAMS
 							std::string error = std::string(":localhost ") + "461 " + user->getNickname() + " " + splitArg[0] + " :Not enough parameters" + "\r\n";
 							send(user->getSocket(), error.c_str(), error.size(), 0);
-							return (false);
 						}
-					  break;
+					  	continue;
 				  case 116:
 					  	chan->setTopicAdmin(false);
 					  	// 324 RPL_CHANNELMODEIS
 						rpl_channel_mode_is += chan->getName() + " -t" + "\r\n";
 						this->sendMessageToAllUsersInChannel(rpl_channel_mode_is, chan);
-					  break;
+					  	continue;
+					default:
+						break;
 		}
 	}
 	return (true);

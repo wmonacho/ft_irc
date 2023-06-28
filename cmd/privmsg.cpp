@@ -52,13 +52,6 @@ bool	cmd::parsePrivmsg(std::string str, Server *server, User *user)
 		send(user->getSocket(), error.c_str(), error.size(), 0);
 		return false;
 	}
-
-	if (!server->nickAlreadyExist(arg[1])) {
-		// 401 ERR_NOSUCHNICK
-		std::string error = std::string(":localhost ") + "401" + " " + arg[0] + " " + arg[1] + " :No such nick" + "\r\n";
-		send(user->getSocket(), error.c_str(), error.size(), 0);
-		return false;
-	}
 	
 	// 407	ERR_TOOMANYTARGETS "<target> :Duplicate recipients. No message \/ delivered"
 	std::string err_tooManyTargets_return = err_tooManyTargets(arg, messagePos);
