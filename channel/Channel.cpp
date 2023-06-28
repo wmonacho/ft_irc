@@ -80,14 +80,6 @@ const std::map<const User*, UserAspects>&	Channel::getUserList( void ) const
 
 const User* Channel::getUser(const User *user)
 {
-	//std::cout << "DEBUG :" << this->getUserList().count(user) << std::endl;
-	//if (this->getUserList().find(user) != this->getUserList().end())
-	//{
-	//	std::cout << "DEBUG" << std::endl;
-	//	std::cout << "DEBUG user :" << this->getUserList().find(user)->first->getNickname() << std::endl;
-	//}
-	//else 
-	//	std::cout << "NO USER" << std::endl;
 	return this->getUserList().find(user)->first;
 }
 
