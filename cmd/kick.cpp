@@ -51,12 +51,27 @@ bool	cmd::parseKick(std::string str, Server *server, User *user)
 		return false;
 	}
 
+	if (!server->nickAlreadyExist(&arg[userToKickArgID][firstCharOfName]))
+	{
+		// 441 ERR_USERNOTINCHANNEL
+		std::string error = std::string(":localhost ") + "441 " + user->getNickname() + " " + arg[channelArgID] + " :They aren't on that channel" + "\r\n";
+		send(user->getSocket(), error.c_str(), error.size(), 0);
+		return false;
+	}
+
 	if (!server->userInChannel(arg[channelArgID], server->getChannelUser(arg[channelArgID], &arg[userToKickArgID][firstCharOfName])))
 	{
 		// 441 ERR_USERNOTINCHANNEL
 		std::string error = std::string(":localhost ") + "441 " + user->getNickname() + " " + arg[channelArgID] + " :They aren't on that channel" + "\r\n";
 		send(user->getSocket(), error.c_str(), error.size(), 0);
 		return false;
+	}
+
+	if (!server->getChannelUserAdmin(arg[channelArgID], user)) {
+		// 482    ERR_CHANOPRIVSNEEDED
+        std::string error = std::string(":localhost ") + "482 " + user->getNickname() + " " +  arg[channelArgID] + " :You're not channel operator" + "\r\n";
+		send(user->getSocket(), error.c_str(), error.size(), 0);
+		return (false);
 	}
 	
 	// Cas 1 : On KICK dans un channel et il y a un commentaire au KICK
@@ -75,6 +90,15 @@ bool	cmd::parseKick(std::string str, Server *server, User *user)
 		sendMessageToAllUsersInChannel(kick_message, server->getChannel(arg[channelArgID]));
 		std::string kick_message_solo = ":" + user->getNickname() + "!" + user->getUsername() + "@localhost " + arg[0] + " " + arg[channelArgID] + " " + &arg[userToKickArgID][firstCharOfName] + " " + kick_comment + "\r\n";
 		send(server->getUser(&arg[userToKickArgID][firstCharOfName])->getSocket(), kick_message_solo.c_str(), kick_message_solo.size(), 0);
+		
+		if (server->getChannelUserList(arg[channelArgID]).size() != 0 && !server->channelHasOperator(arg[channelArgID])) {
+			server->setChannelRemplacementOpe(arg[channelArgID]);
+			std::string rpl_channel_mode_is = ":localhost MODE " + arg[channelArgID] + " +o " + server->getChannelUserList(arg[channelArgID]).begin()->first->getNickname() + "\r\n";
+			this->sendMessageToAllUsersInChannel(rpl_channel_mode_is, server->getChannel(arg[channelArgID]));
+		}
+	
+		if (server->getChannelUserList(arg[channelArgID]).size() == 0)
+			server->deleteChannel(arg[channelArgID]);
 		return true;
 	}
 
@@ -88,6 +112,16 @@ bool	cmd::parseKick(std::string str, Server *server, User *user)
 		sendMessageToAllUsersInChannel(kick_message, server->getChannel(arg[2]));
 		std::string kick_message_solo = ":" + user->getNickname() + "!" + user->getUsername() + "@localhost " + arg[0] + " " + arg[2] + " " + &arg[3][1] + " " + kick_comment + "\r\n";
 		send(server->getUser(&arg[3][1])->getSocket(), kick_message_solo.c_str(), kick_message_solo.size(), 0);
+		
+		std::cerr << "userlist :" << server->getChannelUserList(arg[channelArgID]).size() << "  channel ope :" << server->channelHasOperator(arg[channelArgID]) << std::endl;
+		if (server->getChannelUserList(arg[channelArgID]).size() != 0 && !server->channelHasOperator(arg[channelArgID])) {
+			server->setChannelRemplacementOpe(arg[channelArgID]);
+			std::string rpl_channel_mode_is = ":localhost MODE " + arg[channelArgID] + " +o " + server->getChannelUserList(arg[channelArgID]).begin()->first->getNickname() + "\r\n";
+			this->sendMessageToAllUsersInChannel(rpl_channel_mode_is, server->getChannel(arg[channelArgID]));
+		}
+	
+		if (server->getChannelUserList(arg[channelArgID]).size() == 0)
+			server->deleteChannel(arg[channelArgID]);
 		return true;
 	}
 

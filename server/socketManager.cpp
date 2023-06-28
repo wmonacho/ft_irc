@@ -51,7 +51,7 @@ void    Server::startServer() {
 			else {
 				closeConnection = retrieveDataFromConnectedSocket(socketID, fds, closeConnection, &clientData[socketID]);
 				if (closeConnection == true) {
-					std::cerr << "/!!\\ Closing connection for socket " << socketID << " /!!\\" << std::endl;
+					//std::cerr << "/!!\\ Closing connection for socket " << socketID << " /!!\\" << std::endl;
 					close(fds[socketID].fd);
 					fds[socketID].fd = -1;
 				}
@@ -83,7 +83,7 @@ int Server::acceptNewConnection(struct pollfd *fds, int nfds) {
 		newSocket = accept(this->_socketfd, NULL, NULL);
 		if (newSocket < 0) { 
 			if (errno != EWOULDBLOCK) {
-				std::cerr << "Error: accept() failed" << std::endl;
+				//std::cerr << "Error: accept() failed" << std::endl;
 				nfds = errorStatus;
 			}
 			// std::cout << "Socket " << nfds << " is already connected" << std::endl;
@@ -197,8 +197,10 @@ bool Server::getClientInformationsOnConnection(struct pollfd fds, Server::userCo
 	if (userInfo->passCheck == false)
 		userInfo->passCheck = findPassInBuffer(data.c_str(), userInfo);
 	if (userInfo->passCheck == true) {
-		if (userInfo->nickCheck == false)
+		if (userInfo->nickCheck == false) {
+
 			userInfo->nickCheck = findNickInBuffer(data.c_str(), userInfo);
+		}
 		if (userInfo->userCheck == false)
 			userInfo->userCheck = findUserInBuffer(data.c_str(), userInfo);
 	}
@@ -293,17 +295,16 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
 		recvReturn = recv(fds[socketID].fd, buffer, sizeof(buffer), MSG_DONTWAIT);
 		if (recvReturn < 0) {
 			if (errno != EWOULDBLOCK) {
-				std::cerr << "Error: recv() failed" << std::endl;
+				//std::cerr << "Error: recv() failed" << std::endl;
 				closeConnection = true;
 			}
 			return (closeConnection);
 		}
 		if (recvReturn == 0) {
-			std::cerr << "Connection closed for socket " << socketID << std::endl;
+			//std::cerr << "Connection closed for socket " << socketID << std::endl;
 			closeConnection = true;
 			return (closeConnection);
 		}
-
 		clientData->dataString += buffer;
 
 		// If we get a correct request, we can use it, otherwise we try to receive what is left
