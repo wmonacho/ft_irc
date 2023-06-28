@@ -90,9 +90,14 @@ bool    cmd::parseUser(std::string str, Server *server)
 int	cmd::whichCmd(std::string str, Server *server, User *user)
 {
 	std::vector<std::string> arg = splitString(str, " ");
-	size_t pos = str.find("\n");
+	size_t pos = arg[0].find("\n");
+	if (pos != std::string::npos)
+		arg[0].erase(pos - 1, arg[0].size() - 1);
+	pos = str.find("\n");
 	if (pos != std::string::npos)
 		str[pos - 1] = '\0';
+	
+	//arg[0].erase(arg[0].find("\r"), arg[0].find("\r") + 1);
 	int j = -1;
 
 	for (int i = 0; i < 14; i++)
@@ -107,7 +112,7 @@ int	cmd::whichCmd(std::string str, Server *server, User *user)
 	switch (j)
 	{
 		case -1:
-		    response = std::string(":localhost ") + "421 " + user->getNickname() + " " + arg[0] + ":Unknown command\r\n";
+		    response = std::string(":localhost ") + "421 " + user->getNickname() + " " + arg[0] + " :Unknown command" + "\r\n";
 		    send(user->getSocket(), response.c_str(), response.size(), 0);
 		    return 1;
 
