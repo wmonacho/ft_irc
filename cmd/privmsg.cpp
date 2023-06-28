@@ -12,7 +12,7 @@ bool	cmd::parsePrivmsg(std::string str, Server *server, User *user)
 	int	message_check = 0;
 	int messagePosInt = 0;
 	int	number_of_words = 0;
-	int	findMessage;
+	size_t	findMessage;
 	std::vector<std::string> arg = splitString(str, " ");
 	std::vector<std::string>::iterator messagePos;
 
@@ -30,7 +30,9 @@ bool	cmd::parsePrivmsg(std::string str, Server *server, User *user)
 	}
 
 	findMessage = str.find(":");
-	std::string	msg = str.substr(findMessage);
+	size_t end = str.size();
+	end = end - 2;
+	std::string	msg(str.c_str(), findMessage, end);
 	std::string target = arg[1];
 
 	for (std::vector<std::string>::iterator it = arg.begin(); it != arg.end(); it++) {

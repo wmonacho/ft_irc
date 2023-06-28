@@ -68,19 +68,12 @@ bool    cmd::parsePass(User *user, std::string str, Server *server)
 	(void)user;
 	(void)str;
 	(void)server;
-	std::cout << "GOING THROUGH PASS COMMAND" << std::endl;
-	// std::vector<std::string> splitArg = splitString(str, " ");
-	// if (splitArg.size() != 2 || server->passwordAlreadyRegistred())
-	// 	return (false);
-	// server->setPassword(splitArg[1]);
-	// std::string serverResponse = createServerMessage(user, "", splitArg);
-	// send(user->getSocket(), serverResponse.c_str(), serverResponse.size(), 0);
+
 	return (true);
 }
 
 bool    cmd::parseNick(std::string str, Server *server, User *user) //recup le User originaire de la commande
 {
-
 	(void)str;
 	(void)server;
 	(void)user;
