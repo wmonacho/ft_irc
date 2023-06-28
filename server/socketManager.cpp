@@ -5,12 +5,12 @@
 
 void    Server::startServer() {
 
-	int             connectionStatus, pollReturn, socketID;
-	int             nfds = 1;
-	int             currentSize = 0;
-	bool            closeConnection = false;
-	bool            endOfServer = false;
-	struct pollfd   fds[MAX_SOCKETS];
+	int				connectionStatus, pollReturn, socketID;
+	int				nfds = 1;
+	int				currentSize = 0;
+	bool			closeConnection = false;
+	bool			endOfServer = false;
+	struct pollfd	fds[MAX_SOCKETS];
 	
 	// Initialize the array of pollfd structures
 	memset(fds, 0, sizeof(fds));
@@ -202,9 +202,9 @@ bool Server::getClientInformationsOnConnection(struct pollfd fds, Server::userCo
 		if (userInfo->userCheck == false)
 			userInfo->userCheck = findUserInBuffer(data.c_str(), userInfo);
 	}
-	std::cout << "DEBUG PC ==> " << userInfo->passCheck << std::endl;
-	std::cout << "DEBUG NC ==> " << userInfo->nickCheck << std::endl;
-	std::cout << "DEBUG UC ==> " << userInfo->userCheck << std::endl;
+	std::cout << "FOUND PASS ==> " << userInfo->passCheck << std::endl;
+	std::cout << "FOUND NICK ==> " << userInfo->nickCheck << std::endl;
+	std::cout << "FOUND USER ==> " << userInfo->userCheck << std::endl;
 	if (userInfo->passCheck == true && userInfo->nickCheck == true && userInfo->userCheck == true) {
 		
 		std::cout << "== ALL CONNECTION INFORMATIONS RETRIEVED ==" << std::endl;
@@ -219,15 +219,15 @@ void    Server::createNewUserAtConnection(std::string nickname, std::string user
 	// We create a new user and set his nickname and realname thanks to the message the client sent
 	User new_user;
 
-    new_user.setNickname(nickname);
-    new_user.setUsername(username);
-    new_user.setSocket(socket);
+	new_user.setNickname(nickname);
+	new_user.setUsername(username);
+	new_user.setSocket(socket);
 	
 
-    // Then we add the new user which connected to the server to the USER_LIST of the server
-    this->setUserList(new_user);
-                                                    
-    return ;
+	// Then we add the new user which connected to the server to the USER_LIST of the server
+	this->setUserList(new_user);
+													
+	return ;
 }
 
 std::string Server::createServerResponseForConnection(int socket, Server::userConnectionRegistration *userInfo) {
@@ -235,37 +235,38 @@ std::string Server::createServerResponseForConnection(int socket, Server::userCo
 	bool	userWithSameNicknameExists = false;
 	std::vector<User> userVector = this->getUserList();
 
-	std::cout << "From createserverresponse" << std::endl;
 	for (std::vector<User>::iterator it = userVector.begin(); it != userVector.end(); it++) {
 		if ((*it).getNickname() == userInfo->nickName)
 			userWithSameNicknameExists = true;
 	}
+
 	if (userInfo->nickName.empty() || userInfo->nickName == "")
 	{
-	    std::string response = std::string(":localhost ") + "431 " + userInfo->nickName + " " + ":No nickname given" + "\r\n";
-	    send(socket, response.c_str(), response.size(), 0);
+		std::string response = std::string(":localhost ") + "431 " + userInfo->nickName + " " + ":No nickname given" + "\r\n";
+		send(socket, response.c_str(), response.size(), 0);
 		userInfo->nickCheck = false;
-	    return "";
+		return "";
 	}
+
 	if (userInfo->nickName.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_", 0) != std::string::npos) {
-	    std::string response = std::string(":localhost ") + "432 " + userInfo->nickName + " " + userInfo->nickName + " :Erroneous nickname" + "\r\n";
-	    send(socket, response.c_str(), response.size(), 0);
-	    userInfo->nickCheck = false;
-	    return "";
+		std::string response = std::string(":localhost ") + "432 " + userInfo->nickName + " " + userInfo->nickName + " :Erroneous nickname" + "\r\n";
+		send(socket, response.c_str(), response.size(), 0);
+		userInfo->nickCheck = false;
+		return "";
 	}
 
 	if (userInfo->password != this->_password) {
-	    std::string response = std::string(":localhost ") + "464 " + userInfo->nickName + " " + ":Password incorrect" + "\r\n";
-	    send(socket, response.c_str(), response.size(), 0);
+		std::string response = std::string(":localhost ") + "464 " + userInfo->nickName + " " + ":Password incorrect" + "\r\n";
+		send(socket, response.c_str(), response.size(), 0);
 		userInfo->passCheck = false;
-	    return "";
+		return "";
 	}
 
 	if (userWithSameNicknameExists == true) {
- 	    std::string response = std::string(":localhost ") + "433 " + userInfo->nickName + " " + userInfo->nickName + " :Nickname is already in use" + "\r\n";
-	    send(socket, response.c_str(), response.size(), 0);
+ 		std::string response = std::string(":localhost ") + "433 " + userInfo->nickName + " " + userInfo->nickName + " :Nickname is already in use" + "\r\n";
+		send(socket, response.c_str(), response.size(), 0);
 		userInfo->nickCheck = false;
-	    return "";
+		return "";
 	}
 
 	createNewUserAtConnection(userInfo->nickName, userInfo->userName, socket);
