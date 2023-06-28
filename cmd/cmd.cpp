@@ -250,7 +250,6 @@ int	cmd::whichCmd(std::string str, Server *server, User *user)
 			parsePrivmsg(str, server, user);
 			break;
 	}
-	std::cout << "DEBUG 5 (after switch case)" << std::endl;
 	return 0;
 	//std::cout << "user_addr :" << &(*server->getChannelUser("channel", "will")) << std::endl;
 }
