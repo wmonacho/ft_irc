@@ -14,7 +14,8 @@ bool	cmd::parseQuit(Server *server, std::string str, User * user)
 	//	send(user->getSocket(), quit_message.c_str(), quit_message.size(), 0);
 	//}
 
-	if (user)
+	if (user) {
 		server->deleteUserFromUserList(*user);
+	}
 	return true;
 }
