@@ -113,7 +113,8 @@ int	cmd::whichCmd(std::string str, Server *server, User *user)
 	{
 		case -1:
 		    response = std::string(":localhost ") + "421 " + user->getNickname() + " " + arg[0] + " :Unknown command" + "\r\n";
-		    send(user->getSocket(), response.c_str(), response.size(), 0);
+		   // send(user->getSocket(), response.c_str(), response.size(), 0);
+			server->addReply(user->getSocket(), response);
 		    return 1;
 
 		 case 0:

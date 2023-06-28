@@ -26,7 +26,8 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 				rpl_channel_mode_is += "l";
 			rpl_channel_mode_is += "\r\n";
 			//if (rpl_channel_mode_is != std::string(":localhost ") + "324 " + user->getNickname() + " " + splitArg[1] + " +" + "\r\n")
-				send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
+				//send(user->getSocket(), rpl_channel_mode_is.c_str(), rpl_channel_mode_is.size(), 0);
+				server->addReply(user->getSocket(), rpl_channel_mode_is);
 			return (true);
 		}
 	}
@@ -35,7 +36,8 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 	{
 		// 461  ERR_NEEDMOREPARAMS
 		std::string error = std::string(":localhost ") + "461 " + user->getNickname() + " " + splitArg[0] + " :Not enough parameters" + "\r\n";
-		send(user->getSocket(), error.c_str(), error.size(), 0);
+		server->addReply(user->getSocket(), error);
+		//send(user->getSocket(), error.c_str(), error.size(), 0);
 		return (false);
 	}
 
@@ -43,7 +45,8 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 	if ((splitArg[1][0] != '#' && splitArg[1][0] != '&') || server->getMap().find(splitArg[1]) == server->getMap().end())
 	{
 		std::string error = std::string("localhost :") + "476 " + user->getNickname() + " " + splitArg[1] + " :Bad Channel Mask" + "\r\n";
-		send(user->getSocket(), error.c_str(), error.size(), 0);
+		server->addReply(user->getSocket(), error);
+		//send(user->getSocket(), error.c_str(), error.size(), 0);
 		return (false);
 	}
 
@@ -52,7 +55,8 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 	{
 			// 441 ERR_USERNOTINCHANNEL
 			std::string error = std::string(":localhost ") + "441 " + user->getNickname() + " " + splitArg[1] + " :They aren't on that channel" + "\r\n";
-			send(user->getSocket(), error.c_str(), error.size(), 0);
+		server->addReply(user->getSocket(), error);
+		//send(user->getSocket(), error.c_str(), error.size(), 0);
 			return false;
 	}
 
@@ -61,7 +65,8 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 	{
 			// 477 ERR_NOCHANMODES
 			std::string error = std::string(":localhost ") + "477 " + user->getNickname() + " " +  splitArg[1] + " :Channel doesn't support modes" + "\r\n";
-			send(user->getSocket(), error.c_str(), error.size(), 0);
+		server->addReply(user->getSocket(), error);
+		//send(user->getSocket(), error.c_str(), error.size(), 0);
 			return (false);
 	}
 
@@ -72,7 +77,8 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 			if ( modes.find(splitArg[2][i]) == std::string::npos) {
 				// 472 ERR_UNKNOWNMODE
 				std::string error = std::string(":localhost ") + "472 " + user->getNickname() + " " +  splitArg[2][i] + " :is unknown mode char to me for " + splitArg[1] + "\r\n";
-				send(user->getSocket(), error.c_str(), error.size(), 0);
+				server->addReply(user->getSocket(), error);
+				//send(user->getSocket(), error.c_str(), error.size(), 0);
 				return (false);
 			}
 	}
@@ -81,7 +87,8 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 	if (!server->getChannelUserAdmin(splitArg[1], user)) {
 		// 482    ERR_CHANOPRIVSNEEDED
         std::string error = std::string(":localhost ") + "482 " + user->getNickname() + " " +  splitArg[1] + " :You're not channel operator" + "\r\n";
-		send(user->getSocket(), error.c_str(), error.size(), 0);
+		server->addReply(user->getSocket(), error);
+		//send(user->getSocket(), error.c_str(), error.size(), 0);
 		return (false);
 	}
 	//execute les modes +
@@ -106,7 +113,8 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 						if (chan->getPassword() != "") {
 							// 467 ERR_KEYSET
 							std::string error = std::string(":localhost ") + "467 " + user->getNickname() + " " + splitArg[1] + " :Channel key already set" + "\r\n";
-							send(user->getSocket(), error.c_str(), error.size(), 0);
+							server->addReply(user->getSocket(), error);
+							//send(user->getSocket(), error.c_str(), error.size(), 0);
 							continue;
 						}
 						if (i + 2 < splitArg.size()) {
@@ -119,7 +127,8 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 						{
 							// 461  ERR_NEEDMOREPARAMS
 							std::string error = std::string(":localhost ") + "461 " + user->getNickname() + " " + splitArg[0] + " :Not enough parameters" + "\r\n";
-							send(user->getSocket(), error.c_str(), error.size(), 0);
+							server->addReply(user->getSocket(), error);
+							//send(user->getSocket(), error.c_str(), error.size(), 0);
 						}
 						continue;
 				  case 108:

@@ -27,7 +27,8 @@ bool	cmd::parseInvite(std::string str, Server *server, User *user)
 	{
 		// 401	ERR_NOSUCHNICK
 		std::string error = std::string(":localhost ") + "401" + " " + user->getNickname() + " " + channel + " :No such nick/channel" + "\r\n";
-		send(user->getSocket(), error.c_str(), error.size(), 0);
+		server->addReply(user->getSocket(), error);
+		//send(user->getSocket(), error.c_str(), error.size(), 0);
 		return false;
 	}
 	//seulement les users du channel peuvent inviter des gens
@@ -36,7 +37,8 @@ bool	cmd::parseInvite(std::string str, Server *server, User *user)
 	{
 		// 442	ERR_NOTONCHANNEL
 		std::string error = std::string(":localhost ") + "442" + " " + user->getNickname() + " " + channel + " :You're not on that channel" + "\r\n";
-		send(user->getSocket(), error.c_str(), error.size(), 0);
+		server->addReply(user->getSocket(), error);
+		//send(user->getSocket(), error.c_str(), error.size(), 0);
 		return false;
 	}
 	//si le channel a le flag invite only set, seulement les channels operators peuvent inviter
@@ -44,7 +46,8 @@ bool	cmd::parseInvite(std::string str, Server *server, User *user)
 	{
 		// 482	ERR_CHANOPRIVSNEEDED
 		std::string error = std::string(":localhost ") + "482" + " " + user->getNickname() + " " + channel + " :You're not channel operator" + "\r\n";
-		send(user->getSocket(), error.c_str(), error.size(), 0);
+		server->addReply(user->getSocket(), error);
+		//send(user->getSocket(), error.c_str(), error.size(), 0);
 		return false;
 	}
 	//checker si l'user est deja sur le chan
@@ -52,7 +55,8 @@ bool	cmd::parseInvite(std::string str, Server *server, User *user)
 	{
 		// 443	ERR_USERONCHANNEL
 		std::string error = std::string(":localhost ") + "443" + " " + user->getNickname() + " " + nick + " " + channel + " :is already on channel" + "\r\n";
-		send(user->getSocket(), error.c_str(), error.size(), 0);
+		server->addReply(user->getSocket(), error);
+		//send(user->getSocket(), error.c_str(), error.size(), 0);
 		return false;
 	}
 	//check si le channel a une limit
