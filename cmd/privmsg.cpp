@@ -123,7 +123,6 @@ bool	cmd::privMsgToDirectUser(std::vector<std::string> &arg, Server *server, Use
 	if (!dest) {
 		// 401	ERR_NOSUCHNICK "<nickname> :No such nick/channel"
 		std::string error = std::string(":localhost ") + "401" + " " + arg[0] + " " + arg[1] + " :No such nick" + "\r\n";
-		// std::cerr << "401	ERR_NOSUCHNICK --> " << error << std::endl;	// DEBUG
 		send(user->getSocket(), error.c_str(), error.size(), 0);
 		return false;
 	}

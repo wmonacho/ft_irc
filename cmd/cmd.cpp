@@ -174,29 +174,29 @@ int	cmd::whichCmd(std::string str, Server *server, User *user)
 			std::cerr << "str: \"" << str << "\" cmd not found" << std::endl;
 			return 1;
 
-		case 0:
-			if (parsePass(user, str, server) == false) // ** USED ON CONNECTION **
-			{
-				std::cerr << "Usage: PASS [password]" << std::endl;
-				return 1;
-			}
-			break;
+		// case 0:
+		// 	if (parsePass(user, str, server) == false) // ** USED ON CONNECTION **
+		// 	{
+		// 		std::cerr << "Usage: PASS [password]" << std::endl;
+		// 		return 1;
+		// 	}
+		// 	break;
 
-		case 1:
-			if (parseNick(str, server, user) == false)
-			{
-				std::cerr << "Usage: NICK [nickname]" << std::endl;
-				return 1;
-			}
-			break;
+		// case 1:
+		// 	if (parseNick(str, server, user) == false)
+		// 	{
+		// 		std::cerr << "Usage: NICK [nickname]" << std::endl;
+		// 		return 1;
+		// 	}
+		// 	break;
 
-		case 2:
-			if (parseUser(str, server) == false) // ** USED ON CONNECTION **
-			{
-				std::cerr << "Usage: USER <user> <mode> <unused> <realname>";
-				return 1;
-			}
-			break;
+		// case 2:
+		// 	if (parseUser(str, server) == false) // ** USED ON CONNECTION **
+		// 	{
+		// 		std::cerr << "Usage: USER <user> <mode> <unused> <realname>";
+		// 		return 1;
+		// 	}
+		// 	break;
 
 		case 3:
 			if (parseMode(str, server, user) == false) {

@@ -44,7 +44,9 @@ int	main(int ac, char **av)
 		// We send connection details to log to the server
 		usleep(10000);
 		send(botSocket, sendPass.c_str(), sendPass.size(), 0);
+		usleep(10000);
 		send(botSocket, sendNick.c_str(), sendNick.size(), 0);
+		usleep(10000);
 		send(botSocket, sendUser.c_str(), sendUser.size(), 0);
 
 		std::cout << " /BOT\\ The bot is logged !" << std::endl;
@@ -52,6 +54,7 @@ int	main(int ac, char **av)
 		// GESTION DES COMMANDES avec recv()
 		std::string botJoinChannel = "JOIN #bot\r\n";
 
+		usleep(10000);
 		if (send(botSocket, botJoinChannel.c_str(), botJoinChannel.size(), 0) <= 0) {
 			std::cerr << "Error: send failed to join channel" << std::endl;
 		}
