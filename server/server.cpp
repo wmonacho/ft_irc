@@ -538,3 +538,9 @@ void	Server::addReply(int socketfd, std::string	message)
 {
 	this->_reply.push_back(std::make_pair(socketfd, message));
 }
+
+void addReply (User *user, std::tring msg)
+{
+	clientdata = getClientDataFromUser (user);
+	clientdata.replies.append (msg);
+}

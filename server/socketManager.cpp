@@ -40,19 +40,21 @@ void    Server::startServer() {
 		currentSize = nfds;
 		for (socketID = 0; socketID < currentSize; socketID++) {
 
-			if (fds[socketID].revents & POLLOUT) {	// SOCKET IS READY TO RECV DATA
-				// std::cerr << "SOCKET IS READY TO RECV DATA" << std::endl;
-				std::vector<std::pair<int, std::string> >::iterator	it;
-				for (it = this->_reply.begin(); it != this->_reply.end(); it++) {
-					std::cerr << "reply to send : " << it->second << std::endl;
-					send(it->first, it->second.c_str(), it->second.size(), 0);
+			if (fds[socketID].revents & POLLOUT)
+			{
+				if (!clientData[socketID].replies.empty()) {
+					int	bytesSent = send(fds[socketID].fd, clientData[socketID].replies.c_str(), clientData[socketID].replies.size(), 0);
+					if (bytesSent != clientData[socketID].replies.size()) {
+						clientData[socketID].replies.substr(bytesSent);
+					}
+					else
+						clientData[socketID].replies.clear();
 				}
-				this->_reply.clear();
 			}
 
 			if (fds[socketID].revents & POLLIN) {	// SOCKET IS READY TO SEND DATA
 
-				// std::cerr << "SOCKET IS READY TO SEND DATA" << std::endl;
+				std::cerr << "SOCKET IS READY TO SEND DATA" << std::endl;
 				// If it's a connecting socket we accept the connection and add it to the socket pool (fds[nfds])
 				if (fds[socketID].fd == this->_socketfd) {
 					connectionStatus = acceptNewConnection(fds, nfds);

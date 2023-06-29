@@ -52,6 +52,7 @@ class Server {
 
 		struct clientData {
 			std::string							dataString;
+			std::string							replies;
 			bool								clientIsConnected;
 			struct userConnectionRegistration	userConnectionRegistration;
 		};
