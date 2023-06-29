@@ -14,8 +14,7 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 	if (splitArg.size() < 2) {
 		// 461	ERR_NEEDMOREPARAMS
 		std::string error = std::string(":localhost ") + "461 " + user->getNickname() + " " + splitArg[0] + " :Not enough parameters" + "\r\n";
-		server->addReply(user->getSocket(), error);
-		//send(user->getSocket(), error.c_str(), error.size(), 0);
+		server->getClientData(user->getClientID()).replies.append(error);
 		return false;
 	}
 	std::vector<std::string> channels = splitString(splitArg[1], ",");
@@ -24,8 +23,7 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 		if (channels[i][0] != '#' && channels[i][0] != '&') {
 			// 476	ERR_BADCHANNELMASK
 			std::string error = std::string(":localhost ") + "476 " + user->getNickname() + " " + channels[i] + " :Bad Channel Mask" + "\r\n";
-			server->addReply(user->getSocket(), error);
-			//send(user->getSocket(), error.c_str(), error.size(), 0);
+			server->getClientData(user->getClientID()).replies.append(error);
 			return false;
 		}
 	}
@@ -46,16 +44,14 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 			if (channel->getInviteOnly() && !channel->userInInviteList(user->getNickname())) {
 				// 473    ERR_INVITEONLYCHAN
 			  	std::string error = std::string(":localhost ") + "473 " + user->getNickname() + " " + channels[i] + " :Cannot join channel (+i)" + "\r\n";
-				server->addReply(user->getSocket(), error);
-				//send(user->getSocket(), error.c_str(), error.size(), 0);
+				server->getClientData(user->getClientID()).replies.append(error);
 			  	continue;
 			}
 
 			if (splitArg.size() < 3 && channel->getPassword() != "") {
 				// 475	ERR_BADCHANNELKEY
 				std::string error = std::string(":localhost ") + "475 " + user->getNickname() + " " + channels[i] + " :Cannot join channel (+k)" + "\r\n";
-				server->addReply(user->getSocket(), error);
-				//send(user->getSocket(), error.c_str(), error.size(), 0);
+				server->getClientData(user->getClientID()).replies.append(error);
 				continue;
 			}
 
@@ -65,16 +61,14 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 				if (passwords.size() < i) {
 					//475    ERR_BADCHANNELKEY
 					std::string error = std::string(":localhost ") + "475 " + user->getNickname() + " " + channels[i] + " :Cannot join channel (+k)" + "\r\n";
-					server->addReply(user->getSocket(), error);
-					//send(user->getSocket(), error.c_str(), error.size(), 0);
+					server->getClientData(user->getClientID()).replies.append(error);
 					continue;
 				}
 				if (passwords[i] != channel->getPassword())
 				{
 					//475    ERR_BADCHANNELKEY
 					std::string error = std::string(":localhost ") + "475 " + user->getNickname() + " " + channels[i] + " :Cannot join channel (+k)" + "\r\n";
-					server->addReply(user->getSocket(), error);
-					//send(user->getSocket(), error.c_str(), error.size(), 0);
+					server->getClientData(user->getClientID()).replies.append(error);
 					continue;
 				}
 			}
@@ -82,8 +76,7 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 			if (!server->channelEnoughSpace(channel->getName())) {
 				// 471 ERR_CHANNELISFULL
 				std::string error = std::string(":localhost ") + "471 " + user->getNickname() + " " + channels[i] + " :Cannot join channel (+l)" + "\r\n";
-				server->addReply(user->getSocket(), error);
-				//send(user->getSocket(), error.c_str(), error.size(), 0);
+				server->getClientData(user->getClientID()).replies.append(error);
 				continue;
 			}
 
@@ -95,14 +88,12 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 			// On envoie le topic s'il existe
 			if (!channel->getTopic().empty()) {
 				std::string topic = std::string(":localhost ") + "332 " + user->getNickname() + " " + channels[i] + " " + channel->getTopic() + "\r\n";
-				server->addReply(user->getSocket(), topic);
-				//send(user->getSocket(), topic.c_str(), topic.size(), 0);
+				server->getClientData(user->getClientID()).replies.append(topic);
 			}
 
 			if (channel->getTopic().empty()) {
 				std::string topic = std::string(":localhost ") + "331 " + user->getNickname() + " " + channels[i] + " :Not topic is set" + "\r\n";
-				server->addReply(user->getSocket(), topic);
-				//send(user->getSocket(), topic.c_str(), topic.size(), 0);
+				server->getClientData(user->getClientID()).replies.append(topic);
 			}
 
 			// User list : we send a RPL_NAMREPLY
@@ -132,14 +123,12 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 
 			if (!channel->getTopic().empty()) {
 				std::string topic = std::string(":localhost ") + "332 " + user->getNickname() + " " + channels[i] + " " + channel->getTopic() + "\r\n";
-				server->addReply(user->getSocket(), topic);
-				//send(user->getSocket(), topic.c_str(), topic.size(), 0);
+				server->getClientData(user->getClientID()).replies.append(topic);
 			}
 
 			if (channel->getTopic().empty()) {
 				std::string topic = std::string(":localhost ") + "331 " + user->getNickname() + " " + channels[i] + " :No topic is set" + "\r\n";
-				server->addReply(user->getSocket(), topic);
-				//send(user->getSocket(), topic.c_str(), topic.size(), 0);
+				server->getClientData(user->getClientID()).replies.append(topic);
 			}
 
 			// We send a RPL_NAMREPLY so the first user of the channel can see he is in the channel

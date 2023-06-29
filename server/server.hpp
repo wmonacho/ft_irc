@@ -112,12 +112,13 @@ class Server {
 		const std::map<const User*, UserAspects>&   getChannelUserList(std::string channel_name);
 		std::map<std::string, Channel*>::iterator	getItMap(void);
 		Server::clientData*                         getClientDataArray(void);
+		Server::clientData&							getClientData(int id);
 
 		// Socket connection and user registration for "socketManager.cpp"
-		int										verifyClientAndServerResponse(struct pollfd fds, Server::clientData *clientData);
+		int										verifyClientAndServerResponse(int id, struct pollfd fds, Server::clientData *clientData);
 		int										acceptNewConnection(struct pollfd *fds, int nfds);
 		int										retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bool closeConnection, Server::clientData *clientData);
-		std::string								createServerResponseForConnection(int socket, Server::userConnectionRegistration *userInfo);
+		std::string								createServerResponseForConnection(int id, int socket, Server::userConnectionRegistration *userInfo);
 		void									createNewUserAtConnection(std::string nickname, std::string username, int socket);
 		bool									getClientInformationsOnConnection(struct pollfd fds, Server::userConnectionRegistration *userInfo, std::string data);
 		bool									findPassInBuffer(const char *buffer, Server::userConnectionRegistration *userInfo);

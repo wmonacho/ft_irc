@@ -21,7 +21,7 @@ public:
 	cmd &operator=(const cmd &rhs);
 	~cmd();
 
-	int				whichCmd(std::string str, Server *server, User *user);
+	int				whichCmd(int clientID, Server *server, User *user);
 	bool			parsePass(User *user, std::string str, Server *server);
 	bool			parseNick(std::string str, Server *server, User *user);
 	bool			parseUser(std::string str, Server *server);

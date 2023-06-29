@@ -270,6 +270,11 @@ Server::clientData*	Server::getClientDataArray (void) {
 	return _clientDataArray;
 }
 
+Server::clientData&	Server::getClientData (int id) {
+
+	return _clientDataArray[id];
+}
+
 /* *************************************** */
 /* *************** SETTERS *************** */
 /* *************************************** */
@@ -504,8 +509,7 @@ void	Server::sendUserList(Channel *channel, User *user)
 			}
 
 			user_list.append("\r\n");
-			//send(user_it->first->getSocket(), user_list.c_str(), user_list.size(), 0);
-			addReply(user_it->first->getSocket(), user_list);
+			this->getClientData(user_it->first->getClientID()).replies.append(user_list);
 		}
 	}
 }
@@ -537,10 +541,4 @@ void	Server::setChannelRemplacementOpe(std::string channel_name)
 void	Server::addReply(int socketfd, std::string	message)
 {
 	this->_reply.push_back(std::make_pair(socketfd, message));
-}
-
-void addReply (User *user, std::tring msg)
-{
-	clientdata = getClientDataFromUser (user);
-	clientdata.replies.append (msg);
 }

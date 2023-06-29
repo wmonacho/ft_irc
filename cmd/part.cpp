@@ -8,8 +8,7 @@ bool	cmd::parsePart(std::string str, Server *server, User *user)
 	{
 		// 461 ERR_NEEDMOREPARAMS
 		std::string error = generateErrorMessage("461", splitArg[0]);
-		//send(user->getSocket(), error.c_str(), error.size(), 0);
-		server->addReply(user->getSocket(), error);
+		server->getClientData(user->getClientID()).replies.append(error);
 		return (false);
 	}
 
@@ -26,16 +25,14 @@ bool	cmd::parsePart(std::string str, Server *server, User *user)
 		//verifier si le channel existe
 		if (server->channelAlreadyExist(*it) == false) {
 			std::string error = std::string(":localhost ") + "403 " + user->getNickname() + " " + splitArg[0] + " " + *it_copy + " " + " :No such channel" + "\r\n";
-			//send(user->getSocket(), error.c_str(), error.size(), 0);
-			server->addReply(user->getSocket(), error);
+			server->getClientData(user->getClientID()).replies.append(error);
 			return false;
 		}
 		
 		//verifier si l'user est bien dans le channel
 		if (server->userInChannel(*it, user) == false) {
 			std::string error = std::string(":localhost ") + "442" + " " + splitArg[0] + " " + *it_copy + " " + " :You're not on that channel" + "\r\n";
-			//send(user->getSocket(), error.c_str(), error.size(), 0);
-			server->addReply(user->getSocket(), error);
+			server->getClientData(user->getClientID()).replies.append(error);
 			return false;
 		}
 		std::string part_message = ":" + user->getNickname() + "!" + user->getUsername() + "@localhost " + splitArg[0] + " ";

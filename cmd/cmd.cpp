@@ -87,8 +87,9 @@ bool    cmd::parseUser(std::string str, Server *server)
 	return (true);
 }
 
-int	cmd::whichCmd(std::string str, Server *server, User *user)
+int	cmd::whichCmd(int clientID, Server *server, User *user)
 {
+	std::string str = server->getClientData(clientID).dataString;
 	std::vector<std::string> arg = splitString(str, " ");
 	size_t pos = arg[0].find("\n");
 	if (pos != std::string::npos)
@@ -113,8 +114,7 @@ int	cmd::whichCmd(std::string str, Server *server, User *user)
 	{
 		case -1:
 		    response = std::string(":localhost ") + "421 " + user->getNickname() + " " + arg[0] + " :Unknown command" + "\r\n";
-		   // send(user->getSocket(), response.c_str(), response.size(), 0);
-			server->addReply(user->getSocket(), response);
+			server->getClientData(clientID).replies.append(response);
 		    return 1;
 
 		 case 0:
@@ -225,7 +225,7 @@ void    cmd::sendMessageToAllUsersInChannel(std::string message, Channel *channe
 	while (user != userEnd) {
 		std::string tmp = message;
 		//send(user->first->getSocket(), tmp.c_str(), tmp.size(), 0);
-		server->addReply(user->first->getSocket(), tmp);
+		server->getClientData(user->first->getClientID()).replies.append(tmp);
 		user++;
 	}
 	return ;
@@ -241,8 +241,7 @@ void    cmd::sendMessageToOtherUsersInChannel(std::string message, Channel *chan
 		std::string tmp = message;
 		if (userNode->first != user)
 		{
-			//send(userNode->first->getSocket(), tmp.c_str(), tmp.size(), 0);
-			server->addReply(userNode->first->getSocket(), tmp);
+			server->getClientData(user->getClientID()).replies.append(tmp);
 		}
 		userNode++;
 	}

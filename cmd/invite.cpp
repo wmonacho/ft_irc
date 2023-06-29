@@ -27,8 +27,7 @@ bool	cmd::parseInvite(std::string str, Server *server, User *user)
 	{
 		// 401	ERR_NOSUCHNICK
 		std::string error = std::string(":localhost ") + "401" + " " + user->getNickname() + " " + channel + " :No such nick/channel" + "\r\n";
-		server->addReply(user->getSocket(), error);
-		//send(user->getSocket(), error.c_str(), error.size(), 0);
+		server->getClientData(user->getClientID()).replies.append(error);
 		return false;
 	}
 	//seulement les users du channel peuvent inviter des gens
@@ -37,8 +36,7 @@ bool	cmd::parseInvite(std::string str, Server *server, User *user)
 	{
 		// 442	ERR_NOTONCHANNEL
 		std::string error = std::string(":localhost ") + "442" + " " + user->getNickname() + " " + channel + " :You're not on that channel" + "\r\n";
-		server->addReply(user->getSocket(), error);
-		//send(user->getSocket(), error.c_str(), error.size(), 0);
+		server->getClientData(user->getClientID()).replies.append(error);
 		return false;
 	}
 	//si le channel a le flag invite only set, seulement les channels operators peuvent inviter
@@ -46,8 +44,7 @@ bool	cmd::parseInvite(std::string str, Server *server, User *user)
 	{
 		// 482	ERR_CHANOPRIVSNEEDED
 		std::string error = std::string(":localhost ") + "482" + " " + user->getNickname() + " " + channel + " :You're not channel operator" + "\r\n";
-		server->addReply(user->getSocket(), error);
-		//send(user->getSocket(), error.c_str(), error.size(), 0);
+		server->getClientData(user->getClientID()).replies.append(error);
 		return false;
 	}
 	//checker si l'user est deja sur le chan
@@ -55,8 +52,7 @@ bool	cmd::parseInvite(std::string str, Server *server, User *user)
 	{
 		// 443	ERR_USERONCHANNEL
 		std::string error = std::string(":localhost ") + "443" + " " + user->getNickname() + " " + nick + " " + channel + " :is already on channel" + "\r\n";
-		server->addReply(user->getSocket(), error);
-		//send(user->getSocket(), error.c_str(), error.size(), 0);
+		server->getClientData(user->getClientID()).replies.append(error);
 		return false;
 	}
 	//check si le channel a une limit
@@ -77,9 +73,7 @@ bool	cmd::parseInvite(std::string str, Server *server, User *user)
 	std::string invite_message = ":" + user->getNickname() + "!" + user->getNickname() + "@localhost " + arg[0] + " " + nick + " " + channel + "\r\n";
 	std::string user_nickname = server->getUser(nick)->getNickname();
 	std::string invite_confirmation = std::string(":localhost ") + "341" + " " + user->getNickname() + " " + user_nickname + " " + channel + "\r\n";
-	server->addReply(user->getSocket(), invite_confirmation);
-	server->addReply(server->getUser(nick)->getSocket(), invite_message);
-	//send(user->getSocket(), invite_confirmation.c_str(), invite_confirmation.size(), 0);
-	//send(server->getUser(nick)->getSocket(), invite_message.c_str(), invite_message.size(), 0);
+	server->getClientData(user->getClientID()).replies.append(invite_confirmation);
+	server->getClientData(server->getUser(nick)->getClientID()).replies.append(invite_message);
 	return true;
 }
