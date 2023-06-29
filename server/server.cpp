@@ -5,7 +5,6 @@
 /* *************************************** */
 
 Server::Server() {
-	this->_user_list.reserve(MAX_SOCKETS);
 }
 
 // This Server constructor sets up a listening socket
@@ -20,7 +19,6 @@ Server::Server(int port, std::string password) {
 		this->_clientDataArray[index].userConnectionRegistration.passCheck = false;
 		index++;
 	}
-	this->_user_list.reserve(MAX_SOCKETS);
 	_servLen = sizeof(_servAddr);
 	_clientLen = sizeof(_clientAddr);
 	_port = port;
@@ -138,7 +136,7 @@ std::string Server::getPassword(void)
 	return (this->_password);
 }
 
-std::vector<User>  Server::getUserList(void)
+std::list<User>  Server::getUserList(void)
 {
 	return (this->_user_list);
 }
@@ -206,7 +204,7 @@ bool	Server::getChannelUserAdmin(std::string channel_name, User *user)
 
 User*	Server::getUser(std::string user_nickname)
 {
-	for (std::vector<User>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
+	for (std::list<User>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
 	{
 		if ((*it).getNickname() == user_nickname)
 			return (&(*it));
@@ -216,7 +214,7 @@ User*	Server::getUser(std::string user_nickname)
 
 User*	Server::getUserWithName(std::string user_name)
 {
-	for (std::vector<User>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
+	for (std::list<User>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
 	{
 		if ((*it).getUsername() == user_name)
 			return (&(*it));
@@ -225,7 +223,7 @@ User*	Server::getUserWithName(std::string user_name)
 }
 User*	Server::getUserBySocket(int socket)
 {
-	std::vector<User>::iterator user;
+	std::list<User>::iterator user;
 
 	for (user = this->_user_list.begin(); user != this->_user_list.end(); user++) {
 			if ((*user).getSocket() == socket)
@@ -235,13 +233,13 @@ User*	Server::getUserBySocket(int socket)
 }
 const User*  Server::getConstUser(std::string user_nickname)
 {
-	for (std::vector<User>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
+	for (std::list<User>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
 	{
 		if ((*it).getNickname() == user_nickname)
 			return (&(*it));
 	}
 	//throw une exception si possible a la place de return cette merde
-	std::vector<User>::iterator it = this->_user_list.begin();
+	std::list<User>::iterator it = this->_user_list.begin();
 	return (&(*it));
 }
 
@@ -346,9 +344,9 @@ bool    Server::passwordAlreadyRegistred( void )
 
 bool    Server::nickAlreadyExist( std::string new_nick )
 {
-    for(unsigned int i = 0; i < this->_user_list.size(); i++)
+    for(std::list<User>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
     {
-        if (this->_user_list[i].getNickname() == new_nick)
+        if (it->getNickname() == new_nick)
             return (true);
     }
     return (false);
@@ -356,9 +354,9 @@ bool    Server::nickAlreadyExist( std::string new_nick )
 
 bool    Server::usernameAlreadyExist( std::string new_username )
 {
-	for(unsigned int i = 0; i < this->_user_list.size(); i++)
+	for(std::list<User>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++)
 	{
-		if (this->_user_list[i].getUsername() == new_username)
+		if (it->getUsername() == new_username)
 			return (true);
 	}
 	return (false);
@@ -472,11 +470,9 @@ void	Server::deleteChannel(std::string channel_name)
 
 void	Server::deleteUserFromUserList(User user)
 {
-	for (unsigned int i = 0; i < this->_user_list.size(); i++) {
-			if (this->_user_list[i].getNickname() == user.getNickname()) {
-				std::vector<User>::iterator it;
-				it = this->_user_list.begin();
-				this->_user_list.erase(it + i);
+	for (std::list<User>::iterator it = this->_user_list.begin(); it != this->_user_list.end(); it++) {
+			if (it->getNickname() == user.getNickname()) {
+				this->_user_list.erase(it);
 				break;
 			}
 	}
