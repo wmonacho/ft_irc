@@ -113,7 +113,8 @@ int Server::verifyClientAndServerResponse(struct pollfd fds, Server::clientData 
 		return (0);
 
 	// Finally we send back the server response to confirm the connection of the user
-	send(fds.fd, server_response_for_connection.c_str(), server_response_for_connection.size(), 0);
+	//send(fds.fd, server_response_for_connection.c_str(), server_response_for_connection.size(), 0);
+	addReply(fds.fd, server_response_for_connection);
 	return (1);
 }
 
@@ -238,28 +239,32 @@ std::string Server::createServerResponseForConnection(int socket, Server::userCo
 	if (userInfo->nickName.empty() || userInfo->nickName == "")
 	{
 		std::string response = std::string(":localhost ") + "431 " + userInfo->nickName + " " + ":No nickname given" + "\r\n";
-		send(socket, response.c_str(), response.size(), 0);
+		//send(socket, response.c_str(), response.size(), 0);
+		addReply(socket, response);
 		userInfo->nickCheck = false;
 		return "";
 	}
 
 	if (userInfo->nickName.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_", 0) != std::string::npos) {
 		std::string response = std::string(":localhost ") + "432 " + userInfo->nickName + " " + userInfo->nickName + " :Erroneous nickname" + "\r\n";
-		send(socket, response.c_str(), response.size(), 0);
+		//send(socket, response.c_str(), response.size(), 0);
+		addReply(socket, response);
 		userInfo->nickCheck = false;
 		return "";
 	}
 
 	if (userInfo->password != this->_password) {
 		std::string response = std::string(":localhost ") + "464 " + userInfo->nickName + " " + ":Password incorrect" + "\r\n";
-		send(socket, response.c_str(), response.size(), 0);
+		//send(socket, response.c_str(), response.size(), 0);
+		addReply(socket, response);
 		userInfo->passCheck = false;
 		return "";
 	}
 
 	if (userWithSameNicknameExists == true) {
  		std::string response = std::string(":localhost ") + "433 " + userInfo->nickName + " " + userInfo->nickName + " :Nickname is already in use" + "\r\n";
-		send(socket, response.c_str(), response.size(), 0);
+		//send(socket, response.c_str(), response.size(), 0);
+		addReply(socket, response);
 		userInfo->nickCheck = false;
 		return "";
 	}

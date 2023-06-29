@@ -211,7 +211,7 @@ std::string    cmd::createServerMessage(User *user, std::string numReply, std::v
 	return (tmp);
 }
 
-void    cmd::sendMessageToAllUsersInChannel(std::string message, Channel *channel)
+void    cmd::sendMessageToAllUsersInChannel(std::string message, Channel *channel, Server *server)
 {
 	if (!channel) {
 		std::cerr << "Error: channel does not exist" << std::endl;
@@ -224,13 +224,14 @@ void    cmd::sendMessageToAllUsersInChannel(std::string message, Channel *channe
 
 	while (user != userEnd) {
 		std::string tmp = message;
-		send(user->first->getSocket(), tmp.c_str(), tmp.size(), 0);
+		//send(user->first->getSocket(), tmp.c_str(), tmp.size(), 0);
+		server->addReply(user->first->getSocket(), tmp);
 		user++;
 	}
 	return ;
 }
 
-void    cmd::sendMessageToOtherUsersInChannel(std::string message, Channel *channel, User *user) {
+void    cmd::sendMessageToOtherUsersInChannel(std::string message, Channel *channel, User *user, Server *server) {
 
 	std::map<const User*, UserAspects> userMap = channel->getUserList();
 	std::map<const User*, UserAspects>::iterator userNode = userMap.begin();
@@ -239,7 +240,10 @@ void    cmd::sendMessageToOtherUsersInChannel(std::string message, Channel *chan
 	while (userNode != lastUserNode) {
 		std::string tmp = message;
 		if (userNode->first != user)
-			send(userNode->first->getSocket(), tmp.c_str(), tmp.size(), 0);
+		{
+			//send(userNode->first->getSocket(), tmp.c_str(), tmp.size(), 0);
+			server->addReply(userNode->first->getSocket(), tmp);
+		}
 		userNode++;
 	}
 	return ;

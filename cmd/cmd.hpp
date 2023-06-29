@@ -37,9 +37,9 @@ public:
 	bool			privMsgToDirectUser(std::vector<std::string> &arg, Server *server, User *user, std::string msg);
 	std::string		createServerMessage(User *user, std::string numReply, std::vector<std::string> splitArg);
 	std::string		generateErrorMessage(std::string numreply, std::string command);
-	void			sendMessageToAllUsersInChannel(std::string message, Channel *channel);
-	void			sendMessageToOtherUsersInChannel(std::string message, Channel *channel, User *user);
-	void			sendChannelTopicToUser(Channel *channel, User *user);
+	void			sendMessageToAllUsersInChannel(std::string message, Channel *channel, Server *server);
+	void			sendMessageToOtherUsersInChannel(std::string message, Channel *channel, User *user, Server *server);
+	void			sendChannelTopicToUser(Channel *channel, User *user, Server *server);
 	void			rebuildMessage(std::vector<std::string> &arg, int index);
 	void			rebuildMessageWithIterator(std::vector<std::string> &arg, std::vector<std::string>::iterator messagePos); 
 

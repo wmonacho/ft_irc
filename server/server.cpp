@@ -504,7 +504,8 @@ void	Server::sendUserList(Channel *channel, User *user)
 			}
 
 			user_list.append("\r\n");
-			send(user_it->first->getSocket(), user_list.c_str(), user_list.size(), 0);
+			//send(user_it->first->getSocket(), user_list.c_str(), user_list.size(), 0);
+			addReply(user_it->first->getSocket(), user_list);
 		}
 	}
 }

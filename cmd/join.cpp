@@ -90,7 +90,7 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
  			UserAspects	new_aspects(false);
 
 			server->addUserToChannel(channel_name, user, new_aspects);
-			this->sendMessageToAllUsersInChannel(server_response, channel);
+			this->sendMessageToAllUsersInChannel(server_response, channel, server);
 
 			// On envoie le topic s'il existe
 			if (!channel->getTopic().empty()) {
@@ -128,7 +128,7 @@ bool	cmd::parseJoin(std::string str, Server *server, User *user)
 				return false;
 			}
 			server->addUserToChannel(channel_name, user, new_aspects);
-			sendMessageToAllUsersInChannel(server_response, server->getChannel(channel_name));
+			sendMessageToAllUsersInChannel(server_response, server->getChannel(channel_name), server);
 
 			if (!channel->getTopic().empty()) {
 				std::string topic = std::string(":localhost ") + "332 " + user->getNickname() + " " + channels[i] + " " + channel->getTopic() + "\r\n";
