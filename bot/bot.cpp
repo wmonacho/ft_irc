@@ -43,6 +43,7 @@ int	main(int ac, char **av)
 
 		// We send connection details to log to the server
 		usleep(10000);
+
 		send(botSocket, sendPass.c_str(), sendPass.size(), 0);
 		usleep(10000);
 		send(botSocket, sendNick.c_str(), sendNick.size(), 0);

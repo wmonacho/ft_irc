@@ -268,6 +268,11 @@ Server::clientData*	Server::getClientDataArray (void) {
 	return _clientDataArray;
 }
 
+Server::clientData&	Server::getClientData (int id) {
+
+	return _clientDataArray[id];
+}
+
 /* *************************************** */
 /* *************** SETTERS *************** */
 /* *************************************** */
@@ -500,7 +505,7 @@ void	Server::sendUserList(Channel *channel, User *user)
 			}
 
 			user_list.append("\r\n");
-			send(user_it->first->getSocket(), user_list.c_str(), user_list.size(), 0);
+			this->getClientData(user_it->first->getClientID()).replies.append(user_list);
 		}
 	}
 }

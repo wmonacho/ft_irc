@@ -64,6 +64,11 @@ int	User::getSocket( void ) const
 	return (this->_socket);
 }
 
+int	User::getClientID( void ) const
+{
+	return (this->_clientID);
+}
+
 void	User::setNickname( std::string new_string )
 {
 	this->_nickname = new_string;
@@ -87,6 +92,11 @@ void	User::setRealname( std::string new_string )
 void	User::setSocket( int fd )
 {
 	this->_socket = fd;
+}
+
+void	User::setClientID( int id )
+{
+	this->_clientID = id;
 }
 
 bool User::operator==(const User* other) const

@@ -39,23 +39,42 @@ void    Server::startServer() {
 		// We set the currentSize to the number of sockets in our pollfd array
 		currentSize = nfds;
 		for (socketID = 0; socketID < currentSize; socketID++) {
-			// If it's a connecting socket we accept the connection and add it to the socket pool (fds[nfds])
-			if (fds[socketID].fd == this->_socketfd) {
-				connectionStatus = acceptNewConnection(fds, nfds);
-				if (connectionStatus == -1)
-					endOfServer = true;
-				else
-					nfds = connectionStatus; // connectionStatus is the number of fd if acceptNewConnection() succeeded
-			}
-			// If it's already a connected socket, we try to receive the data
-			else {
-				closeConnection = retrieveDataFromConnectedSocket(socketID, fds, closeConnection, &clientData[socketID]);
-				if (closeConnection == true) {
-					std::cerr << "/!!\\ Closing connection for socket " << socketID << " /!!\\" << std::endl;
-					if (fds[socketID].fd != -1) {
-						close(fds[socketID].fd);
-						fds[socketID].fd = -1;
+
+			if (fds[socketID].revents & POLLOUT)
+			{
+				if (!clientData[socketID].replies.empty()) {
+					size_t	bytesSent = send(fds[socketID].fd, clientData[socketID].replies.c_str(), clientData[socketID].replies.size(), 0);
+					std::cerr << "Sending -- " << bytesSent << std::endl;
+					if (bytesSent != clientData[socketID].replies.size()) {
+						clientData[socketID].replies.substr(bytesSent);
 					}
+					else
+						clientData[socketID].replies.clear();
+				}
+			}
+
+			if (fds[socketID].revents & POLLIN) {	// SOCKET IS READY TO SEND DATA
+
+				std::cerr << "SOCKET IS READY TO SEND DATA" << std::endl;
+				// If it's a connecting socket we accept the connection and add it to the socket pool (fds[nfds])
+				if (fds[socketID].fd == this->_socketfd) {
+					connectionStatus = acceptNewConnection(fds, nfds);
+					if (connectionStatus == -1)
+						endOfServer = true;
+					else
+						nfds = connectionStatus; // connectionStatus is the number of fd if acceptNewConnection() succeeded
+				}
+				// If it's already a connected socket, we try to receive the data
+				else {
+					closeConnection = retrieveDataFromConnectedSocket(socketID, fds, closeConnection, &clientData[socketID]);
+					if (closeConnection == true) {
+						std::cerr << "/!!\\ Closing connection for socket " << socketID << " /!!\\" << std::endl;
+						if (fds[socketID].fd != -1) {
+							close(fds[socketID].fd);
+							fds[socketID].fd = -1;
+						}
+					}
+					fds[socketID].events |= POLLOUT;
 				}
 			}
 		}
@@ -81,22 +100,21 @@ int Server::acceptNewConnection(struct pollfd *fds, int nfds) {
 	int newSocket;
 	// int errorStatus = -1;
 
-	do {
+	// do {
 		newSocket = accept(this->_socketfd, NULL, NULL);
 		if (newSocket < 0) { 
-			//std::cerr << "REMOVED EWOULDBLOCK --> ACCEPT returns < 0\n";
-			break ;
+			return nfds;
 		}
 		// This is a new socket so we add it to our socket pool
 		fds[nfds].fd = newSocket;
 		fds[nfds].events = POLLIN;
 		std::cout << "--A new socket is now connected to the server--" << std::endl;
 		nfds++;
-	} while (newSocket != -1);
+	// } while (newSocket != -1);
 	return (nfds);
 }
 
-int Server::verifyClientAndServerResponse(struct pollfd fds, Server::clientData *clientData) {
+int Server::verifyClientAndServerResponse(int id, struct pollfd fds, Server::clientData *clientData) {
 
 	// We retrieve the informations sent by the client to create the new user which connected to our server
 	// and we send back the RPL_WELCOME
@@ -108,12 +126,12 @@ int Server::verifyClientAndServerResponse(struct pollfd fds, Server::clientData 
 	if (getClientInformationsOnConnection(fds, userInfo, clientData->dataString) == false)
 		return (0);
 	// We create the string for the RPL_WELCOME and make a few checks (correct password and if the nickanme is not currently used)
-	server_response_for_connection = createServerResponseForConnection(fds.fd, userInfo);
+	server_response_for_connection = createServerResponseForConnection(id, fds.fd, userInfo);
 	if (server_response_for_connection.empty())
 		return (0);
 
 	// Finally we send back the server response to confirm the connection of the user
-	send(fds.fd, server_response_for_connection.c_str(), server_response_for_connection.size(), 0);
+	this->getClientData(id).replies.append(server_response_for_connection);
 	return (1);
 }
 
@@ -224,7 +242,7 @@ void    Server::createNewUserAtConnection(std::string nickname, std::string user
 	return ;
 }
 
-std::string Server::createServerResponseForConnection(int socket, Server::userConnectionRegistration *userInfo) {
+std::string Server::createServerResponseForConnection(int id, int socket, Server::userConnectionRegistration *userInfo) {
 
 	bool	userWithSameNicknameExists = false;
 	std::list<User> userVector = this->getUserList();
@@ -237,28 +255,32 @@ std::string Server::createServerResponseForConnection(int socket, Server::userCo
 	if (userInfo->nickName.empty() || userInfo->nickName == "")
 	{
 		std::string response = std::string(":localhost ") + "431 " + userInfo->nickName + " " + ":No nickname given" + "\r\n";
-		send(socket, response.c_str(), response.size(), 0);
+		//send(socket, response.c_str(), response.size(), 0);
+		this->getClientData(id).replies.append(response);
 		userInfo->nickCheck = false;
 		return "";
 	}
 
 	if (userInfo->nickName.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_", 0) != std::string::npos) {
-		std::string response = std::string(":localhost ") + "432 " + userInfo->nickName + " " + userInfo->nickName + " :Erroneous nickname" + "\r\n";
-		send(socket, response.c_str(), response.size(), 0);
+		std::string respo<<<<<<< sendDebugnse = std::string(":localhost ") + "432 " + userInfo->nickName + " " + userInfo->nickName + " :Erroneous nickname" + "\r\n";
+		//send(socket, response.c_str(), response.size(), 0);
+		this->getClientData(id).replies.append(response);
 		userInfo->nickCheck = false;
 		return "";
 	}
 
 	if (userInfo->password != this->_password) {
 		std::string response = std::string(":localhost ") + "464 " + userInfo->nickName + " " + ":Password incorrect" + "\r\n";
-		send(socket, response.c_str(), response.size(), 0);
+		//send(socket, response.c_str(), response.size(), 0);
+		this->getClientData(id).replies.append(response);
 		userInfo->passCheck = false;
 		return "";
 	}
 
 	if (userWithSameNicknameExists == true) {
  		std::string response = std::string(":localhost ") + "433 " + userInfo->nickName + " " + userInfo->nickName + " :Nickname is already in use" + "\r\n";
-		send(socket, response.c_str(), response.size(), 0);
+		//send(socket, response.c_str(), response.size(), 0);
+		this->getClientData(id).replies.append(response);
 		userInfo->nickCheck = false;
 		return "";
 	}
@@ -299,7 +321,7 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
 		// If we get a correct request, we can use it, otherwise we try to receive what is left
 		if (!clientData->dataString.empty() && (clientData->dataString.find("\n") != std::string::npos)) {
 			if (clientData->clientIsConnected == false) {
-				connectionDone = verifyClientAndServerResponse(fds[socketID], clientData);
+				connectionDone = verifyClientAndServerResponse(socketID, fds[socketID], clientData);
 				if (connectionDone == 1)
 					clientData->clientIsConnected = true;
 				else {
@@ -316,7 +338,8 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
 
 				// We handle the command here
 				user = this->getUserBySocket(fds[socketID].fd);
-				clientStatus = command.whichCmd(clientData->dataString.c_str(), this, user);
+				user->setClientID(socketID);
+				clientStatus = command.whichCmd(socketID, this, user);
 				if (clientStatus == 2) {
 					clientData->clientIsConnected = false;
 					closeConnection = true;
