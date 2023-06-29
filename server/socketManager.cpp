@@ -295,6 +295,7 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
 			return (closeConnection);
 		}
 		clientData->dataString += buffer;
+
 		// If we get a correct request, we can use it, otherwise we try to receive what is left
 		if (!clientData->dataString.empty() && (clientData->dataString.find("\n") != std::string::npos)) {
 			if (clientData->clientIsConnected == false) {
@@ -315,7 +316,7 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
 
 				// We handle the command here
 				user = this->getUserBySocket(fds[socketID].fd);
-				clientStatus = command.whichCmd(clientData->dataString, this, user);
+				clientStatus = command.whichCmd(clientData->dataString.c_str(), this, user);
 				if (clientStatus == 2) {
 					clientData->clientIsConnected = false;
 					closeConnection = true;
