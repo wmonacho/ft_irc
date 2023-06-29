@@ -133,7 +133,7 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 						continue;
 				  case 111:
 					  	//execute mode o
-						if (i + 2 < splitArg.size() && server->nickAlreadyExist(splitArg[i + 2])) {
+						if (i + 2 < splitArg.size() && server->nickAlreadyExist(splitArg[i + 2]) && server->userInChannel(chan->getName(), server->getUser(splitArg[i + 2]))) {
 							rpl_channel_mode_is += chan->getName() + " +o " + splitArg[i + 2] + "\r\n";
 							chan->changeUserAdmin(server->getChannelUser(splitArg[1], splitArg[i + 2]), true);
 							this->sendMessageToAllUsersInChannel(rpl_channel_mode_is, chan, server);
@@ -186,7 +186,7 @@ bool	cmd::parseMode(std::string str, Server *server, User *user)
 					  	continue;
 				  case 111:
 					  	//execute mode o
-						if (i + 2 < splitArg.size() && server->nickAlreadyExist(splitArg[i + 2])) {
+						if (i + 2 < splitArg.size() && server->nickAlreadyExist(splitArg[i + 2]) && server->userInChannel(chan->getName(), server->getUser(splitArg[i + 2]))) {
 					  		chan->changeUserAdmin(server->getChannelUser(splitArg[1], splitArg[i + 2]), false);
 					  		// 324 RPL_CHANNELMODEIS
 							rpl_channel_mode_is += chan->getName() + " -o " + splitArg[i + 2] + "\r\n";
