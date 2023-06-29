@@ -25,6 +25,7 @@ class User
 		std::string	_password;
 		std::string	_realname;
 		int			_socket;
+		int			_clientID;
 	public :
 		User( void );
 		~User( void );
@@ -36,6 +37,7 @@ class User
 		void		setNickname( std::string new_string );
 		void		setSocket( int fd );
 		void		setAdmin( int admin);
+		void		setClientID( int id );
 		
 		bool	operator==(const User* other) const;
 		
@@ -46,6 +48,7 @@ class User
 		std::string			getUsername( void ) const;
 		std::string			getNickname( void ) const;
 		int					getSocket( void ) const;
+		int					getClientID( void ) const;
 };
 
 
