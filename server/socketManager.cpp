@@ -39,8 +39,7 @@ void    Server::startServer() {
 		currentSize = nfds;
 		for (socketID = 0; socketID < currentSize; socketID++) {
 
-			if (fds[socketID].revents & POLLOUT)
-			{
+			if (fds[socketID].revents & POLLOUT) {
 				if (!clientData[socketID].replies.empty()) {
 					size_t	bytesSent = send(fds[socketID].fd, clientData[socketID].replies.c_str(), clientData[socketID].replies.size(), 0);
 					std::cerr << "Sending -- " << bytesSent << std::endl;
@@ -52,7 +51,7 @@ void    Server::startServer() {
 				}
 			}
 
-			if (fds[socketID].revents & POLLIN) {	// SOCKET IS READY TO SEND DATA
+			if (fds[socketID].revents & POLLIN) {
 
 				std::cerr << "SOCKET IS READY TO SEND DATA" << std::endl;
 				// If it's a connecting socket we accept the connection and add it to the socket pool (fds[nfds])
