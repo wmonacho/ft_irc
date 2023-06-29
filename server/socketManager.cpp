@@ -1,5 +1,4 @@
 #include "server.hpp"
-#include <cerrno>
 #include <string.h>
 #include <fcntl.h>
 

@@ -240,7 +240,7 @@ void    cmd::sendMessageToOtherUsersInChannel(std::string message, Channel *chan
 		std::string tmp = message;
 		if (userNode->first != user)
 		{
-			server->getClientData(user->getClientID()).replies.append(tmp);
+			server->getClientData(userNode->first->getClientID()).replies.append(tmp);
 		}
 		userNode++;
 	}
