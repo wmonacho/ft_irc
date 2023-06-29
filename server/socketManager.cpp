@@ -262,7 +262,7 @@ std::string Server::createServerResponseForConnection(int id, int socket, Server
 	}
 
 	if (userInfo->nickName.find_first_not_of("abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789_", 0) != std::string::npos) {
-		std::string respo<<<<<<< sendDebugnse = std::string(":localhost ") + "432 " + userInfo->nickName + " " + userInfo->nickName + " :Erroneous nickname" + "\r\n";
+		std::string response = std::string(":localhost ") + "432 " + userInfo->nickName + " " + userInfo->nickName + " :Erroneous nickname" + "\r\n";
 		//send(socket, response.c_str(), response.size(), 0);
 		this->getClientData(id).replies.append(response);
 		userInfo->nickCheck = false;
