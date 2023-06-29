@@ -17,6 +17,7 @@
 #include <poll.h>
 #include <map>
 #include <algorithm>
+#include <list>
 
 #define MAX_SOCKETS 42
 
@@ -35,7 +36,7 @@ class Server {
 		socklen_t   _servLen;
 		socklen_t   _clientLen;
 		std::string _password;
-		std::vector<User>	_user_list;
+		std::list<User>	_user_list;
 		std::vector<std::pair<int, std::string> >	_reply;
 		struct sockaddr_in  _servAddr;
 		struct sockaddr_in  _clientAddr;
@@ -106,7 +107,7 @@ class Server {
 		const User* 	                        getConstUser(std::string user_nickname);
 		const User*                             getChannelUser(std::string channel_name, std::string user_name);
 		const User*	                            getChannelUser(std::string channel_name, const User *user);
-		std::vector<User>							getUserList(void);
+		std::list<User>							getUserList(void);
 		const std::map<std::string, Channel*>&			getMap(void);
 		const std::map<const User*, UserAspects>&   getChannelUserList(std::string channel_name);
 		std::map<std::string, Channel*>::iterator	getItMap(void);

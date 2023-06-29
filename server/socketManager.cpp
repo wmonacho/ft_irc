@@ -84,7 +84,7 @@ int Server::acceptNewConnection(struct pollfd *fds, int nfds) {
 	do {
 		newSocket = accept(this->_socketfd, NULL, NULL);
 		if (newSocket < 0) { 
-			std::cerr << "REMOVED EWOULDBLOCK --> ACCEPT returns < 0\n";
+			//std::cerr << "REMOVED EWOULDBLOCK --> ACCEPT returns < 0\n";
 			break ;
 		}
 		// This is a new socket so we add it to our socket pool
@@ -220,18 +220,17 @@ void    Server::createNewUserAtConnection(std::string nickname, std::string user
 	
 
 	// Then we add the new user which connected to the server to the USER_LIST of the server
-	this->setUserList(new_user);
-													
+	this->setUserList(new_user);										
 	return ;
 }
 
 std::string Server::createServerResponseForConnection(int socket, Server::userConnectionRegistration *userInfo) {
 
 	bool	userWithSameNicknameExists = false;
-	std::vector<User> userVector = this->getUserList();
+	std::list<User> userVector = this->getUserList();
 
-	for (std::vector<User>::iterator it = userVector.begin(); it != userVector.end(); it++) {
-		if ((*it).getNickname() == userInfo->nickName)
+	for (std::list<User>::iterator it = userVector.begin(); it != userVector.end(); it++) {
+		if (it->getNickname() == userInfo->nickName)
 			userWithSameNicknameExists = true;
 	}
 
@@ -263,7 +262,6 @@ std::string Server::createServerResponseForConnection(int socket, Server::userCo
 		userInfo->nickCheck = false;
 		return "";
 	}
-
 	createNewUserAtConnection(userInfo->nickName, userInfo->userName, socket);
 	std::string server_response = ":localhost 001 " + userInfo->nickName + " :Welcome to the Internet Relay Network " + userInfo->nickName + "!" + userInfo->userName + "@localhost\r\n";
 	return (server_response);
@@ -287,7 +285,7 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
 		memset(buffer, 0, sizeof(buffer));
 		recvReturn = recv(fds[socketID].fd, buffer, sizeof(buffer), MSG_DONTWAIT);
 		if (recvReturn < 0) {
-			std::cerr << "REMOVED EWOULDBLOCK --> RECV returns < 0\n";
+			//std::cerr << "REMOVED EWOULDBLOCK --> RECV returns < 0\n";
 			return (closeConnection);
 		}
 		if (recvReturn == 0) {
@@ -299,7 +297,6 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
 		clientData->dataString += buffer;
 		// If we get a correct request, we can use it, otherwise we try to receive what is left
 		if (!clientData->dataString.empty() && (clientData->dataString.find("\n") != std::string::npos)) {
-
 			if (clientData->clientIsConnected == false) {
 				connectionDone = verifyClientAndServerResponse(fds[socketID], clientData);
 				if (connectionDone == 1)
@@ -309,7 +306,6 @@ int Server::retrieveDataFromConnectedSocket(int socketID, struct pollfd *fds, bo
 					clientData->dataString.clear();
 				}
 			}
-
 			if (clientData->clientIsConnected == true) {
 
 				// Display for testing purpose
