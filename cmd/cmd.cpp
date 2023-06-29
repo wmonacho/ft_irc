@@ -100,7 +100,6 @@ int	cmd::whichCmd(int clientID, Server *server, User *user)
 	
 	//arg[0].erase(arg[0].find("\r"), arg[0].find("\r") + 1);
 	int j = -1;
-
 	for (int i = 0; i < 14; i++)
 	{
 		if (arg[0] == _cmd[i])
