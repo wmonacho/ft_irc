@@ -39,23 +39,39 @@ void    Server::startServer() {
 		// We set the currentSize to the number of sockets in our pollfd array
 		currentSize = nfds;
 		for (socketID = 0; socketID < currentSize; socketID++) {
-			// If it's a connecting socket we accept the connection and add it to the socket pool (fds[nfds])
-			if (fds[socketID].fd == this->_socketfd) {
-				connectionStatus = acceptNewConnection(fds, nfds);
-				if (connectionStatus == -1)
-					endOfServer = true;
-				else
-					nfds = connectionStatus; // connectionStatus is the number of fd if acceptNewConnection() succeeded
+
+			if (fds[socketID].revents & POLLOUT) {	// SOCKET IS READY TO RECV DATA
+				// std::cerr << "SOCKET IS READY TO RECV DATA" << std::endl;
+				std::vector<std::pair<int, std::string> >::iterator	it;
+				for (it = this->_reply.begin(); it != this->_reply.end(); it++) {
+					std::cerr << "reply to send : " << it->second << std::endl;
+					send(it->first, it->second.c_str(), it->second.size(), 0);
+				}
+				this->_reply.clear();
 			}
-			// If it's already a connected socket, we try to receive the data
-			else {
-				closeConnection = retrieveDataFromConnectedSocket(socketID, fds, closeConnection, &clientData[socketID]);
-				if (closeConnection == true) {
-					std::cerr << "/!!\\ Closing connection for socket " << socketID << " /!!\\" << std::endl;
-					if (fds[socketID].fd != -1) {
-						close(fds[socketID].fd);
-						fds[socketID].fd = -1;
+
+			if (fds[socketID].revents & POLLIN) {	// SOCKET IS READY TO SEND DATA
+
+				// std::cerr << "SOCKET IS READY TO SEND DATA" << std::endl;
+				// If it's a connecting socket we accept the connection and add it to the socket pool (fds[nfds])
+				if (fds[socketID].fd == this->_socketfd) {
+					connectionStatus = acceptNewConnection(fds, nfds);
+					if (connectionStatus == -1)
+						endOfServer = true;
+					else
+						nfds = connectionStatus; // connectionStatus is the number of fd if acceptNewConnection() succeeded
+				}
+				// If it's already a connected socket, we try to receive the data
+				else {
+					closeConnection = retrieveDataFromConnectedSocket(socketID, fds, closeConnection, &clientData[socketID]);
+					if (closeConnection == true) {
+						std::cerr << "/!!\\ Closing connection for socket " << socketID << " /!!\\" << std::endl;
+						if (fds[socketID].fd != -1) {
+							close(fds[socketID].fd);
+							fds[socketID].fd = -1;
+						}
 					}
+					fds[socketID].events |= POLLOUT;
 				}
 			}
 		}
@@ -81,18 +97,17 @@ int Server::acceptNewConnection(struct pollfd *fds, int nfds) {
 	int newSocket;
 	// int errorStatus = -1;
 
-	do {
+	// do {
 		newSocket = accept(this->_socketfd, NULL, NULL);
 		if (newSocket < 0) { 
-			std::cerr << "REMOVED EWOULDBLOCK --> ACCEPT returns < 0\n";
-			break ;
+			return nfds;
 		}
 		// This is a new socket so we add it to our socket pool
 		fds[nfds].fd = newSocket;
 		fds[nfds].events = POLLIN;
 		std::cout << "--A new socket is now connected to the server--" << std::endl;
 		nfds++;
-	} while (newSocket != -1);
+	// } while (newSocket != -1);
 	return (nfds);
 }
 
